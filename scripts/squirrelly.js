@@ -106,7 +106,7 @@ function withExt(fileName) {
 // Add Squirrelly Helpers
 
 
-Sqrl.helpers.define('includeFromFile', function (content, blocks, config) {
+Sqrl.helpers.define('partial', function (content, blocks, config) {
 
   // Disallow Blocks And Filters
    if (blocks && blocks.length > 0) {
@@ -120,7 +120,7 @@ Sqrl.helpers.define('includeFromFile', function (content, blocks, config) {
   return template(content.params[1] || {}, config)
 })
 
-Sqrl.helpers.define('extendsFile', function (content, blocks, config) {
+Sqrl.helpers.define('layout', function (content, blocks, config) {
   var data = content.params[1] || {}
   data.content = content.exec()
 
