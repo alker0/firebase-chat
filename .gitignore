@@ -1,0 +1,15 @@
+node_modules/
+build/
+yarn-error.log
+
+# ---- if using Zero-Install ----
+.yarn/unplugged
+.yarn/build-state.yml
+
+# ---- if not using Zero-Install ----
+#.yarn/*
+#!.yarn/releases
+#!.yarn/plugins
+#.pnp.*
+
+!.gitkeep

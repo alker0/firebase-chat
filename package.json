@@ -1,0 +1,56 @@
+{
+  "name": "pj-name",
+  "version": "0.0.1",
+  "author": "alker",
+  "private": true,
+  "installConfig": {
+    "pnp": true
+  },
+  "scripts": {
+    "prepare": "snowpack",
+    "start": "snowpack dev",
+    "start:static": "snowpack dev --config only-static.config.js",
+    "test": "jest",
+    "citest": "CI=true jest --reporters=default --reporters=jest-github-action-reporter",
+    "build": "snowpack build",
+    "stylus:styles": "stylus src/styles --out src/public/css",
+    "stylus:components": "stylus src/components --out src/public/css/components",
+    "squirrelly": "node ./scripts/squirrelly.js src/templates --out src/public",
+    "page:add": "node ./scripts/add-page.js",
+    "page:delete": "node ./scripts/delete-page.js"
+  },
+  "devDependencies": {
+    "@snowpack/plugin-parcel": "^1.2.0",
+    "glob": "^7.1.6",
+    "jest": "^26.0.1",
+    "jest-github-actions-reporter": "^1.0.2",
+    "npm-run-all": "^4.1.5",
+    "parcel": "^1.12.4",
+    "parcel-plugin-purgecss": "^3.0.0",
+    "purgecss": "^2.3.0",
+    "snowpack": "^2.5.1",
+    "squirrelly": "^8.0.1",
+    "stylus": "^0.54.7",
+    "typescript": "^3.9.5"
+  },
+  "dependencies:about": {
+    "module: meiosis-setup": "helper for Meiosis Pattern",
+    "module: mergerino": "merge Object",
+    "module: inferno": "DOM renderer",
+    "module: pipe-and-compose": "compose multiple functions",
+    "module: bluebird": "Promise",
+    "dev-tool: snowpack": "build tool",
+    "dev-tool: parcel": "bundler",
+    "dev-tool: purgecss": "delete unused css",
+    "dev-tool: npm-run-all": "multiple scripts",
+    "dev-tool: jest": "test tool",
+    "dev-tool: jest-github-actions-reporter": "add pull request annotation when jest error",
+    "dev-tool: @snowpack/plugin-parcel": "combine: snowpack & parcel",
+    "dev-tool: parcel-plugin-purgecss": "combine: purgecss & parcel",
+    "language: squirrelly": "alt html",
+    "language: stylus": "alt css",
+    "language: typescript": "typescript",
+    "unused: glob": "to resolve pnp error with snowpack-plugin-parcel"
+  },
+  "dependencies": {}
+}
