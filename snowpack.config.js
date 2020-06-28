@@ -17,7 +17,7 @@ module.exports = {
     "run:ts,tsx::watch": "$1 --watch",
     "run:styl": "run-p stylus:*",
     "run:styl::watch": "$1 -- --watch",
-    "run:sqrl": "squirrelly"
+    "run:sqrl": "yarn run squirrelly"
   },
   installOptions: {
     installTypes: true,
@@ -29,4 +29,4 @@ module.exports = {
   //   "bluebird",
   //   "inferno",
   // ]
-};
+}

@@ -13,7 +13,7 @@ const args =  process.argv.slice(2)
 const red = '\x1b[31m%s\x1b[0m'
 const green = '\x1b[32m%s\x1b[0m'
 const normal = '%s'
-const greenNormal = `${green}${normal}`;
+const greenNormal = `${green}${normal}`
 
 if(args.Count < 2) throw new Error('Required Least 2 Arguments')
 
@@ -21,29 +21,21 @@ const sqrlOption = Sqrl.getConfig({cache:true})
 
 // Read Arguments
 
-//const includeItems = []
-
 const targets = []
 
-var dist;
+var dist
 
 while(args.length){
   const arg = args.shift()
   switch (arg) {
-    // case '-i':
-    // case '--include':
-    //   const includePath = args.shift()
-    //   if (!includePath) throw new Error('--include <path> required');
-    //   includeItems.push(includePath)
-    //   break;
     case '-o':
     case '--out':
       dist = args.shift()
-      if (!dist) throw new Error('--out <dir> required');
-      break;
+      if (!dist) throw new Error('--out <dir> required')
+      break
     default:
       targets.push(arg)
-      break;
+      break
   }
 }
 
@@ -143,9 +135,9 @@ const prepare = (async () => {
   stats = await fs.stat(dist)
 
   if(!stats.isDirectory()) throw new Error('Output must be directory')
-})();
+})()
 
-(async function (){
+;(async function (){
 
   await prepare
 

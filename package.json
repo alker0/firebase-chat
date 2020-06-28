@@ -2,14 +2,17 @@
   "name": "pj-name",
   "version": "0.0.1",
   "author": "alker",
+  "license": "MIT",
   "private": true,
   "installConfig": {
     "pnp": true
   },
   "scripts": {
     "prepare": "snowpack",
-    "start": "snowpack dev",
+    "start": "run-p start:firebase start:snowpack",
     "start:static": "snowpack dev --config only-static.config.js",
+    "start:firebase": "node ./scripts/firebase-proxy.js",
+    "start:snowpack": "snowpack dev",
     "test": "jest",
     "citest": "CI=true jest --reporters=default --reporters=jest-github-action-reporter",
     "build": "snowpack build",
@@ -21,6 +24,8 @@
   },
   "devDependencies": {
     "@snowpack/plugin-parcel": "^1.2.0",
+    "connect": "^3.7.0",
+    "firebase-tools": "^8.4.3",
     "glob": "^7.1.6",
     "jest": "^26.0.1",
     "jest-github-actions-reporter": "^1.0.2",
@@ -28,9 +33,11 @@
     "parcel": "^1.12.4",
     "parcel-plugin-purgecss": "^3.0.0",
     "purgecss": "^2.3.0",
+    "request": "^2.88.2",
     "snowpack": "^2.5.1",
-    "squirrelly": "^8.0.1",
+    "squirrelly": "^8.0.2",
     "stylus": "^0.54.7",
+    "superstatic": "^6.0.4",
     "typescript": "^3.9.5"
   },
   "dependencies:about": {
@@ -39,6 +46,7 @@
     "module: inferno": "DOM renderer",
     "module: pipe-and-compose": "compose multiple functions",
     "module: bluebird": "Promise",
+    "module: firebase": "Firebase",
     "dev-tool: snowpack": "build tool",
     "dev-tool: parcel": "bundler",
     "dev-tool: purgecss": "delete unused css",
@@ -47,10 +55,16 @@
     "dev-tool: jest-github-actions-reporter": "add pull request annotation when jest error",
     "dev-tool: @snowpack/plugin-parcel": "combine: snowpack & parcel",
     "dev-tool: parcel-plugin-purgecss": "combine: purgecss & parcel",
+    "for-firebase: firebase-tools": "Firebase",
+    "for-firebase: request": "processing requests for Firebase",
+    "for-firebase: superstatic": "provider for Firebase",
+    "for-firebase: connect": "server for Firebase",
     "language: squirrelly": "alt html",
     "language: stylus": "alt css",
     "language: typescript": "typescript",
     "unused: glob": "to resolve pnp error with snowpack-plugin-parcel"
   },
-  "dependencies": {}
+  "dependencies": {
+    "firebase": "^7.15.5"
+  }
 }
