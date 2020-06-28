@@ -26,4 +26,4 @@ module.exports = {
   //   "pipe-and-compose",
   //   "inferno",
   // ]
-};
+}
