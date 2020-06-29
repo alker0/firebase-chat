@@ -19,6 +19,9 @@ module.exports = {
     "run:styl::watch": "$1 -- --watch",
     "run:sqrl": "yarn run squirrelly"
   },
+  proxy: {
+    "/__/firebase": 'https://www.gstatic.com/firebasejs'
+  },
   installOptions: {
     installTypes: true,
   },

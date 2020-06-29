@@ -2,7 +2,9 @@
 
 const stream = require('stream')
 const connect = require('connect')// npm package
-const request = require('request')
+const request = require('request')// npm package
+const io = require('socket.io')// npm package
+const { createProxyMiddleware } = require('http-proxy-middleware')
 
 const superstatic = require('superstatic')// npm package
 const firebaseConfig = require('firebase-tools/lib/config').load({ cwd: process.cwd() })
@@ -36,7 +38,7 @@ function createProxyProvider(base) {
 
 const args =  process.argv.slice(2)
 let port = 8081
-let proxyBase = 'http://localhost:8080'
+let proxyBase = 'localhost:8080'
 
 while(args.length){
   const arg = args.shift()
@@ -52,16 +54,32 @@ while(args.length){
   }
 }
 
+const httpPrefix = 'http://'
+const websocketsPrefix = 'ws://'
+const wsProxy = createProxyMiddleware(websocketsPrefix + proxyBase, { changeOrigin: true })
+
+
 const app = connect()
+
+app.use(wsProxy)
 
 app.use(superstatic({
     config: firebaseConfig.data.hosting,
-    provider: createProxyProvider(proxyBase)
+    provider: createProxyProvider(httpPrefix + proxyBase)
 }))
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
     console.log(['Superstatic proxy is running',
      `Port: ${port}`,
      `Proxy Base: ${proxyBase}`,
     ].join('\n'))
 })
+
+server.on('upgrade', wsProxy.upgrade)
+
+
+// io.listen(server)
+// var listener = io.listen(server);
+// listener.sockets.on('connection', function(socket){
+//     socket.emit('message', {'message': 'hello world'})
+// })
