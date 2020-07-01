@@ -21,6 +21,8 @@ const sqrlOption = Sqrl.getConfig({cache:true})
 
 // Read Arguments
 
+//const includeItems = []
+
 const targets = []
 
 var dist
@@ -82,11 +84,12 @@ async function allFiles(pathName, recursive) {
 // Render Squirrelly File
 
 async function render(fileName) {
+  const option = Object.assign({}, sqrlOption, {fileName: fileName})
 
   await fs
     .writeFile(
       path.join(dist, path.basename(fileName, sqrlExtension) + '.html'),
-      await Sqrl.renderFile(fileName, sqrlOption)
+      await Sqrl.renderFile(fileName, option)
     )
     .then(() => console.log(greenNormal , 'Renderd', ` : ${path.relative(cwd, fileName)}`))
 }

@@ -1,10 +1,9 @@
 #!/usr/bin/env node
 
+const http = require('http')
 const stream = require('stream')
 const connect = require('connect')// npm package
-const request = require('request')// npm package
-const io = require('socket.io')// npm package
-const { createProxyMiddleware } = require('http-proxy-middleware')
+const websocket = require('websocket-driver')// npm package
 
 const superstatic = require('superstatic')// npm package
 const firebaseConfig = require('firebase-tools/lib/config').load({ cwd: process.cwd() })
@@ -14,7 +13,7 @@ function createProxyProvider(base) {
         const proxyPath = base + path
         const passThrough = new stream.PassThrough()
         return new Promise((resolve, reject) => {
-            request(proxyPath)
+            http.request(proxyPath)
             .on('error', reject)
             .on('response', (res) => {
                 if (res.statusCode != 200) {
@@ -32,6 +31,7 @@ function createProxyProvider(base) {
                 resolve({ stream: passThrough, size, etag, modified: date })
                 res.pipe(passThrough)
             })
+            .end()
         })
     }
 }
@@ -55,13 +55,8 @@ while(args.length){
 }
 
 const httpPrefix = 'http://'
-const websocketsPrefix = 'ws://'
-const wsProxy = createProxyMiddleware(websocketsPrefix + proxyBase, { changeOrigin: true })
-
 
 const app = connect()
-
-app.use(wsProxy)
 
 app.use(superstatic({
     config: firebaseConfig.data.hosting,
@@ -75,11 +70,15 @@ const server = app.listen(port, () => {
     ].join('\n'))
 })
 
-server.on('upgrade', wsProxy.upgrade)
+server.on('upgrade', function(req, socket, body){
+    if(!websocket.isWebSocket(req)) return
 
+    // req.headers.host = proxyBase
 
-// io.listen(server)
-// var listener = io.listen(server);
-// listener.sockets.on('connection', function(socket){
-//     socket.emit('message', {'message': 'hello world'})
-// })
+    const wsDriver = websocket.http(req, {protocols: ['esm-hmr']})
+
+    wsDriver.io.write(body)
+    socket.pipe(wsDriver.io).pipe(socket)
+
+    wsDriver.start()
+})
