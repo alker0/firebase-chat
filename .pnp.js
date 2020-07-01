@@ -12016,64 +12016,6 @@ let packageInformationStores = new Map([
       ]),
     }],
   ])],
-  ["http-proxy-middleware", new Map([
-    ["1.0.4", {
-      packageLocation: path.resolve(__dirname, "../../.cache/yarn/v6/npm-http-proxy-middleware-1.0.4-425ea177986a0cda34f9c81ec961c719adb6c2a9-integrity/node_modules/http-proxy-middleware/"),
-      packageDependencies: new Map([
-        ["@types/http-proxy", "1.17.4"],
-        ["http-proxy", "1.18.1"],
-        ["is-glob", "4.0.1"],
-        ["lodash", "4.17.15"],
-        ["micromatch", "4.0.2"],
-        ["http-proxy-middleware", "1.0.4"],
-      ]),
-    }],
-  ])],
-  ["@types/http-proxy", new Map([
-    ["1.17.4", {
-      packageLocation: path.resolve(__dirname, "../../.cache/yarn/v6/npm-@types-http-proxy-1.17.4-e7c92e3dbe3e13aa799440ff42e6d3a17a9d045b-integrity/node_modules/@types/http-proxy/"),
-      packageDependencies: new Map([
-        ["@types/node", "14.0.13"],
-        ["@types/http-proxy", "1.17.4"],
-      ]),
-    }],
-  ])],
-  ["http-proxy", new Map([
-    ["1.18.1", {
-      packageLocation: path.resolve(__dirname, "../../.cache/yarn/v6/npm-http-proxy-1.18.1-401541f0534884bbf95260334e72f88ee3976549-integrity/node_modules/http-proxy/"),
-      packageDependencies: new Map([
-        ["eventemitter3", "4.0.4"],
-        ["follow-redirects", "1.11.0"],
-        ["requires-port", "1.0.0"],
-        ["http-proxy", "1.18.1"],
-      ]),
-    }],
-  ])],
-  ["eventemitter3", new Map([
-    ["4.0.4", {
-      packageLocation: path.resolve(__dirname, "../../.cache/yarn/v6/npm-eventemitter3-4.0.4-b5463ace635a083d018bdc7c917b4c5f10a85384-integrity/node_modules/eventemitter3/"),
-      packageDependencies: new Map([
-        ["eventemitter3", "4.0.4"],
-      ]),
-    }],
-  ])],
-  ["follow-redirects", new Map([
-    ["1.11.0", {
-      packageLocation: path.resolve(__dirname, "../../.cache/yarn/v6/npm-follow-redirects-1.11.0-afa14f08ba12a52963140fe43212658897bc0ecb-integrity/node_modules/follow-redirects/"),
-      packageDependencies: new Map([
-        ["debug", "3.2.6"],
-        ["follow-redirects", "1.11.0"],
-      ]),
-    }],
-  ])],
-  ["requires-port", new Map([
-    ["1.0.0", {
-      packageLocation: path.resolve(__dirname, "../../.cache/yarn/v6/npm-requires-port-1.0.0-925d2601d39ac485e091cf0da5c6e694dc3dcaff-integrity/node_modules/requires-port/"),
-      packageDependencies: new Map([
-        ["requires-port", "1.0.0"],
-      ]),
-    }],
-  ])],
   ["jest", new Map([
     ["26.0.1", {
       packageLocation: path.resolve(__dirname, "../../.cache/yarn/v6/npm-jest-26.0.1-5c51a2e58dff7525b65f169721767173bf832694-integrity/node_modules/jest/"),
@@ -14376,6 +14318,42 @@ let packageInformationStores = new Map([
       ]),
     }],
   ])],
+  ["http-proxy", new Map([
+    ["1.18.1", {
+      packageLocation: path.resolve(__dirname, "../../.cache/yarn/v6/npm-http-proxy-1.18.1-401541f0534884bbf95260334e72f88ee3976549-integrity/node_modules/http-proxy/"),
+      packageDependencies: new Map([
+        ["eventemitter3", "4.0.4"],
+        ["follow-redirects", "1.11.0"],
+        ["requires-port", "1.0.0"],
+        ["http-proxy", "1.18.1"],
+      ]),
+    }],
+  ])],
+  ["eventemitter3", new Map([
+    ["4.0.4", {
+      packageLocation: path.resolve(__dirname, "../../.cache/yarn/v6/npm-eventemitter3-4.0.4-b5463ace635a083d018bdc7c917b4c5f10a85384-integrity/node_modules/eventemitter3/"),
+      packageDependencies: new Map([
+        ["eventemitter3", "4.0.4"],
+      ]),
+    }],
+  ])],
+  ["follow-redirects", new Map([
+    ["1.11.0", {
+      packageLocation: path.resolve(__dirname, "../../.cache/yarn/v6/npm-follow-redirects-1.11.0-afa14f08ba12a52963140fe43212658897bc0ecb-integrity/node_modules/follow-redirects/"),
+      packageDependencies: new Map([
+        ["debug", "3.2.6"],
+        ["follow-redirects", "1.11.0"],
+      ]),
+    }],
+  ])],
+  ["requires-port", new Map([
+    ["1.0.0", {
+      packageLocation: path.resolve(__dirname, "../../.cache/yarn/v6/npm-requires-port-1.0.0-925d2601d39ac485e091cf0da5c6e694dc3dcaff-integrity/node_modules/requires-port/"),
+      packageDependencies: new Map([
+        ["requires-port", "1.0.0"],
+      ]),
+    }],
+  ])],
   ["is-builtin-module", new Map([
     ["3.0.0", {
       packageLocation: path.resolve(__dirname, "../../.cache/yarn/v6/npm-is-builtin-module-3.0.0-137d3d2425023a19a660fb9dd6ddfabe52c03466-integrity/node_modules/is-builtin-module/"),
@@ -14507,7 +14485,6 @@ let packageInformationStores = new Map([
         ["connect", "3.7.0"],
         ["firebase-tools", "8.4.3"],
         ["glob", "7.1.6"],
-        ["http-proxy-middleware", "1.0.4"],
         ["jest", "26.0.1"],
         ["jest-github-actions-reporter", "1.0.2"],
         ["npm-run-all", "4.1.5"],
@@ -14520,6 +14497,7 @@ let packageInformationStores = new Map([
         ["stylus", "0.54.7"],
         ["superstatic", "6.0.4"],
         ["typescript", "3.9.5"],
+        ["websocket-driver", "0.7.4"],
       ]),
     }],
   ])],
@@ -15854,12 +15832,6 @@ let locatorsByLocations = new Map([
   ["../../.cache/yarn/v6/npm-fn-name-1.1.0-26cad8017967aea8731bc42961d04a3d5988accc-integrity/node_modules/fn.name/", {"name":"fn.name","reference":"1.1.0"}],
   ["../../.cache/yarn/v6/npm-stack-trace-0.0.10-547c70b347e8d32b4e108ea1a2a159e5fdde19c0-integrity/node_modules/stack-trace/", {"name":"stack-trace","reference":"0.0.10"}],
   ["../../.cache/yarn/v6/npm-winston-transport-4.4.0-17af518daa690d5b2ecccaa7acf7b20ca7925e59-integrity/node_modules/winston-transport/", {"name":"winston-transport","reference":"4.4.0"}],
-  ["../../.cache/yarn/v6/npm-http-proxy-middleware-1.0.4-425ea177986a0cda34f9c81ec961c719adb6c2a9-integrity/node_modules/http-proxy-middleware/", {"name":"http-proxy-middleware","reference":"1.0.4"}],
-  ["../../.cache/yarn/v6/npm-@types-http-proxy-1.17.4-e7c92e3dbe3e13aa799440ff42e6d3a17a9d045b-integrity/node_modules/@types/http-proxy/", {"name":"@types/http-proxy","reference":"1.17.4"}],
-  ["../../.cache/yarn/v6/npm-http-proxy-1.18.1-401541f0534884bbf95260334e72f88ee3976549-integrity/node_modules/http-proxy/", {"name":"http-proxy","reference":"1.18.1"}],
-  ["../../.cache/yarn/v6/npm-eventemitter3-4.0.4-b5463ace635a083d018bdc7c917b4c5f10a85384-integrity/node_modules/eventemitter3/", {"name":"eventemitter3","reference":"4.0.4"}],
-  ["../../.cache/yarn/v6/npm-follow-redirects-1.11.0-afa14f08ba12a52963140fe43212658897bc0ecb-integrity/node_modules/follow-redirects/", {"name":"follow-redirects","reference":"1.11.0"}],
-  ["../../.cache/yarn/v6/npm-requires-port-1.0.0-925d2601d39ac485e091cf0da5c6e694dc3dcaff-integrity/node_modules/requires-port/", {"name":"requires-port","reference":"1.0.0"}],
   ["../../.cache/yarn/v6/npm-jest-26.0.1-5c51a2e58dff7525b65f169721767173bf832694-integrity/node_modules/jest/", {"name":"jest","reference":"26.0.1"}],
   ["../../.cache/yarn/v6/npm-@jest-core-26.0.1-aa538d52497dfab56735efb00e506be83d841fae-integrity/node_modules/@jest/core/", {"name":"@jest/core","reference":"26.0.1"}],
   ["../../.cache/yarn/v6/npm-@jest-console-26.0.1-62b3b2fa8990f3cbffbef695c42ae9ddbc8f4b39-integrity/node_modules/@jest/console/", {"name":"@jest/console","reference":"26.0.1"}],
@@ -16070,6 +16042,10 @@ let locatorsByLocations = new Map([
   ["../../.cache/yarn/v6/npm-quick-lru-5.1.1-366493e6b3e42a3a6885e2e99d18f80fb7a8c932-integrity/node_modules/quick-lru/", {"name":"quick-lru","reference":"5.1.1"}],
   ["../../.cache/yarn/v6/npm-resolve-alpn-1.0.0-745ad60b3d6aff4b4a48e01b8c0bdc70959e0e8c-integrity/node_modules/resolve-alpn/", {"name":"resolve-alpn","reference":"1.0.0"}],
   ["../../.cache/yarn/v6/npm-p-cancelable-2.0.0-4a3740f5bdaf5ed5d7c3e34882c6fb5d6b266a6e-integrity/node_modules/p-cancelable/", {"name":"p-cancelable","reference":"2.0.0"}],
+  ["../../.cache/yarn/v6/npm-http-proxy-1.18.1-401541f0534884bbf95260334e72f88ee3976549-integrity/node_modules/http-proxy/", {"name":"http-proxy","reference":"1.18.1"}],
+  ["../../.cache/yarn/v6/npm-eventemitter3-4.0.4-b5463ace635a083d018bdc7c917b4c5f10a85384-integrity/node_modules/eventemitter3/", {"name":"eventemitter3","reference":"4.0.4"}],
+  ["../../.cache/yarn/v6/npm-follow-redirects-1.11.0-afa14f08ba12a52963140fe43212658897bc0ecb-integrity/node_modules/follow-redirects/", {"name":"follow-redirects","reference":"1.11.0"}],
+  ["../../.cache/yarn/v6/npm-requires-port-1.0.0-925d2601d39ac485e091cf0da5c6e694dc3dcaff-integrity/node_modules/requires-port/", {"name":"requires-port","reference":"1.0.0"}],
   ["../../.cache/yarn/v6/npm-is-builtin-module-3.0.0-137d3d2425023a19a660fb9dd6ddfabe52c03466-integrity/node_modules/is-builtin-module/", {"name":"is-builtin-module","reference":"3.0.0"}],
   ["../../.cache/yarn/v6/npm-is-interactive-1.0.0-cea6e6ae5c870a7b0a0004070b7b587e0252912e-integrity/node_modules/is-interactive/", {"name":"is-interactive","reference":"1.0.0"}],
   ["../../.cache/yarn/v6/npm-p-queue-6.4.0-5050b379393ea1814d6f9613a654f687d92c0466-integrity/node_modules/p-queue/", {"name":"p-queue","reference":"6.4.0"}],

@@ -27,7 +27,6 @@
     "connect": "^3.7.0",
     "firebase-tools": "^8.4.3",
     "glob": "^7.1.6",
-    "http-proxy-middleware": "^1.0.4",
     "jest": "^26.0.1",
     "jest-github-actions-reporter": "^1.0.2",
     "npm-run-all": "^4.1.5",
@@ -39,7 +38,8 @@
     "squirrelly": "^8.0.2",
     "stylus": "^0.54.7",
     "superstatic": "^6.0.4",
-    "typescript": "^3.9.5"
+    "typescript": "^3.9.5",
+    "websocket-driver": "^0.7.4"
   },
   "dependencies:about": {
     "module: meiosis-setup": "helper for Meiosis Pattern",
@@ -58,9 +58,8 @@
     "dev-tool: parcel-plugin-purgecss": "combine: purgecss & parcel",
     "for-firebase: firebase-tools": "Firebase",
     "for-firebase: connect": "server for Firebase",
-    "for-firebase: request": "processing requests for Firebase",
     "for-firebase: superstatic": "provider for Firebase",
-    "for-firebase: http-proxy-middleware": "websockets (HMR) for Firebase & Snowpack",
+    "for-firebase: websocket-driver": "websockets (HMR) for Firebase & Snowpack",
     "language: squirrelly": "alt html",
     "language: stylus": "alt css",
     "language: typescript": "typescript",
