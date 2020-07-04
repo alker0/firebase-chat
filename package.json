@@ -4,9 +4,6 @@
   "author": "alker",
   "license": "MIT",
   "private": true,
-  "installConfig": {
-    "pnp": true
-  },
   "scripts": {
     "prepare": "snowpack",
     "start": "run-p start:firebase start:snowpack",
