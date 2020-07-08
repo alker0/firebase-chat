@@ -12,7 +12,7 @@ const templateDir = path.join(srcDir, 'templates')
 const styleDir = path.join(srcDir, 'styles')
 
 const templateExtension = '.sqrl'
-const styleExtension = '.styl'
+const styleExtension = '.css'
 const scriptExtension = '.tsx'
 const skipExtension = '.skip'
 
