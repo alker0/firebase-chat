@@ -1,9 +1,0 @@
-{
-  "imports": {
-    "firebase/app": "./firebase/app.js",
-    "firebase/database": "./firebase/database.js",
-    "firebase/storage": "./firebase/storage.js",
-    "inferno": "./inferno.js",
-    "pipe-and-compose": "./pipe-and-compose.js"
-  }
-}
