@@ -1,0 +1,5 @@
+{
+  "imports": {
+    "inferno": "https://cdn.pika.dev/pin/inferno@v7.4.2-ILOvL4k85ZkMvaBT0N3n/inferno.js"
+  }
+}

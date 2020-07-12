@@ -1,16 +1,17 @@
 node_modules/
+web_modules/
 /build/
 /src/public/
 yarn-error.log
 
 # ---- if using Zero-Install ----
-.yarn/unplugged
-.yarn/build-state.yml
+# .yarn/unplugged
+# .yarn/build-state.yml
 
 # ---- if not using Zero-Install ----
-#.yarn/*
-#!.yarn/releases
-#!.yarn/plugins
-#.pnp.*
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
+.pnp.*
 
 !.gitkeep
