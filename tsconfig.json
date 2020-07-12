@@ -24,7 +24,8 @@
         "web_modules/.types/*",
         "node_modules/*",
         "web_modules/*.js"
-      ]
+      ],
+      "assets/*": ["src/assets/*"]
     },
 
     // Skip npm module type check.
@@ -37,5 +38,8 @@
     "strictNullChecks": true
   },
 
-  "include": ["./src/**/*"]
+  "include": [
+    "./src/**/*",
+    "node_modules/inferno/dist/index.d.ts"
+  ]
 }
