@@ -1,15 +1,13 @@
-import * as firebaseApp from 'firebase/app'
-import 'firebase/database'
-import 'firebase/storage'
-import pac from 'pipe-and-compose'
-import inferno from 'inferno'
-import {createClassNamesFunction} from '../../lib/classnames-function'
+import firebaseApp from 'firebase/app'
+import * as inferno from 'inferno'
+import {Ferp, EffectMessage} from 'ferp'
+import {initDropDownReducer, DropDownState} from '../../lib/ferp/dropDown'
 import {css, styles} from 'css-zero/macro'
 
-type FirebaseApp = typeof firebaseApp
-const firebase = (firebaseApp as FirebaseApp & {
-  default: FirebaseApp
-}).default
+declare global {
+  const firebase: typeof firebaseApp
+  const Inferno: typeof inferno
+}
 
 const firebaseConfig = {
     apiKey: "AIzaSyCUDlFQJZdo3NOIAHSt8NmgF-gOHQ9ZkHg",
@@ -23,7 +21,30 @@ const firebaseConfig = {
 }
 // Initialize Firebase
 
-firebase.initializeApp(firebaseConfig);
+
+firebase.initializeApp(firebaseConfig)
+
+firebase.analytics()
+
+const ferp = (window as typeof window & {ferp: Ferp}).ferp
+
+const {dropDownInit, dropDownSub} = initDropDownReducer(ferp)({
+  key: Symbol('dropdown')
+})
+
+type AnyEffectFunction<T, U extends unknown=unknown> = (param: U) => [T, EffectMessage]
+
+type UpdateFunction = AnyEffectFunction<DropDownState>
+
+ferp.app({
+  init: [dropDownInit, ferp.effects.none()],
+  update: (message: UpdateFunction, state) => {
+    return message(state)
+  },
+  subscribe: state => [
+    dropDownSub('#dropdown-click')
+  ]
+})
 
 document.addEventListener('DOMContentLoaded', function() {
   // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
@@ -38,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   try {
     let app = firebase.app();
-    let features = ['database', 'storage'].filter(feature => typeof app[feature] === 'function');
+    let features = (['database', 'storage'] as const).filter(feature => typeof app[feature] === 'function');
     document.getElementById('load')!.innerHTML = `Firebase SDK loaded with ${features.join(', ')}`;
   } catch (e) {
     console.error(e);
