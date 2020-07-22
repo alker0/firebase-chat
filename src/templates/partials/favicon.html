@@ -1,16 +1,2 @@
-{{! const iconPath = (it.faviconPath || '/favicon.ico');}}
-  <link rel="icon" type="image/vnd.microsoft.icon" href="{{iconPath}}">
-  <link rel="shortcut icon" type="image/x-icon" href="{{iconPath}}">
-
-{{- @if(it.appleIconPath)}}
-  <link rel="apple-touch-icon" sizes="180x180" href="{{it.appleIconPath}}">
-{{/if}}
-
-{{- @if(typeof(it.msAppInfo) === 'object')}}
-  <meta name="application-name" content="{{it.msAppInfo.appName}}"/>
-  <meta name="msapplication-square70x70logo" content="{{it.msAppInfo.smallIcon}}"/>
-  <meta name="msapplication-square150x150logo" content="{{it.msAppInfo.mediumIcon}}"/>
-  <meta name="msapplication-square310x310logo" content="{{it.msAppInfo.lergeIcon}}"/>
-  <meta name="msapplication-wide310x150logo" content="{{it.msAppInfo.wideIcon}}"/>
-  <meta name="msapplication-TileColor" content="{{it.msAppInfo.tileColor}}"/>
-{{/if}}
+<link rel="icon" type="image/vnd.microsoft.icon" href="{{iconPath}}">
+<link rel="shortcut icon" type="image/x-icon" href="{{iconPath}}">
