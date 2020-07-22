@@ -1,12 +1,14 @@
-const { isConstructorDeclaration } = require("typescript")
+const env = process.env['NODE_ENV']
 
-module.exports = ctx => {
-  console.log('env: ', ctx)
-  console.log(`input: ${ctx.file.basename}`)
-  return {
-    plugins: {
-      'postcss-import': {},
-      'postcss-ts-classnames': ctx.env === 'typing' && {dest: `src/lib/${ctx.file.basename}.d.ts`}
-    }
+const postcssConfig = {
+  plugins: {
+    'postcss-import': {},
+    ...(env === 'production' ? {
+      '@fullhuman/postcss-purgecss': {
+        content: ['./src/templates/**/*.html']
+      }
+    } : {})
   }
 }
+
+module.exports = postcssConfig
