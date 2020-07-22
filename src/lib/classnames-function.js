@@ -1,5 +1,5 @@
-import {classNames} from 'ts-classnames'
-function createClassNamesFunction(){
+import classNames from 'classnames'
+
+export function createClassNamesFunction() {
   return classNames
 }
-export const createClassNamesFunction
