@@ -14,7 +14,7 @@
     "allowSyntheticDefaultImports": true,
 
     // <div /> => React.createElement("div")
-    // "jsx": "react",
+    "jsx": "preserve",
 
     // Required: Map "/web_modules/*" imports back to their node_modules/ TS definition files.
     "baseUrl": "./",
@@ -35,7 +35,10 @@
     "noEmit": true,
 
     // Useful type checks.
-    "strictNullChecks": true
+    "strictNullChecks": true,
+
+
+    "noImplicitAny": true
   },
 
   "include": [
