@@ -25,7 +25,9 @@
         "node_modules/*",
         "web_modules/*.js"
       ],
-      "assets/*": ["src/assets/*"]
+      "assets/*": ["src/assets/*"],
+      "lib/*": ["src/lib/*"],
+      "components/*": ["src/components/*"]
     },
 
     // Skip npm module type check.

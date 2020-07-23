@@ -1,4 +1,5 @@
-import {createClassNamesFunction} from '../../lib/classnames-function'
+import {createClassNamesFunction} from 'lib/classnames-function'
+import { getDropDownMenuCreater } from 'components/cirrus/dropdown/dropdown';
 import { SubscriptionRunner, Ferp, SubscriptionElement, NativeEffectMessage } from 'ferp'
 
 type DropDownStateKey = symbol | string | number
@@ -19,22 +20,14 @@ type DropDownInitArg<T extends unknown, U extends DropDownStateKey, I extends T 
   postProcess?: (postArg: I) => any
 }
 
-const cn = createClassNamesFunction<Cirrus | 'clicked'>()
-
 type ToggleShown = () => void
 
-const DropDownMenu = (props: { shown: boolean, toggleShown: ToggleShown }) => {
-  return <>
-      <a class={cn('nav-dropdown-link', props.shown && 'clicked')} onClick={props.toggleShown}>Click Me</a>
-      <div id={'overlay'} style={{display: props.shown ? 'block' : 'none'}} onClick={props.toggleShown}></div>
-      <ul class={cn('dropdown-menu', props.shown && 'dropdown-shown')} role="menu">
-        <li role="menuitem"><a href="#">First Item</a></li>
-        <li role="menuitem"><a href="#">Second Item</a></li>
-        <li role="menuitem"><a href="#">Third Item</a></li>
-        <li role="menuitem"><a href="#">Fourth Item</a></li>
-      </ul>
-    </>
-}
+const DropDownMenu = getDropDownMenuCreater([
+  <a href="#">First Item</a>,
+  <a href="#">Second Item</a>,
+  <a href="#">Third Item</a>,
+  <a href="#">Fourth Item</a>,
+])
 
 type RenderEffect = (shown: boolean) => NativeEffectMessage
 

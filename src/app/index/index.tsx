@@ -1,8 +1,7 @@
 import firebaseApp from 'firebase/app'
 import * as inferno from 'inferno'
 import {Ferp, EffectMessage} from 'ferp'
-import {initDropDownReducer, DropDownState} from '../../lib/ferp/dropDown'
-import {css, styles} from 'css-zero/macro'
+import {initDropDownReducer, DropDownState} from '../../lib/ferp/dropdown'
 
 declare global {
   const firebase: typeof firebaseApp
@@ -19,8 +18,8 @@ const firebaseConfig = {
     appId: "1:578515840439:web:2b7905e64ae01d07778c32",
     measurementId: "G-S42EYX1LN4"
 }
-// Initialize Firebase
 
+// Initialize Firebase
 
 firebase.initializeApp(firebaseConfig)
 
