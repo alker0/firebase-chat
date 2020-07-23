@@ -1,7 +1,7 @@
 import firebaseApp from 'firebase/app'
 import * as inferno from 'inferno'
 import {Ferp, EffectMessage} from 'ferp'
-import {initDropDownReducer, DropDownState} from '../../lib/ferp/dropdown'
+import {initDropDownReducer, DropDownState} from 'lib/ferp/dropdown'
 
 declare global {
   const firebase: typeof firebaseApp

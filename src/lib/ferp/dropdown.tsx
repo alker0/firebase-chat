@@ -1,4 +1,3 @@
-import {createClassNamesFunction} from 'lib/classnames-function'
 import { getDropDownMenuCreater } from 'components/cirrus/dropdown/dropdown';
 import { SubscriptionRunner, Ferp, SubscriptionElement, NativeEffectMessage } from 'ferp'
 
@@ -64,7 +63,6 @@ export const initDropDownReducer: <T extends unknown, U extends DropDownStateKey
       const toggleShown = () => {
         dispatch((state: DropDownUpdateState<typeof arg.key>) => {
           const toggledShown = !state[arg.key].shown
-          // parent.className = cn('nav-item', 'has-sub', {active: toggledShown})
           return [
             {...state, [arg.key]: {shown: toggledShown}},
             curriedRenderEffect(toggleShown)(toggledShown)

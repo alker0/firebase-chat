@@ -75,8 +75,8 @@ server.on('upgrade', function(req, socket, body){
 
     // req.headers.host = proxyBase
 
-    // const wsDriver = websocket.http(req)
-    const wsDriver = websocket.http(req, {protocols: ['esm-hmr']})
+    const wsDriver = websocket.http(req)
+    // const wsDriver = websocket.http(req, {protocols: ['esm-hmr']})
 
     wsDriver.io.write(body)
     socket.pipe(wsDriver.io).pipe(socket)

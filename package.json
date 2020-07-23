@@ -26,6 +26,10 @@
       }
     }
   },
+  "alias": {
+    "lib": "~/src/lib",
+    "components": "~/src/components"
+  },
   "distDir": "build",
   "scripts": {
     "start": "run-p start:firebase start:parcel",
