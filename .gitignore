@@ -1,16 +1,22 @@
+*.code-workspace
 node_modules/
+web_modules/
 /build/
+/dist/
 /src/public/
+/eustia/cache/
+.parcel-cache/
 yarn-error.log
 
 # ---- if using Zero-Install ----
-# .yarn/unplugged
+# .yarn/unplugged/
 # .yarn/build-state.yml
 
 # ---- if not using Zero-Install ----
 .yarn/*
 !.yarn/releases
 !.yarn/plugins
+!.yarn/sdks
 .pnp.*
 
 !.gitkeep

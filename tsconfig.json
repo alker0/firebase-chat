@@ -14,7 +14,7 @@
     "allowSyntheticDefaultImports": true,
 
     // <div /> => React.createElement("div")
-    // "jsx": "react",
+    "jsx": "preserve",
 
     // Required: Map "/web_modules/*" imports back to their node_modules/ TS definition files.
     "baseUrl": "./",
@@ -24,7 +24,10 @@
         "web_modules/.types/*",
         "node_modules/*",
         "web_modules/*.js"
-      ]
+      ],
+      "assets/*": ["src/assets/*"],
+      "lib/*": ["src/lib/*"],
+      "components/*": ["src/components/*"]
     },
 
     // Skip npm module type check.
@@ -34,8 +37,14 @@
     "noEmit": true,
 
     // Useful type checks.
-    "strictNullChecks": true
+    "strictNullChecks": true,
+
+    // Disallow implicit any.
+    "noImplicitAny": true
   },
 
-  "include": ["./src/**/*"]
+  "include": [
+    "./src/**/*",
+    "node_modules/inferno/dist/index.d.ts"
+  ]
 }
