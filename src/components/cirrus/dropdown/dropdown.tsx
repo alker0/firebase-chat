@@ -1,11 +1,10 @@
 import {createClassNamesFunction} from 'lib/classnames-function'
-import { InfernoChild } from 'inferno'
 
 const cn = createClassNamesFunction<Cirrus | 'clicked'>()
 
 type ToggleShown = () => void
 
-type MenuItemsChildren = InfernoChild[]
+type MenuItemsChildren = JSX.Element[]
 
 export const getDropDownMenuCreater = (menuItemsChildren: MenuItemsChildren) => {
   const menuItems = menuItemsChildren.map(child => <li role="menuitem">{child}</li>)
