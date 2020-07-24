@@ -3,6 +3,11 @@
 <each loop="sdk in firebaseSdk">
   <script src="{{ firebasePath }}/{{ firebaseVersion }}/firebase-{{ sdk }}.js"></script>
 </each>
+<!-- <script src="/__/firebase/{{ firebaseVersion }}/firebase-app.js"></script>
+
+<each loop="sdk in firebaseSdk">
+  <script src="/__/firebase/{{ firebaseVersion }}/firebase-{{ sdk }}.js"></script>
+</each> -->
 
 <switch expression="env">
   <case n="'production'">

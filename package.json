@@ -29,7 +29,7 @@
   "alias": {
     "lib": "~/src/lib",
     "components": "~/src/components",
-    "./__/firebase": "https://www.gstatic.com/firebasejs"
+    "/__/firebase": "https://www.gstatic.com/firebasejs"
   },
   "distDir": "build",
   "scripts": {

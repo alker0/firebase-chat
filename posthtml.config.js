@@ -27,7 +27,7 @@ module.exports = {
       cirrusVersion: '@0.5.5',
       ferpVersion: '@1.2.0',
       firebasePath: firebasePath,
-      firebaseInitPath: './src/lib/firebase-init-app.js',
+      firebaseInitPath: '~/src/lib/firebase-init-app.js',
       firebaseVersion: '7.17.0',
       firebaseSdk: ['analytics', 'database', 'storage']
     }}
