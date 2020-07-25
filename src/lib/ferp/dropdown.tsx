@@ -1,4 +1,4 @@
-import { getDropDownMenuCreater } from 'components/cirrus/dropdown/dropdown';
+import { getDropDownMenuCreater, ToggleShown } from 'components/cirrus/dropdown/dropdown';
 import { SubscriptionRunner, Ferp, SubscriptionElement, NativeEffectMessage } from 'ferp'
 
 type DropDownStateKey = symbol | string | number
@@ -19,13 +19,21 @@ type DropDownInitArg<T extends unknown, U extends DropDownStateKey, I extends T 
   postProcess?: (postArg: I) => any
 }
 
-type ToggleShown = () => void
+const staticOf = (funcElement: JSX.FunctionalElement) => {
+  funcElement.defaultHooks = {
+    ...funcElement.defaultHooks,
+    onComponentShouldUpdate(_1: unknown, _2: unknown) {
+      return false
+    }
+  }
+  return funcElement
+}
 
 const DropDownMenu = getDropDownMenuCreater([
-  <a href="#">First Item</a>,
-  <a href="#">Second Item</a>,
-  <a href="#">Third Item</a>,
-  <a href="#">Fourth Item</a>,
+  staticOf(() => <a href="#">First Item</a>),
+  staticOf(() => <a href="#">Second Item</a>),
+  staticOf(() => <a href="#">Third Item</a>),
+  staticOf(() => <a href="#">Fourth Item</a>),
 ])
 
 type RenderEffect = (shown: boolean) => NativeEffectMessage
