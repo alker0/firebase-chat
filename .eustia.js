@@ -1,5 +1,5 @@
 module.exports = {
-  include: 'isStr',
+  // include: 'isStr',
   output: './src/lib/licia.js',
   ts: true
 }
