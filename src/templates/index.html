@@ -1,0 +1,55 @@
+<extends src="layouts/html-born.html">
+  <block name="title">Greeting</block>
+
+  <block name="head">
+
+    <include src="partials/favicon.html" locals='{
+      "iconPath": "../assets/favicon/favicon.ico"
+    }'></include>
+
+    <meta name="theme-color" content="#ff9900">
+
+    <link href="https://cdn.jsdelivr.net/npm/cirrus-ui{{ cirrusVersion }}/dist/cirrus.min.css" type="text/css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/inferno{{ infernoVersion }}/dist/inferno.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ferp{{ ferpVersion }}/ferp.js"></script>
+
+    <link href="../styles/index.postcss.css" type="text/css" rel="stylesheet" />
+  </block>
+
+  <block name="body">
+
+    <include src="partials/firebase-sdk.html"></include>
+
+    <script type="module" src="../app/index/index.tsx"></script>
+
+    <div class="header header-fixed unselectable header-animated">
+      <div class="header-brand">
+        <div class="nav-item no-hover">
+          <a><h5 class="title">Talker</h5></a>
+        </div>
+        <div class="nav-item nav-btn" id="header-btn">
+          <span>First Child</span>
+          <span>Second Child</span>
+          <span>Third Child</span>
+        </div>
+      </div>
+      <div class="header-nav" id="header-menu">
+        <div class="nav-right">
+          <div class="nav-item has-sub" id="dropdown-click">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="message">
+      <h2>Welcome</h2>
+      <h1>Firebase Hosting Setup Complete</h1>
+      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
+      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
+    </div>
+    <p id="load">Firebase SDK Loading&hellip;</p>
+
+    <div>hello, my name is foo !</div>
+    <div class="bg-success">rendering is success !</div>
+  </block>
+</extends>

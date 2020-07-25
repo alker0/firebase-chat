@@ -1,0 +1,8 @@
+{
+  "/__/firebase": {
+    "target": "https://www.gstatic.com/firebasejs/",
+    "pathRewrite": {
+      "^/__/firebase": ""
+    }
+  }
+}
