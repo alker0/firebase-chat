@@ -94,7 +94,7 @@
     "dev-tool: @babel/proposals-class-properties": "In JS, class",
     "dev-tool: @babel/proposals-object-rest-spread": "In JS, spread",
     "dev-tool: fast-fp.macro": "macro of pipe",
-    "dev-tool: param.macro": "macro of it",
+    "dev-tool: param.macro": "macro of it (is not type safe)",
     "dev-tool: inline-loops.macro": "macro of loop",
     "dev-tool: parcel": "build/bundler tool",
     "dev-tool: postcss": "CSS transformer",
