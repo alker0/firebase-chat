@@ -4935,7 +4935,6 @@ __metadata:
     prettier: ^2.0.5
     purgecss: ^2.3.0
     purgecss-from-js: ^1.0.0
-    squirrelly: ^8.0.3
     stylelint: ^13.6.1
     stylelint-config-prettier: ^8.0.2
     stylelint-config-standard: ^20.0.0
@@ -10385,13 +10384,6 @@ __metadata:
   version: 1.0.3
   resolution: "sprintf-js@npm:1.0.3"
   checksum: 51df1bce9e577287f56822d79ac5bd94f6c634fccf193895f2a1d2db2e975b6aa7bc97afae9cf11d49b7c37fe4afc188ff5c4878be91f2c86eabd11c5df8b62c
-  languageName: node
-  linkType: hard
-
-"squirrelly@npm:^8.0.3":
-  version: 8.0.3
-  resolution: "squirrelly@npm:8.0.3"
-  checksum: 4455de01730e7d22bdb9ed8879a16589f1cd34c1b29cffeefeb9c0112e26c2b93ca36fb18a0c14a1b9f4cb361dc7b6b6a046c9256440ef56da3a30c2e7b63133
   languageName: node
   linkType: hard
 

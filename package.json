@@ -69,7 +69,6 @@
     "prettier": "^2.0.5",
     "purgecss": "^2.3.0",
     "purgecss-from-js": "^1.0.0",
-    "squirrelly": "^8.0.3",
     "stylelint": "^13.6.1",
     "stylelint-config-prettier": "^8.0.2",
     "stylelint-config-standard": "^20.0.0",
