@@ -1,5 +1,5 @@
-import classNames from 'classnames'
+import { clsx } from "/lib/deps"
 
-export function createClassNamesFunction() {
-  return classNames
+export function createFilteredClassFunction() {
+  return clsx
 }

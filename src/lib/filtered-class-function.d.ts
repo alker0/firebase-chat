@@ -1,18 +1,22 @@
-type ClassNamesStatus<K extends string> = {
-    [P in K]?: boolean | null | undefined;
-};
+export type FilteredClassValue<T extends string>
+  = FilteredClassArray
+  | FilteredClassDictionary
+  | T
+  | number
+  | null
+  | boolean
+  | undefined
 
-type ClassNamesFunctionParams<T extends string> =
-    | ClassNamesStatus<T>
-    | T
-    | null
-    | undefined
-    | false;
+export interface FilteredClassArray<T extends string> extends Array<FilteredClassValue<T>> {}
 
-export interface ClassNamesFunction<T extends string> {
-    (...args: ClassNamesFunctionParams<T>[]): string;
+export interface FilteredClassDictionary<T extends string> {
+	[id: T]: any;
 }
 
-export type ClassNamesFunctionCreater = <T extends string>() => ClassNamesFunction<T>
+export interface FilteredClassFunction<T extends string> {
+    (...classes: FilteredClassValue<T>[]): string;
+}
 
-export const createClassNamesFunction: ClassNamesFunctionCreater
+export type FilteredClassFunctionCreater = <T extends string>() => FilteredClassFunction<T>
+
+export const createFilteredClassFunction: FilteredClassFunctionCreater
