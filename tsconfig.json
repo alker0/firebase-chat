@@ -13,7 +13,6 @@
     // `import React` instead of `import * as React`
     "allowSyntheticDefaultImports": true,
 
-    // <div /> => React.createElement("div")
     "jsx": "preserve",
 
     // Required: Map "/web_modules/*" imports back to their node_modules/ TS definition files.
@@ -25,9 +24,13 @@
         "node_modules/*",
         "web_modules/*.js"
       ],
-      "assets/*": ["src/assets/*"],
-      "lib/*": ["src/lib/*"],
-      "components/*": ["src/components/*"]
+      "https://cdn.skypack.dev/inferno*": ["src/typings/inferno-cdn"],
+      "https://cdn.skypack.dev/ferp*": ["src/typings/ferp"],
+      "inferno": ["node_modules/inferno/dist/index"],
+      "filtered-class-function": ["src/lib/filtered-class-function"],
+      "/assets/*": ["src/assets/*"],
+      "/lib/*": ["src/lib/*"],
+      "/components/*": ["src/components/*"]
     },
 
     // Skip npm module type check.

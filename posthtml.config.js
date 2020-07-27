@@ -1,35 +1,22 @@
+const extend = require('posthtml-extend')
+const expressoins = require('posthtml-expressions')
+const include = require('posthtml-include')
+
 const nodeEnv = process.env['NODE_ENV']
-const dev = 'development'
 
-console.log('posthtml.config.js', nodeEnv)
-
-let firebasePath
-// switch (nodeEnv) {
-switch (dev) {
-  case 'production':
-    firebasePath = '/__/firebase'
-    break
-  case 'development':
-    firebasePath = 'https://www.gstatic.com/firebasejs'
-    break
-  default:
-    break
-}
+console.error('posthtml.config.js', nodeEnv)
 
 module.exports = {
-  plugins: {
-    'posthtml-extend': {root: 'src/templates'},
-    'posthtml-include': {root: 'src/templates'},
-    'posthtml-expressions': {locals: {
-      // env: nodeEnv,
-      env: dev,
-      infernoVersion: '@latest',
+  input: 'src/templates/*.html',
+  plugins: [
+    extend({root: 'src/templates'}),
+    include({root: 'src/templates'}),
+    expressoins({locals: {
+      env: nodeEnv,
       cirrusVersion: '@0.5.5',
-      ferpVersion: '@1.2.0',
-      firebasePath: firebasePath,
-      firebaseInitPath: '~/src/lib/firebase-init-app.js',
-      firebaseVersion: '7.17.0',
+      firebaseVersion: '7.17.1',
+      firebaseInitPath: '/lib/firebase-init-app.js',
       firebaseSdk: ['analytics', 'database', 'storage']
-    }}
-  }
+    }}),
+  ],
 }

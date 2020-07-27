@@ -1,6 +1,11 @@
 module.exports = {
   presets: [
-    ['@babel/env'],
+    ['@babel/env', {
+      modules: false,
+      targets: {
+        esmodules: true
+      }
+    }],
     ['@babel/typescript', {
       isTSX: true,
       allowDeclareFields: true,
@@ -11,6 +16,12 @@ module.exports = {
     ['inferno', {import: true}],
     'macros',
     '@babel/proposal-class-properties',
-    '@babel/proposal-object-rest-spread'
+    '@babel/proposal-object-rest-spread',
+    // ↓ not working
+    // ['transform-rename-import', {
+    //   replacements: [
+    //     {original: 'inferno', replacement: 'https://cdn.skypack.dev/inferno@^7.4.2'}
+    //   ]
+    // }]
   ]
 }
