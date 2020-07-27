@@ -1,7 +1,7 @@
-<script src="{{ firebasePath }}/{{ firebaseVersion }}/firebase-app.js"></script>
+<script src="/__/firebase/{{ firebaseVersion }}/firebase-app.js"></script>
 
 <each loop="sdk in firebaseSdk">
-  <script src="{{ firebasePath }}/{{ firebaseVersion }}/firebase-{{ sdk }}.js"></script>
+  <script src="/__/firebase/{{ firebaseVersion }}/firebase-{{ sdk }}.js"></script>
 </each>
 <!-- <script src="/__/firebase/{{ firebaseVersion }}/firebase-app.js"></script>
 
@@ -17,6 +17,6 @@
     <script src="{{ firebaseInitPath }}"></script>
   </case>
   <case n="'test'">
-    <script src="/__/firebase/init.js"></script>
+    <script src="{{ firebaseInitPath }}"></script>
   </case>
 </switch>
