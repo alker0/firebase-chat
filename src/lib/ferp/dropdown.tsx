@@ -1,5 +1,6 @@
-import { getDropDownMenuCreater, ToggleShown } from 'components/cirrus/dropdown/dropdown';
-import { SubscriptionRunner, Ferp, SubscriptionElement, NativeEffectMessage } from 'ferp'
+import { getDropDownMenuCreater, ToggleShown } from '/components/cirrus/dropdown/dropdown';
+import { Ferp, Inferno } from '/lib/deps'
+import { staticOf } from '/lib/inferno-utils'
 
 type DropDownStateKey = symbol | string | number
 
@@ -19,16 +20,6 @@ type DropDownInitArg<T extends unknown, U extends DropDownStateKey, I extends T 
   postProcess?: (postArg: I) => any
 }
 
-const staticOf = (funcElement: JSX.FunctionalElement) => {
-  funcElement.defaultHooks = {
-    ...funcElement.defaultHooks,
-    onComponentShouldUpdate(_1: unknown, _2: unknown) {
-      return false
-    }
-  }
-  return funcElement
-}
-
 const DropDownMenu = getDropDownMenuCreater([
   staticOf(() => <a href="#">First Item</a>),
   staticOf(() => <a href="#">Second Item</a>),
@@ -36,23 +27,21 @@ const DropDownMenu = getDropDownMenuCreater([
   staticOf(() => <a href="#">Fourth Item</a>),
 ])
 
-type RenderEffect = (shown: boolean) => NativeEffectMessage
+type RenderEffect = (shown: boolean) => Ferp.NativeEffectMessage
 
-const getRenderDropDownEffect = (effects: Ferp["effects"]) => (parent: Element, toggleShown: ToggleShown): RenderEffect => shown => {
+const getRenderDropDownEffect = (effects: Ferp.NativeEffects) => (parent: Element, toggleShown: ToggleShown): RenderEffect => shown => {
   Inferno.render(<DropDownMenu shown={shown} toggleShown={toggleShown} />, parent)
   return effects.none()
 }
 
-type DropDownSubscriptionGetter = (selector: string) => SubscriptionElement<[Element], any>
+type DropDownSubscriptionGetter = (selector: string) => Ferp.SubscriptionElement<[Element], any>
 
 export const initDropDownReducer: <T extends unknown, U extends DropDownStateKey>
-    (ferp: Ferp) => (arg: DropDownInitArg<T, U>) => {
+    (effects: Ferp.NativeEffects) => (arg: DropDownInitArg<T, U>) => {
       dropDownInit: DropDownState,
       dropDownSub: DropDownSubscriptionGetter
     }
-    = ferp => arg => {
-
-  const {effects} = ferp
+    = effects => arg => {
 
   const initDropDown = <T extends {}>(renderEffect: RenderEffect) => (state: T) => {
     return [
@@ -63,7 +52,7 @@ export const initDropDownReducer: <T extends unknown, U extends DropDownStateKey
 
   const renderDropDownEffect = getRenderDropDownEffect(effects)
 
-  function dropDownSubscription(parent: Element): SubscriptionRunner{
+  function dropDownSubscription(parent: Element): Ferp.SubscriptionRunner{
 
     const curriedRenderEffect = (toggleShown: ToggleShown) => renderDropDownEffect(parent, toggleShown)
 
@@ -99,6 +88,3 @@ export const initDropDownReducer: <T extends unknown, U extends DropDownStateKey
     dropDownSub: getDropDownSubscription
   }
 }
-
-
-

@@ -1,6 +1,6 @@
-import {createClassNamesFunction} from 'lib/classnames-function'
+import {createFilteredClassFunction} from '/lib/filtered-class-function'
 
-const cn = createClassNamesFunction<Cirrus | 'clicked'>()
+const cn = createFilteredClassFunction<Cirrus | 'clicked'>()
 
 export type ToggleShown = () => void
 
