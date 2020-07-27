@@ -12,7 +12,7 @@ const templateDir = path.join(srcDir, 'templates')
 const styleDir = path.join(srcDir, 'styles')
 
 const templateExtension = '.html'
-const styleExtension = '.postcss.css'
+const styleExtension = '.pcss'
 const scriptExtension = '.tsx'
 const skipExtension = '.skip'
 
