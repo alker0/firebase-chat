@@ -19,7 +19,6 @@
       },
       "includeNodeModules": {
         "inferno": false,
-        "css-zero/macro": false,
         "firebase/app": false,
         "firebase/database": false,
         "firebase/storage": false
@@ -33,12 +32,13 @@
   },
   "distDir": "build",
   "scripts": {
-    "start": "run-p start:firebase start:parcel",
-    "start:parcel": "parcel --port 8080 --target app src/templates/*.html",
+    "prepare": "snowpack",
+    "start": "run-p start:firebase start:snowpack",
+    "start:snowpack": "snowpack dev --port 8080",
     "start:firebase": "node ./scripts/firebase-proxy.js",
     "test": "jest",
     "citest": "CI=true jest --reporters=default --reporters=jest-github-action-reporter",
-    "build": "parcel build .",
+    "build": "snowpack build",
     "page:add": "node ./scripts/add-page.js",
     "page:delete": "node ./scripts/delete-page.js"
   },
@@ -49,30 +49,29 @@
     "@babel/preset-env": "^7.10.4",
     "@babel/preset-typescript": "^7.10.4",
     "@fullhuman/postcss-purgecss": "^2.3.0",
-    "@parcel/config-default": "^2.0.0-alpha.3",
-    "@parcel/validator-typescript": "^2.0.0-alpha.3",
-    "@types/classnames": "^2",
+    "@snowpack/plugin-babel": "^1.4.0",
     "babel-plugin-inferno": "^6.1.1",
     "babel-plugin-macros": "^2.8.0",
+    "babel-plugin-transform-rename-import": "^2.3.0",
     "connect": "^3.7.0",
+    "firebase": "^7.17.1",
     "firebase-tools": "^8.6.0",
-    "inferno": "^7.4.2",
     "jest": "^26.1.0",
     "jest-github-actions-reporter": "^1.0.2",
     "npm-run-all": "^4.1.5",
-    "parcel": "^2.0.0-beta.1",
     "postcss": "^7.0.32",
     "postcss-cli": "^7.1.1",
     "postcss-import": "^12.0.1",
     "postcss-import-url": "^5.1.0",
     "postcss-ts-classnames": "^0.1.2",
+    "posthtml-cli": "^0.6.0",
     "posthtml-expressions": "^1.4.5",
     "posthtml-extend": "^0.3.0",
     "posthtml-include": "^1.4.3",
     "prettier": "^2.0.5",
     "purgecss": "^2.3.0",
     "purgecss-from-js": "^1.0.0",
-    "squirrelly": "^8.0.3",
+    "snowpack": "^2.6.4",
     "stylelint": "^13.6.1",
     "stylelint-config-prettier": "^8.0.2",
     "stylelint-config-standard": "^20.0.0",
@@ -127,12 +126,15 @@
     "assets: cirrus-ui": "CSS Assets",
     "assets: licia": "JS Utils"
   },
-  "dependencies": {
-    "classnames": "^2.2.6",
-    "ferp": "^1.2.0",
-    "firebase": "^7.17.0"
-  },
   "installConfig": {
     "pnp": true
+  },
+  "dependenciesMeta": {
+    "open": {
+      "unplugged": true
+    }
+  },
+  "dependencies": {
+    "inferno": "^7.4.2"
   }
 }

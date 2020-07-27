@@ -1,14 +1,10 @@
-const env = process.env['NODE_ENV']
-
-const postcssConfig = {
+const postcssConfig = ctx => ({
   plugins: {
     'postcss-import': {},
-    // ...(env === 'production' ? {
-    //   '@fullhuman/postcss-purgecss': {
-    //     content: ['./src/templates/**/*.html']
-    //   }
-    // } : {})
+    '@fullhuman/postcss-purgecss': ctx.env === 'production' && {
+      content: ['./src/templates/**/*.html']
+    }
   }
-}
+})
 
 module.exports = postcssConfig

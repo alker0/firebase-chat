@@ -4,7 +4,6 @@ const http = require('http')
 const stream = require('stream')
 const connect = require('connect')// npm package
 const websocket = require('websocket-driver')// npm package
-
 const superstatic = require('superstatic')// npm package
 const firebaseConfig = require('firebase-tools/lib/config').load({ cwd: process.cwd() })
 
@@ -75,8 +74,8 @@ server.on('upgrade', function(req, socket, body){
 
     // req.headers.host = proxyBase
 
-    const wsDriver = websocket.http(req)
-    // const wsDriver = websocket.http(req, {protocols: ['esm-hmr']})
+    // const wsDriver = websocket.http(req)
+    const wsDriver = websocket.http(req, {protocols: ['esm-hmr']})
 
     wsDriver.io.write(body)
     socket.pipe(wsDriver.io).pipe(socket)

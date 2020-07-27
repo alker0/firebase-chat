@@ -1,20 +1,18 @@
-import {EffectMessage} from 'ferp'
-import {initDropDownReducer, DropDownState} from 'lib/ferp/dropdown'
+import { Ferp } from '/lib/deps'
+import { initDropDownReducer, DropDownState } from '/lib/ferp/dropdown'
 
 firebase.analytics()
 
-const ferp = window.ferp
-
-const {dropDownInit, dropDownSub} = initDropDownReducer(ferp)({
+const {dropDownInit, dropDownSub} = initDropDownReducer(Ferp.effects)({
   key: Symbol('dropdown')
 })
 
-type AnyEffectFunction<T, U extends unknown=unknown> = (param: U) => [T, EffectMessage]
+type AnyEffectFunction<T, U extends unknown=unknown> = (param: U) => [T, Ferp.EffectMessage]
 
 type UpdateFunction = AnyEffectFunction<DropDownState>
 
-ferp.app({
-  init: [dropDownInit, ferp.effects.none()],
+Ferp.app({
+  init: [dropDownInit, Ferp.effects.none()],
   update: (message: UpdateFunction, state) => {
     return message(state)
   },
@@ -30,8 +28,8 @@ document.addEventListener('DOMContentLoaded', function() {
   // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
 
   try {
-    let app = firebase.app();
-    let features = (['database', 'storage'] as const).filter(feature => typeof app[feature] === 'function');
+    let firebaseApp = firebase.app();
+    let features = (['database', 'storage'] as const).filter(feature => typeof firebaseApp[feature] === 'function');
     document.getElementById('load')!.innerHTML = `Firebase SDK loaded with ${features.join(', ')}`;
   } catch (e) {
     console.error(e);
