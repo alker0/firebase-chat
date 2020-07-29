@@ -33,6 +33,9 @@ module.exports = {
   },
   installOptions: {
     installTypes: true,
+    alias: {
+      'inferno': 'inferno/dist/index.dev.esm.js',// only development
+    },
   },
   devOptions: {
     bundle: false
