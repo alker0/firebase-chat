@@ -3,7 +3,7 @@ import { initDropDownReducer, DropDownState } from '/lib/ferp/dropdown'
 
 firebase.analytics()
 
-const {dropDownInit, dropDownSub} = initDropDownReducer(Ferp.effects)({
+const {dropDownInit, dropDownSub} = initDropDownReducer({
   key: Symbol('dropdown')
 })
 
