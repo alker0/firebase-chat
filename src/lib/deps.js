@@ -1,4 +1,4 @@
-// export * as Foo from 'Foo'
+// export * as Foo from 'foo'
 // ↑ not working
 
 import * as _Ferp from 'https://cdn.skypack.dev/ferp@^1.2.0'

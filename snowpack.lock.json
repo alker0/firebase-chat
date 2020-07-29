@@ -1,0 +1,5 @@
+{
+  "imports": {
+    "string-hash": "https://cdn.pika.dev/pin/string-hash@v1.1.3-ifJ3v8KtOoaKcwIiSoKj/string-hash.js"
+  }
+}

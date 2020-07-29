@@ -1,5 +1,3 @@
-import _ from ''
-
 type State<T> = T
 type Message<T> = T
 type UpdateResult<T, U> = ReturnType<AppParams<T, U>["update"]>

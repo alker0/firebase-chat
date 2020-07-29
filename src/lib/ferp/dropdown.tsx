@@ -29,19 +29,19 @@ const DropDownMenu = getDropDownMenuCreater([
 
 type RenderEffect = (shown: boolean) => Ferp.NativeEffectMessage
 
-const getRenderDropDownEffect = (effects: Ferp.NativeEffects) => (parent: Element, toggleShown: ToggleShown): RenderEffect => shown => {
+const renderDropDownEffect = (parent: Element, toggleShown: ToggleShown): RenderEffect => shown => {
   Inferno.render(<DropDownMenu shown={shown} toggleShown={toggleShown} />, parent)
-  return effects.none()
+  return Ferp.effects.none()
 }
 
 type DropDownSubscriptionGetter = (selector: string) => Ferp.SubscriptionElement<[Element], any>
 
 export const initDropDownReducer: <T extends unknown, U extends DropDownStateKey>
-    (effects: Ferp.NativeEffects) => (arg: DropDownInitArg<T, U>) => {
+    (arg: DropDownInitArg<T, U>) => {
       dropDownInit: DropDownState,
       dropDownSub: DropDownSubscriptionGetter
     }
-    = effects => arg => {
+    = arg => {
 
   const initDropDown = <T extends {}>(renderEffect: RenderEffect) => (state: T) => {
     return [
@@ -49,8 +49,6 @@ export const initDropDownReducer: <T extends unknown, U extends DropDownStateKey
       renderEffect(false)
     ]
   }
-
-  const renderDropDownEffect = getRenderDropDownEffect(effects)
 
   function dropDownSubscription(parent: Element): Ferp.SubscriptionRunner{
 

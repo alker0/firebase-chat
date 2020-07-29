@@ -1162,6 +1162,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/types@npm:7.8.3":
+  version: 7.8.3
+  resolution: "@babel/types@npm:7.8.3"
+  dependencies:
+    esutils: ^2.0.2
+    lodash: ^4.17.13
+    to-fast-properties: ^2.0.0
+  checksum: d3a4f0b6bc04f3c3fd51eb32eefa4e4bc8b811801d13e430bad302c5374a1962d4e126931418e439e3a33eda63f009091722231c275ecd13240e734510311c16
+  languageName: node
+  linkType: hard
+
 "@babel/types@npm:^7":
   version: 7.10.5
   resolution: "@babel/types@npm:7.10.5"
@@ -2315,6 +2326,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/string-hash@npm:^1.1.1":
+  version: 1.1.1
+  resolution: "@types/string-hash@npm:1.1.1"
+  checksum: 3580b388b2cc2a899b189e8eb75e9491dfeafb6b1fefd6dad2fefd9d6d116a8934443874a467101dc7d7af43e74287b770d8b23569652dcb24ae28b3f991bfbc
+  languageName: node
+  linkType: hard
+
 "@types/unist@npm:^2.0.0, @types/unist@npm:^2.0.2":
   version: 2.0.3
   resolution: "@types/unist@npm:2.0.3"
@@ -2883,6 +2901,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"babel-plugin-syntax-jsx@npm:6.18.0":
+  version: 6.18.0
+  resolution: "babel-plugin-syntax-jsx@npm:6.18.0"
+  checksum: a5c8174ad6165d5f541f9f31cf4b6338ccfb7d586cec111537fa567f13b5fbdcf54f7928db44429d4610aa1be9d07bb03d017b22ba521ff819a6a2090b694797
+  languageName: node
+  linkType: hard
+
 "babel-plugin-transform-rename-import@npm:^2.3.0":
   version: 2.3.0
   resolution: "babel-plugin-transform-rename-import@npm:2.3.0"
@@ -2988,6 +3013,13 @@ __metadata:
   version: 1.6.48
   resolution: "big-integer@npm:1.6.48"
   checksum: 311f86a45e28513ddb12415082c5f437b868d80914bff71689a99e16f597beee5c0f12b0c9e65713b70b0516e6ed27f4006e256ea5393bfcf68bb18dc453f976
+  languageName: node
+  linkType: hard
+
+"big.js@npm:^5.2.2":
+  version: 5.2.2
+  resolution: "big.js@npm:5.2.2"
+  checksum: ea33d7d25674df4253ae3667da7f48ade6cc8828cb4f2c3a7753f53975f10cebae57e0d1ecf84f1b920b5467262dc0d4f357e5e497b138472d0e64992a8402a4
   languageName: node
   linkType: hard
 
@@ -3973,7 +4005,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"convert-source-map@npm:^1.4.0, convert-source-map@npm:^1.6.0, convert-source-map@npm:^1.7.0":
+"convert-source-map@npm:1.7.0, convert-source-map@npm:^1.4.0, convert-source-map@npm:^1.6.0, convert-source-map@npm:^1.7.0":
   version: 1.7.0
   resolution: "convert-source-map@npm:1.7.0"
   dependencies:
@@ -4634,6 +4666,13 @@ __metadata:
   version: 8.0.0
   resolution: "emoji-regex@npm:8.0.0"
   checksum: 87cf3f89efb8ba028075b3dc1713e2c5609af94cbc129b1f00c3113d01dbe4bf85c9d971e75a98bf8a8508131727682ce929e4bd70e9022af4fd47d75e9507de
+  languageName: node
+  linkType: hard
+
+"emojis-list@npm:^2.0.0":
+  version: 2.1.0
+  resolution: "emojis-list@npm:2.1.0"
+  checksum: 09220b636cb03b16c234b6412391c9d8ce6fab4213659fd88d98a83e1b8fce8c60352f4dfc395a2f14159f1ed348a150c26123aee8afccb15b9747e26ed7b6ec
   languageName: node
   linkType: hard
 
@@ -5317,6 +5356,7 @@ __metadata:
     "@babel/preset-typescript": ^7.10.4
     "@fullhuman/postcss-purgecss": ^2.3.0
     "@snowpack/plugin-babel": ^1.4.0
+    "@types/string-hash": ^1.1.1
     babel-plugin-inferno: ^6.1.1
     babel-plugin-macros: ^2.8.0
     babel-plugin-transform-rename-import: ^2.3.0
@@ -5324,6 +5364,7 @@ __metadata:
     firebase: ^7.17.1
     firebase-tools: ^8.6.0
     inferno: ^7.4.2
+    inferno-styled-jsx: ^0.0.1
     jest: ^26.1.0
     jest-github-actions-reporter: ^1.0.2
     npm-run-all: ^4.1.5
@@ -5340,6 +5381,8 @@ __metadata:
     purgecss: ^2.3.0
     purgecss-from-js: ^1.0.0
     snowpack: ^2.6.4
+    string-hash: ^1.1.3
+    styled-jsx: ^3.3.0
     stylelint: ^13.6.1
     stylelint-config-prettier: ^8.0.2
     stylelint-config-standard: ^20.0.0
@@ -6397,6 +6440,16 @@ __metadata:
   version: 7.4.2
   resolution: "inferno-shared@npm:7.4.2"
   checksum: 67ce53addbb4658c0b2397ce8d593cfb368a335b4927de7b25422c53ee7add816b164643cc581b0f4406f1ef3c8de9911c67a4526fd5d463653c4fdb415bda6d
+  languageName: node
+  linkType: hard
+
+"inferno-styled-jsx@npm:^0.0.1":
+  version: 0.0.1
+  resolution: "inferno-styled-jsx@npm:0.0.1"
+  peerDependencies:
+    inferno: 7.x
+    styled-jsx: 3.x
+  checksum: 4acd45863638e89a75a89df0ce239e0de94442c3fd16f40687069d885f0e43d93bbf0160eeaf91fe38dc98b02dab01c011d082851bb9ca7b4e758be8ce03562d
   languageName: node
   linkType: hard
 
@@ -7682,6 +7735,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"json5@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "json5@npm:1.0.1"
+  dependencies:
+    minimist: ^1.2.0
+  bin:
+    json5: lib/cli.js
+  checksum: df41624f9f40bfacc546f779eef6d161a3312fbb6ec1dbd69f8c4388e9807af653b753371ab19b6d2bab22af2ca7dde62fe03c791596acf76915e1fc4ee6fd88
+  languageName: node
+  linkType: hard
+
 "json5@npm:^2.1.2":
   version: 2.1.3
   resolution: "json5@npm:2.1.3"
@@ -7952,6 +8016,17 @@ __metadata:
     pify: ^3.0.0
     strip-bom: ^3.0.0
   checksum: 692f33387be2439e920e394a70754499c22eabe567f55fee7c0a8994c050e27360c1b39c5375d214539ebb7d609d28e69f6bd6e3c070d30bc202c99289e27f96
+  languageName: node
+  linkType: hard
+
+"loader-utils@npm:1.2.3":
+  version: 1.2.3
+  resolution: "loader-utils@npm:1.2.3"
+  dependencies:
+    big.js: ^5.2.2
+    emojis-list: ^2.0.0
+    json5: ^1.0.1
+  checksum: 61b44f2d301c063f4937de087bffa1289ec65a88d7bccb1527baf1f63f1278761e18eb230b86f40fbea20776ed5aadcbb1ab468088ccde86858d2a4f77db1467
   languageName: node
   linkType: hard
 
@@ -11194,6 +11269,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"source-map@npm:0.7.3, source-map@npm:^0.7.3":
+  version: 0.7.3
+  resolution: "source-map@npm:0.7.3"
+  checksum: 351ce26ffa1ebf203660c0d70d7566c81e65d2d994d1c2d94da140808e02da34961673ce12ecea9b40797b96fbeb8c70bf71a4ad9f779f1a4fdbba75530bb386
+  languageName: node
+  linkType: hard
+
 "source-map@npm:^0.5.0, source-map@npm:^0.5.6":
   version: 0.5.7
   resolution: "source-map@npm:0.5.7"
@@ -11205,13 +11287,6 @@ __metadata:
   version: 0.6.1
   resolution: "source-map@npm:0.6.1"
   checksum: 8647829a0611724114022be455ca1c8a2c8ae61df81c5b3667d9b398207226a1e21174fb7bbf0b4dbeb27ac358222afb5a14f1c74a62a62b8883b012e5eb1270
-  languageName: node
-  linkType: hard
-
-"source-map@npm:^0.7.3":
-  version: 0.7.3
-  resolution: "source-map@npm:0.7.3"
-  checksum: 351ce26ffa1ebf203660c0d70d7566c81e65d2d994d1c2d94da140808e02da34961673ce12ecea9b40797b96fbeb8c70bf71a4ad9f779f1a4fdbba75530bb386
   languageName: node
   linkType: hard
 
@@ -11362,6 +11437,13 @@ __metadata:
   version: 1.0.1
   resolution: "stream-shift@npm:1.0.1"
   checksum: 5d777b222e460dc660ee29acad4f99649eb8d0051d3cb648fc92f3f77557b33d0a8ad656291c2cfa87703204191534a6003c2b035606a699674d0bb600353ad3
+  languageName: node
+  linkType: hard
+
+"string-hash@npm:1.1.3, string-hash@npm:^1.1.3":
+  version: 1.1.3
+  resolution: "string-hash@npm:1.1.3"
+  checksum: 178d855be2999a4ae2070d578e872574370224d86ca5d7b45bd709562a9acca61ac165a866c0b8b39e1cf2c181d781b96735725b7036e10b94196b261eb8229e
   languageName: node
   linkType: hard
 
@@ -11589,6 +11671,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"styled-jsx@npm:^3.3.0":
+  version: 3.3.0
+  resolution: "styled-jsx@npm:3.3.0"
+  dependencies:
+    "@babel/types": 7.8.3
+    babel-plugin-syntax-jsx: 6.18.0
+    convert-source-map: 1.7.0
+    loader-utils: 1.2.3
+    source-map: 0.7.3
+    string-hash: 1.1.3
+    stylis: 3.5.4
+    stylis-rule-sheet: 0.0.10
+  peerDependencies:
+    react: 15.x.x || 16.x.x
+  checksum: 1a90d2f566bf69b44f86eca7d3afc099a346df4dd10be1ff2f5cb3ac178fe0dacb163248114957f82c026b13198c834a4d6ed6fe786e56be27d6dbe6d01cdc1c
+  languageName: node
+  linkType: hard
+
 "stylelint-config-prettier@npm:^8.0.2":
   version: 8.0.2
   resolution: "stylelint-config-prettier@npm:8.0.2"
@@ -11688,6 +11788,22 @@ __metadata:
   bin:
     stylelint: bin/stylelint.js
   checksum: 5a56a4ba4259ca20295d2cffb0c52da0273c6386589430172e714713665ca13f8b021d6554ab57e6d43699bf089a6dd74881114e99472a036ce0f8f647445f34
+  languageName: node
+  linkType: hard
+
+"stylis-rule-sheet@npm:0.0.10":
+  version: 0.0.10
+  resolution: "stylis-rule-sheet@npm:0.0.10"
+  peerDependencies:
+    stylis: ^3.5.0
+  checksum: 89c5e8a72bf0dab4882464bd1e23db100956217d2851b6ff2c7a9d72274df68072528c82f5d7cda92d91aa455095d8adc2b97ff0f88b3a707fcbcdc485df970c
+  languageName: node
+  linkType: hard
+
+"stylis@npm:3.5.4":
+  version: 3.5.4
+  resolution: "stylis@npm:3.5.4"
+  checksum: 356e2352b1800595c46f3969c6afdce82ab3e5d668bbb6733e68a4968fa2190208cccd74129b7456e80ade3d321beeaff7c2c69ab90288127221062f90dcff99
   languageName: node
   linkType: hard
 
