@@ -11,8 +11,8 @@ const appDir = path.join(srcDir, 'app')
 const templateDir = path.join(srcDir, 'templates')
 const styleDir = path.join(srcDir, 'styles')
 
-const templateExtension = '.sqrl'
-const styleExtension = '.styl'
+const templateExtension = '.html'
+const styleExtension = '.pcss'
 
 const args = process.argv.slice(2)
 

@@ -1,35 +1,48 @@
 module.exports = {
   exclude: [
-    "**/node_modules/**/*",
-    "**/__test__/*",
-    "**/spec/*",
-    "**/*.@(spec|test).@(js|mjs)",
-    "**/*.skip",
-    "**/*.gitkeep",
+    '**/node_modules/**/*',
+    '**/__test__/*',
+    '**/*.@(spec|test).@(js|mjs)',
+    '**/templates/@(layouts|partials)/**/*',
+    '**/styles/cdn/**/*',
+    '**/typings/**/*',
+    '**/*.skip*',
+    '**/.pnp.js',
+    '**/.gitkeep',
   ],
-  plugins: ["./plugins/typescript.js", "@snowpack/plugin-parcel"],
+  plugins: [
+    '@snowpack/plugin-babel'
+  ],
   scripts: {
-    "mount:web_modules": "mount web_modules",
-    "mount:public": "mount src/public --to /",
-    "mount:app": "mount src/app --to /js",
-    "mount:assets": "mount src/assets --to /assets",
-    "run:ts,tsx": "tsc --noEmit",
-    "run:ts,tsx::watch": "$1 --watch",
-    "run:styl": "run-p stylus:*",
-    "run:styl::watch": "$1 -- --watch",
-    "run:sqrl": "yarn run squirrelly"
+    'mount:favicon': 'mount src/assets/favicon --to /',
+    'mount:assets': 'mount src/assets --to /assets',
+    'mount:web_modules': 'mount web_modules --to /web_modules',
+    // 'mount:styles': 'mount src/styles --to /css',
+    'mount:public': 'mount src/public --to /',
+    'mount:app': 'mount src/app --to /app',
+    'mount:lib': 'mount src/lib --to /lib',
+    'mount:components': 'mount src/components --to /components',
+    'run:ts,tsx': 'tsc --noEmit',
+    'run:ts,tsx::watch': '$1 --watch',
+    'run:html': 'posthtml -o src/public',
+    'run:pcss': 'postcss src/styles/*.pcss --ext .css --dir src/public/css',
+    'run:pcss::watch': '$1 --watch',
   },
   proxy: {
-    "/__/firebase": 'https://www.gstatic.com/firebasejs'
+    '/__/firebase': 'https://www.gstatic.com/firebasejs'
   },
   installOptions: {
     installTypes: true,
+    alias: {
+      'inferno': 'inferno/dist/index.dev.esm.js',// only development
+    },
+    externalPackage: [
+      'styled-jsx'
+    ]
   },
-  // install: [
-  //   "meiosis-setup",
-  //   "mergerino",
-  //   "pipe-and-compose",
-  //   "bluebird",
-  //   "inferno",
-  // ]
+  install: [
+  ],
+  devOptions: {
+    bundle: false
+  }
 }
