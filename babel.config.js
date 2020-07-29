@@ -14,6 +14,7 @@ module.exports = {
   ],
   plugins: [
     ['inferno', {import: true}],
+    ['styled-jsx/babel', {styleModule: '/lib/inferno-styled-jsx.js'}],
     'macros',
     '@babel/proposal-class-properties',
     '@babel/proposal-object-rest-spread',

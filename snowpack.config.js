@@ -36,7 +36,12 @@ module.exports = {
     alias: {
       'inferno': 'inferno/dist/index.dev.esm.js',// only development
     },
+    externalPackage: [
+      'styled-jsx'
+    ]
   },
+  install: [
+  ],
   devOptions: {
     bundle: false
   }
