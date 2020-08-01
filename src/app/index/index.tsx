@@ -1,10 +1,17 @@
 import { Ferp } from '/lib/deps'
 import { initDropDownReducer, DropDownState } from '/lib/ferp/dropdown'
+import { staticOf } from '../../lib/inferno-utils'
 
 firebase.analytics()
 
 const {dropDownInit, dropDownSub} = initDropDownReducer({
-  key: Symbol('dropdown')
+  key: Symbol('dropdown'),
+  menuItems:[
+    staticOf(() => <a href="#">First Item</a>),
+    staticOf(() => <a href="#">Second Item</a>),
+    staticOf(() => <a href="#">Third Item</a>),
+    staticOf(() => <a href="#">Fourth Item</a>),
+  ]
 })
 
 type AnyEffectFunction<T, U extends unknown=unknown> = (param: U) => [T, Ferp.EffectMessage]
@@ -26,6 +33,17 @@ document.addEventListener('DOMContentLoaded', function() {
   // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
   // firebase.messaging().requestPermission().then(() => { });
   // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
+  const mockEmail = 'procyon@kyj.biglobe.ne.jp'
+  const mockPassword = 'foofoo4bar'
+
+  document.querySelectorAll('#signup-button').forEach(elm => {
+    elm.addEventListener('click', ev => {
+      firebase.auth().createUserWithEmailAndPassword(mockEmail, mockPassword).catch(err => {
+        console.log(err.code)
+        console.log(err.message)
+      })
+    })
+  })
 
   try {
     let firebaseApp = firebase.app();
@@ -36,3 +54,4 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('load')!.innerHTML = 'Error loading the Firebase SDK, check the console.';
   }
 });
+

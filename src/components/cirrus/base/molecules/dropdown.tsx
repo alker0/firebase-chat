@@ -1,3 +1,4 @@
+import {ComponentCreater} from '../../typings/component-creater'
 import {createFilteredClassFunction} from '/lib/filtered-class-function'
 import {css} from 'styled-jsx/css'
 
@@ -9,8 +10,6 @@ interface DropDownMenuProps {
   shown: boolean,
   toggleShown: ToggleShown
 }
-
-type MenuItemsChildren = JSX.FunctionalElement[]
 
 const {className: overlay, styles} = css.resolve`
   div {
@@ -25,17 +24,40 @@ const {className: overlay, styles} = css.resolve`
   }
 `
 
-export const getDropDownMenuCreater = (menuItemsChildren: MenuItemsChildren) => {
-  const menuItems = (props: unknown) => menuItemsChildren.map(child => <li role="menuitem">{child(props)}</li>)
+const defaultContext: Required<DropDown.Context> = {
+    menuItemsChildren: [],
+    buttonText: 'Click Me'
+}
 
-  return (props: DropDownMenuProps) => {
-    return <>
-        <a class={cn('nav-dropdown-link', props.shown && 'clicked')} onClick={props.toggleShown}>Click Me</a>
-        <div class={overlay} style={{display: props.shown ? 'block' : 'none'}} onClick={props.toggleShown}></div>
-        <ul class={cn('dropdown-menu', props.shown && 'dropdown-shown')} role="menu">
-          {menuItems(props)}
-        </ul>
-        {styles}
-      </>
+export const DropDown: ComponentCreater<DropDown.Context> = {
+  createComponent: (context = defaultContext) => {
+    const fixedContext: DropDown.FixedContext = {...defaultContext, ...context}
+
+    const menuItems = (props: unknown) =>
+      fixedContext
+      .menuItemsChildren
+      .map(child => <li role="menuitem">{child(props)}</li>)
+
+    return (props: DropDownMenuProps) => {
+      return <>
+          <a class={cn('nav-dropdown-link', props.shown && 'clicked')} onClick={props.toggleShown}>{fixedContext.buttonText}</a>
+          <div class={overlay} style={{display: props.shown ? 'block' : 'none'}} onClick={props.toggleShown}></div>
+          <ul class={cn('dropdown-menu', props.shown && 'dropdown-shown')} role="menu">
+            {menuItems(props)}
+          </ul>
+          {styles}
+        </>
+    }
   }
+}
+
+export module DropDown {
+  export type Context = {
+    menuItemsChildren?: MenuItemsChildren,
+    buttonText?: string
+  }
+
+  export type FixedContext = Required<Context>
+
+  export type MenuItemsChildren = JSX.FunctionalElement[]
 }
