@@ -7,7 +7,7 @@ const nodeEnv = process.env['NODE_ENV']
 console.error('posthtml.config.js', nodeEnv)
 
 module.exports = {
-  input: 'src/templates/*.html',
+  input: 'src/templates/*.posthtml',
   plugins: [
     extend({root: 'src/templates'}),
     include({root: 'src/templates'}),

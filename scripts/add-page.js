@@ -11,7 +11,7 @@ const appDir = path.join(srcDir, 'app')
 const templateDir = path.join(srcDir, 'templates')
 const styleDir = path.join(srcDir, 'styles')
 
-const templateExtension = '.html'
+const templateExtension = '.posthtml'
 const styleExtension = '.pcss'
 const scriptExtension = '.tsx'
 const skipExtension = '.skip'
@@ -163,10 +163,10 @@ const cyanNormal = `${cyan}${normal}`
         // src/app/name/ to src/style/name.ext
         const relativeToStyle = path.relative(targetDir, targetStylePath)
 
-        // src/app/name/name.ext.skip
+        // src/app/name/name.skip.ext
         const templateLinkPath =
-          targetBasePath + skipExtension + templateExtension
-        const styleLinkPath = targetBasePath + skipExtension + styleExtension
+          targetBasePath + skipExtension + '.html'
+        const styleLinkPath = targetBasePath + skipExtension + '.css'
 
         // src/app/name/name.ext.skip -> src/template/name
         const createTemplateLink = createTemplateFile.then(() => {
