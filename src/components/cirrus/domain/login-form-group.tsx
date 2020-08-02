@@ -1,5 +1,5 @@
 import {ComponentCreater} from '../typings/component-creater'
-import {createFilteredClassFunction} from '/lib/filtered-class-function'
+import {createFilteredClassFunction} from '@lib/filtered-class-function'
 import {css} from 'styled-jsx/css'
 
 const cn = createFilteredClassFunction<Cirrus>()

@@ -5545,6 +5545,7 @@ __metadata:
     "@babel/preset-typescript": ^7.10.4
     "@fullhuman/postcss-purgecss": ^2.3.0
     "@snowpack/plugin-babel": ^2.0.2
+    "@snowpack/plugin-build-script": ^2.0.2
     "@types/string-hash": ^1.1.1
     babel-plugin-inferno: ^6.1.1
     babel-plugin-macros: ^2.8.0
@@ -5561,6 +5562,7 @@ __metadata:
     postcss-import: ^12.0.1
     postcss-import-url: ^5.1.0
     postcss-ts-classnames: ^0.1.2
+    posthtml: ^0.13.1
     posthtml-cli: ^0.6.0
     posthtml-expressions: ^1.4.5
     posthtml-extend: ^0.3.0
@@ -10201,7 +10203,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"posthtml@npm:^0.13.0":
+"posthtml@npm:^0.13.0, posthtml@npm:^0.13.1":
   version: 0.13.1
   resolution: "posthtml@npm:0.13.1"
   dependencies:

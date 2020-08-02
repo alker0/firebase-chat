@@ -26,10 +26,10 @@
       ],
       "https://cdn.skypack.dev/inferno*": ["src/typings/inferno-cdn"],
       "https://cdn.skypack.dev/ferp*": ["src/typings/ferp"],
+      "ferp": ["src/typings/ferp"],
       "inferno": ["node_modules/inferno/dist/index"],
-      "/assets/*": ["src/assets/*"],
-      "/lib/*": ["src/lib/*"],
-      "/components/*": ["src/components/*"]
+      "@lib/*": ["src/lib/*"],
+      "@components/*": ["src/components/*"]
     },
 
     // Skip npm module type check.

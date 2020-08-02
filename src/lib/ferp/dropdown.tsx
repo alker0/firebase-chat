@@ -1,5 +1,5 @@
-import { DropDown, ToggleShown } from '/components/cirrus/base/molecules/dropdown';
-import { Ferp, Inferno } from '/lib/deps'
+import { DropDown, ToggleShown } from '@components/cirrus/base/molecules/dropdown';
+import { Ferp, Inferno } from '@lib/deps'
 import { StateKey, StateMap, UpdateState, InitArg } from './state'
 
 export type DropDownState = {

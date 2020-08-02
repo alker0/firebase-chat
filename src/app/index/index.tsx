@@ -1,6 +1,6 @@
-import { Ferp } from '/lib/deps'
-import { initDropDownReducer, DropDownState } from '/lib/ferp/dropdown'
-import { staticOf } from '../../lib/inferno-utils'
+import { Ferp } from '@lib/deps'
+import { initDropDownReducer, DropDownState } from '@lib/ferp/dropdown'
+import { staticOf } from '@lib/inferno-utils'
 
 firebase.analytics()
 

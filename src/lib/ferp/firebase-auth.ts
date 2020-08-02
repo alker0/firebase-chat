@@ -1,4 +1,4 @@
-import { Ferp } from '/lib/deps'
+import { Ferp } from '@lib/deps'
 import { StateKey, StateMap, InitArg, UpdateState } from './state'
 import { User } from 'firebase'
 
