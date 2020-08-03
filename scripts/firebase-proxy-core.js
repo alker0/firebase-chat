@@ -21,7 +21,7 @@ function createProxyProvider({endPoint, logger}) {
             `StatusCode: ${res.statusCode}`,
             `Path: ${resourcePath}`
           ].join('\n'))
-          return
+          return;
         }
 
         const size = res.headers['content-length']
@@ -59,7 +59,7 @@ module.exports = ({resourceEndPoint, port, logger}) => {
   })
 
   server.on('upgrade', function(req, socket, body){
-    if(!websocket.isWebSocket(req)) return
+    if(!websocket.isWebSocket(req)) return;
 
     // req.headers.host = proxyBase
 
@@ -71,4 +71,12 @@ module.exports = ({resourceEndPoint, port, logger}) => {
 
     wsDriver.start()
   })
+
+  return () => {
+    process.on('SIGINT', () => {
+      server.close(() => {
+        logger.log('Proxy server is closed')
+      })
+    })
+  }
 }

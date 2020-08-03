@@ -18,7 +18,7 @@ module.exports = function(snowpackConfig, pluginOption) {
   return {
     name: 'firebase-proxy',
     async run({isDev, log}) {
-      if(!isDev) return
+      if(!isDev) return;
 
       const logger = {
         log: (...messages) => log('WORKER_MSG', {level: 'log', msg: `${messages.join(' ')}\n`}),

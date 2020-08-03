@@ -17,12 +17,12 @@ module.exports = {
     '@snowpack/plugin-babel',
     ['@snowpack/plugin-build-script',{cmd: 'postcss', input: ['.pcss'], output: ['.css']}],
     ['./plugins/snowpack-firebase-proxy.js'],
-    ['./plugins/snowpack-posthtml.js', {config: require('./posthtml.config')}]// not working
+    ['./plugins/snowpack-posthtml.js', {inputDir: './src/templates', config: require('./posthtml.config')}]// not working
   ],
   mount: {
     'web_modules': '/web_modules',
-    // 'src/public': '/',
-    'src/templates': '/',
+    'src/public': '/',
+    // 'src/templates': '/',
     'src/assets': '/assets',
     'src/assets/favicon': '/',
     'src/styles': '/css',

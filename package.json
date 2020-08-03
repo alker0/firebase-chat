@@ -32,11 +32,10 @@
   },
   "distDir": "build",
   "scripts": {
-    "start": "run-s compile:posthtml start:snowpack",
+    "start": "run-s start:snowpack",
     "start:snowpack": "snowpack dev --port 8080",
     "test": "jest",
     "citest": "CI=true jest --reporters=default --reporters=jest-github-action-reporter",
-    "compile:posthtml": "./scripts/posthtml.sh",
     "page:add": "node ./scripts/add-page.js",
     "page:delete": "node ./scripts/delete-page.js"
   },
