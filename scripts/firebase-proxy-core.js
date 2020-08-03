@@ -34,6 +34,8 @@ function createProxyProvider({endPoint, logger}) {
   }
 }
 
+const sigint = 'SIGINT'
+
 const localhost = 'localhost'
 const httpPrefix = 'http://'
 
@@ -72,11 +74,18 @@ module.exports = ({resourceEndPoint, port, logger}) => {
     wsDriver.start()
   })
 
-  return () => {
-    process.on('SIGINT', () => {
-      server.close(() => {
-        logger.log('Proxy server is closed')
-      })
+  const closer = () => {
+    server.close(() => {
+      logger.log([
+        '',
+        '======== SIGINT ========',
+        'Proxy server is closed',
+      ].join('\n'))
     })
+
+    process.off(sigint, closer)
+    process.kill(process.pid, sigint)
   }
+
+  process.on(sigint, closer)
 }
