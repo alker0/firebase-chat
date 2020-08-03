@@ -24,14 +24,14 @@ const {className: overlay, styles} = css.resolve`
   }
 `
 
-const defaultContext: Required<DropDown.Context> = {
+const defaultContext: DropDown.FilledContext = {
     menuItemsChildren: [],
     buttonText: 'Click Me'
 }
 
 export const DropDown: ComponentCreater<DropDown.Context> = {
   createComponent: (context = defaultContext) => {
-    const fixedContext: DropDown.FixedContext = {...defaultContext, ...context}
+    const fixedContext: DropDown.FilledContext = {...defaultContext, ...context}
 
     const menuItems = (props: unknown) =>
       fixedContext
@@ -57,7 +57,7 @@ export declare module DropDown {
     buttonText?: string
   }
 
-  export type FixedContext = Required<Context>
+  export type FilledContext = Required<Context>
 
   export type MenuItemsChildren = JSX.FunctionalElement[]
 }

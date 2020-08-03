@@ -37,12 +37,13 @@ const sizeSuffixMap = {
   large: '-large',
   xlarge: '-xlarge',
 }
+
 const buttonSizeSuffixMap = {
   ...sizeSuffixMap,
   xsmall: '-tiny'
 }
 
-const defaultSignUpContext: Required<SignUpForm.Context> = {
+const defaultSignUpContext: SignUpForm.FilledContext = {
   itemSize: false
 }
 
@@ -86,4 +87,6 @@ export module SignUpForm {
   export type Context = {
     itemSize?: 'xsmall' | 'small' | false | 'large' | 'xlarge'
   }
+
+  export type FilledContext = Required<Context>
 }
