@@ -16,8 +16,7 @@ module.exports = {
     ],
     '@snowpack/plugin-babel',
     ['@snowpack/plugin-build-script',{cmd: 'postcss', input: ['.pcss'], output: ['.css']}],
-    // ['@snowpack/plugin-run-script',{cmd: 'echo "Proxy do not work"', watch: 'node ./scripts/firebase-proxy.js'}],
-    ['./plugins/snowpack-firebase-proxy.js', {}],
+    ['./plugins/snowpack-firebase-proxy.js'],
     ['./plugins/snowpack-posthtml.js', {config: require('./posthtml.config')}]// not working
   ],
   mount: {
