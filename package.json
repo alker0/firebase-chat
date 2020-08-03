@@ -32,11 +32,11 @@
   },
   "distDir": "build",
   "scripts": {
-    "start": "run-p start:firebase start:snowpack",
+    "start": "run-s compile:posthtml start:snowpack",
     "start:snowpack": "snowpack dev --port 8080",
-    "start:firebase": "node ./scripts/firebase-proxy.js",
     "test": "jest",
     "citest": "CI=true jest --reporters=default --reporters=jest-github-action-reporter",
+    "compile:posthtml": "./scripts/posthtml.sh",
     "page:add": "node ./scripts/add-page.js",
     "page:delete": "node ./scripts/delete-page.js"
   },
@@ -49,6 +49,7 @@
     "@fullhuman/postcss-purgecss": "^2.3.0",
     "@snowpack/plugin-babel": "^2.0.2",
     "@snowpack/plugin-build-script": "^2.0.2",
+    "@snowpack/plugin-run-script": "^2.0.2",
     "@types/string-hash": "^1.1.1",
     "babel-plugin-inferno": "^6.1.1",
     "babel-plugin-macros": "^2.8.0",

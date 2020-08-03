@@ -2,7 +2,7 @@ const extend = require('posthtml-extend')
 const expressoins = require('posthtml-expressions')
 const include = require('posthtml-include')
 
-const nodeEnv = process.env['NODE_ENV']
+const nodeEnv = process.env['NODE_ENV'] || 'development'
 
 console.error('posthtml.config.js', nodeEnv)
 

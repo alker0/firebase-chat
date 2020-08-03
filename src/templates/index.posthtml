@@ -19,7 +19,7 @@
 
     <include src="partials/firebase-sdk.html"></include>
 
-    <script type="module" src="/app/index/index.js"></script>
+    <script type="module" src="/js/index.js"></script>
 
     <div class="header header-fixed unselectable header-animated">
       <div class="header-brand">

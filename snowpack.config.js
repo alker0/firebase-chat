@@ -11,9 +11,14 @@ module.exports = {
     '**/.gitkeep',
   ],
   plugins: [
+    ['@snowpack/plugin-run-script',
+      {cmd: 'tsc --noEmit', watch: '$1 --watch'},
+    ],
     '@snowpack/plugin-babel',
     ['@snowpack/plugin-build-script',{cmd: 'postcss', input: ['.pcss'], output: ['.css']}],
-    ['./plugins/snowpack-posthtml.js', {config: require('./posthtml.config')}]
+    // ['@snowpack/plugin-run-script',{cmd: 'echo "Proxy do not work"', watch: 'node ./scripts/firebase-proxy.js'}],
+    ['./plugins/snowpack-firebase-proxy.js', {}],
+    ['./plugins/snowpack-posthtml.js', {config: require('./posthtml.config')}]// not working
   ],
   mount: {
     'web_modules': '/web_modules',
@@ -22,13 +27,10 @@ module.exports = {
     'src/assets': '/assets',
     'src/assets/favicon': '/',
     'src/styles': '/css',
-    'src/app/*': '/js',
-    'src/lib': '/js/lib',
+    'src/app/index': '/js',
+    'src/app/404': '/js',
+    'src/lib': '/lib',
     'src/components': '/components'
-  },
-  scripts: {
-    'run:ts,tsx': 'tsc --noEmit',
-    'run:ts,tsx::watch': '$1 --watch',
   },
   alias: {
     'inferno': 'inferno/dist/index.dev.esm.js',// only development

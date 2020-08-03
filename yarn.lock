@@ -5546,6 +5546,7 @@ __metadata:
     "@fullhuman/postcss-purgecss": ^2.3.0
     "@snowpack/plugin-babel": ^2.0.2
     "@snowpack/plugin-build-script": ^2.0.2
+    "@snowpack/plugin-run-script": ^2.0.2
     "@types/string-hash": ^1.1.1
     babel-plugin-inferno: ^6.1.1
     babel-plugin-macros: ^2.8.0

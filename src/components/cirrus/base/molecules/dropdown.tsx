@@ -51,7 +51,7 @@ export const DropDown: ComponentCreater<DropDown.Context> = {
   }
 }
 
-export module DropDown {
+export declare module DropDown {
   export type Context = {
     menuItemsChildren?: MenuItemsChildren,
     buttonText?: string
