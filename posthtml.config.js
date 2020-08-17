@@ -4,6 +4,8 @@ const include = require('posthtml-include')
 
 const nodeEnv = process.env['NODE_ENV'] || 'development'
 
+const isProd = nodeEnv === 'production'
+
 console.error('posthtml.config.js', nodeEnv)
 
 module.exports = {
@@ -14,9 +16,11 @@ module.exports = {
     expressoins({locals: {
       env: nodeEnv,
       cirrusVersion: '@0.5.5',
-      firebaseVersion: '7.17.1',
+      firebaseVersion: '7.18.0',
       firebaseInitPath: '/lib/firebase-init-app.js',
-      firebaseSdk: ['analytics', 'auth', 'database', 'storage']
+      firebaseSdk: ['auth', 'database', 'storage'],
+      useAnalytics: true,
+      firebaseAnalyticsPath: '/lib/firebase-init-analytics.js'
     }}),
   ],
 }
