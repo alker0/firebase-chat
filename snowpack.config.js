@@ -9,6 +9,9 @@ module.exports = {
     '**/*.skip*',
     '**/.pnp.js',
     '**/.gitkeep',
+    '**/lib/inferno-*',
+    '**/lib/ferp/*',
+    '**/lib/styled-jsx/*'
   ],
   plugins: [
     ['@snowpack/plugin-run-script',
@@ -17,7 +20,7 @@ module.exports = {
     '@snowpack/plugin-babel',
     ['@snowpack/plugin-build-script',{cmd: 'postcss', input: ['.pcss'], output: ['.css']}],
     ['./plugins/snowpack-firebase-proxy.js'],
-    ['./plugins/snowpack-posthtml.js', {inputDir: './src/templates', config: require('./posthtml.config')}]// not working
+    ['./plugins/snowpack-posthtml.js', {inputDir: './src/templates', config: require('./posthtml.config')}]
   ],
   mount: {
     'web_modules': '/web_modules',
@@ -32,9 +35,10 @@ module.exports = {
     'src/components': '/components'
   },
   alias: {
-    'inferno': 'inferno/dist/index.dev.esm.js',// only development
+    // 'inferno': 'inferno/dist/index.dev.esm.js',// only development
     '@lib': './src/lib',
-    '@components': './src/components'
+    '@components': './src/components',
+    '@webModules': './web_modules'
   },
   proxy: {
     '/__/firebase': 'https://www.gstatic.com/firebasejs'
@@ -42,7 +46,8 @@ module.exports = {
   installOptions: {
     installTypes: true,
     externalPackage: [
-      'styled-jsx',
+      'https://cdn.skypack.dev',
+      'styled-jsx/css',
       'firebase'
     ]
   },
