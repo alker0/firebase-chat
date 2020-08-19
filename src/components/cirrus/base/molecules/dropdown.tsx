@@ -1,17 +1,12 @@
-import {ComponentCreater} from '../../typings/component-creater'
-import {createFilteredClassFunction} from '@lib/filtered-class-function'
-import {css} from 'styled-jsx/css'
+import { ComponentCreater } from '../../typings/component-creater'
+import { createFilteredClassFunction } from '@lib/filtered-class-function'
+import { wrapCss } from '@lib/solid-styled-jsx'
+import { css } from 'styled-jsx/css'
+import { createSignal, setDefaults, For } from 'solid-js'
 
 const cn = createFilteredClassFunction<Cirrus | 'clicked'>()
 
-export type ToggleShown = () => void
-
-interface DropDownMenuProps {
-  shown: boolean,
-  toggleShown: ToggleShown
-}
-
-const {className: overlay, styles} = css.resolve`
+const { className: overlay, styles } = wrapCss(() => css.resolve`
   div {
     width: 100%;
     height: 100%;
@@ -22,28 +17,42 @@ const {className: overlay, styles} = css.resolve`
     left: 0;
     z-index: 5;
   }
-`
+`)
 
-const defaultContext: DropDown.FilledContext = {
-    menuItemsChildren: [],
-    buttonText: 'Click Me'
+const defaultContext: DropDownMenu.FilledContext = {
+  buttonText: 'Click Me',
 }
 
-export const DropDown: ComponentCreater<DropDown.Context> = {
+const DO_NOTHING = () => {}
+
+const defaultProps: DropDownMenu.FilledProps = {
+  menuItems: [],
+  onCleanup: DO_NOTHING
+}
+
+export const DropDownMenu: ComponentCreater<
+    DropDownMenu.Context,
+    DropDownMenu.Props
+  > = {
   createComponent: (context = defaultContext) => {
-    const fixedContext: DropDown.FilledContext = {...defaultContext, ...context}
+    const fixedContext: DropDownMenu.FilledContext = {...defaultContext, ...context}
 
-    const menuItems = (props: unknown) =>
-      fixedContext
-      .menuItemsChildren
-      .map(child => <li role="menuitem">{child(props)}</li>)
+    return propsArg => {
+      setDefaults(propsArg, defaultProps)
 
-    return (props: DropDownMenuProps) => {
+      const props = propsArg as DropDownMenu.FilledProps
+
+      const [shown, setShown] = createSignal(false)
+
+      const toggleShown = () => setShown(!shown())
+
       return <>
-          <a class={cn('nav-dropdown-link', props.shown && 'clicked')} onClick={props.toggleShown}>{fixedContext.buttonText}</a>
-          <div class={overlay} style={{display: props.shown ? 'block' : 'none'}} onClick={props.toggleShown}></div>
-          <ul class={cn('dropdown-menu', props.shown && 'dropdown-shown')} role="menu">
-            {menuItems(props)}
+          <a class={cn('nav-dropdown-link', shown() && 'clicked')} onClick={toggleShown}>{fixedContext.buttonText}</a>
+          <div class={overlay} style={{display: shown() ? 'block' : 'none'}} onClick={toggleShown}></div>
+          <ul class={cn('dropdown-menu', shown() && 'dropdown-shown')} role="menu">
+            <For each={(props as DropDownMenu.FilledProps).menuItems}>
+              {item => <li>{item()}</li>}
+            </For>
           </ul>
           {styles}
         </>
@@ -51,13 +60,19 @@ export const DropDown: ComponentCreater<DropDown.Context> = {
   }
 }
 
-export declare module DropDown {
-  export type Context = {
-    menuItemsChildren?: MenuItemsChildren,
-    buttonText?: string
+export declare module DropDownMenu {
+  export interface Context {
+    buttonText?: string,
   }
 
-  export type FilledContext = Required<Context>
+  export interface FilledContext extends Required<Context> {}
 
-  export type MenuItemsChildren = JSX.FunctionalElement[]
+  export interface Props {
+    menuItems?: JSX.FunctionElement[]
+    onCleanup?: () => void
+  }
+
+  export interface FilledProps extends Required<Props> {}
+
+  export type MenuItemsChildren = JSX.Element[]
 }
