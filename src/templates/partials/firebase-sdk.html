@@ -3,14 +3,13 @@
 <each loop="sdk in firebaseSdk">
   <script src="/__/firebase/{{ firebaseVersion }}/firebase-{{ sdk }}.js"></script>
 </each>
-<!-- <script src="/__/firebase/{{ firebaseVersion }}/firebase-app.js"></script>
-
-<each loop="sdk in firebaseSdk">
-  <script src="/__/firebase/{{ firebaseVersion }}/firebase-{{ sdk }}.js"></script>
-</each> -->
 
 <switch expression="env">
   <case n="'production'">
+    <if condition="useAnalytics">
+      <script src="/__/firebase/{{ firebaseVersion }}/firebase-analytics.js"></script>
+      <script src="{{ firebaseAnalyticsPath }}"></script>
+    </if>
     <script src="/__/firebase/init.js"></script>
   </case>
   <case n="'development'">

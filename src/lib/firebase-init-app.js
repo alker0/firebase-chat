@@ -11,6 +11,6 @@ const firebaseConfig = {
 
 // Initialize Firebase
 
-firebase.initializeApp(firebaseConfig)
+firebase.initializeApp(firebaseConfig);
 
 console.log('Firebase is initialized')

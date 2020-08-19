@@ -11,7 +11,7 @@ const appDir = path.join(srcDir, 'app')
 const templateDir = path.join(srcDir, 'templates')
 const styleDir = path.join(srcDir, 'styles')
 
-const templateExtension = '.html'
+const templateExtension = '.posthtml'
 const styleExtension = '.pcss'
 
 const args = process.argv.slice(2)

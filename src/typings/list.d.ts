@@ -1,4 +1,4 @@
-namespace List {
+declare module List {
   type Head<T extends any[], D=never> = T extends [infer X, ...any[]] ? X : D
   type Tail<T extends any[]> = ((...x: T) => void) extends ((x: any, ...xs: infer XS) => void) ? XS : never
 

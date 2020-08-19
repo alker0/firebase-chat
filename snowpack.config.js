@@ -9,35 +9,46 @@ module.exports = {
     '**/*.skip*',
     '**/.pnp.js',
     '**/.gitkeep',
+    '**/lib/inferno-*',
+    '**/lib/ferp/*',
+    '**/lib/styled-jsx/*'
   ],
   plugins: [
-    '@snowpack/plugin-babel'
+    ['@snowpack/plugin-run-script',
+      {cmd: 'tsc --noEmit', watch: '$1 --watch'},
+    ],
+    '@snowpack/plugin-babel',
+    ['@snowpack/plugin-build-script',{cmd: 'postcss', input: ['.pcss'], output: ['.css']}],
+    ['./plugins/snowpack-firebase-proxy.js'],
+    ['./plugins/snowpack-posthtml.js', {inputDir: './src/templates', config: require('./posthtml.config')}]
   ],
-  scripts: {
-    'mount:favicon': 'mount src/assets/favicon --to /',
-    'mount:assets': 'mount src/assets --to /assets',
-    'mount:web_modules': 'mount web_modules --to /web_modules',
-    // 'mount:styles': 'mount src/styles --to /css',
-    'mount:public': 'mount src/public --to /',
-    'mount:app': 'mount src/app --to /app',
-    'mount:lib': 'mount src/lib --to /lib',
-    'mount:components': 'mount src/components --to /components',
-    'run:ts,tsx': 'tsc --noEmit',
-    'run:ts,tsx::watch': '$1 --watch',
-    'run:html': 'posthtml -o src/public',
-    'run:pcss': 'postcss src/styles/*.pcss --ext .css --dir src/public/css',
-    'run:pcss::watch': '$1 --watch',
+  mount: {
+    'web_modules': '/web_modules',
+    'src/public': '/',
+    // 'src/templates': '/',
+    'src/assets': '/assets',
+    'src/assets/favicon': '/',
+    'src/styles': '/css',
+    'src/app/index': '/js',
+    'src/app/404': '/js',
+    'src/lib': '/lib',
+    'src/components': '/components'
+  },
+  alias: {
+    // 'inferno': 'inferno/dist/index.dev.esm.js',// only development
+    '@lib': './src/lib',
+    '@components': './src/components',
+    '@webModules': './web_modules'
   },
   proxy: {
     '/__/firebase': 'https://www.gstatic.com/firebasejs'
   },
   installOptions: {
     installTypes: true,
-    alias: {
-      'inferno': 'inferno/dist/index.dev.esm.js',// only development
-    },
     externalPackage: [
-      'styled-jsx'
+      'https://cdn.skypack.dev',
+      'styled-jsx/css',
+      'firebase'
     ]
   },
   install: [

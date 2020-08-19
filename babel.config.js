@@ -1,20 +1,27 @@
 module.exports = {
   presets: [
-    ['@babel/env', {
-      modules: false,
-      targets: {
-        esmodules: true
-      }
-    }],
-    ['@babel/typescript', {
-      isTSX: true,
-      allowDeclareFields: true,
-      allExtensions: true
-    }]
+    [
+      '@babel/env',
+      {
+        modules: false,
+        targets: {
+          esmodules: true,
+        },
+      },
+    ],
+    'solid',
+    [
+      '@babel/typescript',
+      {
+        isTSX: true,
+        allowDeclareFields: true,
+        allExtensions: true,
+      },
+    ],
   ],
   plugins: [
-    ['inferno', {import: true}],
-    ['styled-jsx/babel', {styleModule: '/lib/inferno-styled-jsx.js'}],
+    // ['styled-jsx/babel', {styleModule: '/lib/inferno-styled-jsx.js'}],
+    ['styled-jsx/babel', { styleModule: '/web_modules/solid-styled-jsx.js' }],
     'macros',
     '@babel/proposal-class-properties',
     '@babel/proposal-object-rest-spread',
@@ -24,5 +31,5 @@ module.exports = {
     //     {original: 'inferno', replacement: 'https://cdn.skypack.dev/inferno@^7.4.2'}
     //   ]
     // }]
-  ]
-}
+  ],
+};
