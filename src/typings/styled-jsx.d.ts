@@ -1,5 +1,4 @@
 declare global {
-  // import { Inferno } from "/lib/deps";
   import 'solid-js/types/rendering/jsx';
   interface StyleHTMLAttributes<T> extends JSX.HTMLAttributes<T> {
     jsx?: boolean,

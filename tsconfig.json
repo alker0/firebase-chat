@@ -24,10 +24,7 @@
         "node_modules/*",
         // "web_modules/*.js"
       ],
-      "https://cdn.skypack.dev/inferno*": ["src/typings/inferno-cdn"],
-      "https://cdn.skypack.dev/ferp*": ["src/typings/ferp"],
-      "ferp": ["src/typings/ferp"],
-      // "inferno": ["node_modules/inferno/dist/index"],
+      // "https://cdn.skypack.dev/inferno*": ["src/typings/inferno-cdn"],
       "solid-js/*": ["solid-js/types/*"],
       "@lib/*": ["src/lib/*"],
       "@components/*": ["src/components/*"]
@@ -54,6 +51,5 @@
 
   "exclude": [
     "node_modules",
-    "src/lib/ferp"
   ],
 }
