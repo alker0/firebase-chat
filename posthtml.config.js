@@ -16,7 +16,7 @@ module.exports = {
     expressoins({locals: {
       env: nodeEnv,
       cirrusVersion: '@0.5.5',
-      firebaseVersion: '7.18.0',
+      firebaseVersion: '7.19.0',
       firebaseInitPath: '/lib/firebase-init-app.js',
       firebaseSdk: ['auth', 'database', 'storage'],
       useAnalytics: true,
