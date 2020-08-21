@@ -1,5 +1,4 @@
-import { clsx } from "/lib/deps"
-
+import { default as clsx } from "clsx"
 export function createFilteredClassFunction() {
   return clsx
 }

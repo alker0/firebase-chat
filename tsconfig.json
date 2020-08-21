@@ -29,7 +29,6 @@
       "@lib/*": ["src/lib/*"],
       "@components/*": ["src/components/*"],
       "@components/cirrus/*": ["src/components/cirrus/src/*"]
-
     },
 
     // Skip npm module type check.
@@ -49,9 +48,12 @@
     "./src/**/*",
     // "node_modules/inferno/dist/index.d.ts",
     "node_modules/solid-js/dist/types/rendering/jsx.d.ts",
+    "node_modules/@alker/solid-styled-tsx/styled-jsx.d.ts"
   ],
 
   "exclude": [
     "node_modules",
+    "./src/lib/solid-styled-tsx/*",
+    "./src/lib/ts-filtered-css-class/*"
   ],
 }
