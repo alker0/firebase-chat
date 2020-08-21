@@ -1,12 +1,11 @@
 import { ComponentCreater } from '../../typings/component-creater'
 import { createFilteredClassFunction } from '@lib/filtered-class-function'
-import { wrapCss } from '@lib/solid-styled-jsx'
 import { css } from 'styled-jsx/css'
-import { createSignal, setDefaults, For } from 'solid-js'
+import { createSignal, setDefaults, For, createRoot } from 'solid-js'
 
 const cn = createFilteredClassFunction<Cirrus | 'clicked'>()
 
-const { className: overlay, styles } = wrapCss(() => css.resolve`
+const { className: overlay, styles } = createRoot(() => css.resolve`
   div {
     width: 100%;
     height: 100%;

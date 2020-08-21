@@ -1,15 +1,16 @@
-import {ComponentCreater} from '../typings/component-creater'
-import {createFilteredClassFunction} from '@lib/filtered-class-function'
-import {css} from 'styled-jsx/css'
+import { ComponentCreater } from '../typings/component-creater'
+import { createFilteredClassFunction } from '@lib/filtered-class-function'
+import { css } from 'styled-jsx/css'
+import { createRoot } from 'solid-js'
 
 const cn = createFilteredClassFunction<Cirrus>()
 
-const {className: formRoot, styles} = css.resolve`
+const {className: formRoot, styles} = createRoot(() => css.resolve`
   div {
     display: flex;
     justify-content: center;
   }
-`
+`)
 
 type SizedItem = Extract<
   ''
@@ -83,7 +84,7 @@ export const SignUpForm: ComponentCreater<SignUpForm.Context> = {
   }
 }
 
-export module SignUpForm {
+export declare module SignUpForm {
   export type Context = {
     itemSize?: 'xsmall' | 'small' | false | 'large' | 'xlarge'
   }
