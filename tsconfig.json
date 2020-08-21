@@ -24,7 +24,6 @@
         "node_modules/*",
         // "web_modules/*.js"
       ],
-      // "https://cdn.skypack.dev/inferno*": ["src/typings/inferno-cdn"],
       "solid-js/*": ["solid-js/types/*"],
       "@lib/*": ["src/lib/*"],
       "@components/*": ["src/components/*"],
@@ -46,7 +45,6 @@
 
   "include": [
     "./src/**/*",
-    // "node_modules/inferno/dist/index.d.ts",
     "node_modules/solid-js/dist/types/rendering/jsx.d.ts",
     "node_modules/@alker/solid-styled-tsx/styled-jsx.d.ts"
   ],
