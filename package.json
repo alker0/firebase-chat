@@ -51,7 +51,6 @@
     "@snowpack/plugin-build-script": "^2.0.5",
     "@snowpack/plugin-postcss": "^1.0.1",
     "@snowpack/plugin-run-script": "^2.1.0",
-    "babel-plugin-inferno": "^6.1.1",
     "babel-plugin-macros": "^2.8.0",
     "babel-plugin-transform-rename-import": "^2.3.0",
     "babel-preset-solid": "^0.18.14",

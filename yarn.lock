@@ -699,7 +699,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-syntax-jsx@npm:^7, @babel/plugin-syntax-jsx@npm:^7.10.4":
+"@babel/plugin-syntax-jsx@npm:^7.10.4":
   version: 7.10.4
   resolution: "@babel/plugin-syntax-jsx@npm:7.10.4"
   dependencies:
@@ -1358,17 +1358,6 @@ __metadata:
     lodash: ^4.17.13
     to-fast-properties: ^2.0.0
   checksum: d3a4f0b6bc04f3c3fd51eb32eefa4e4bc8b811801d13e430bad302c5374a1962d4e126931418e439e3a33eda63f009091722231c275ecd13240e734510311c16
-  languageName: node
-  linkType: hard
-
-"@babel/types@npm:^7":
-  version: 7.10.5
-  resolution: "@babel/types@npm:7.10.5"
-  dependencies:
-    "@babel/helper-validator-identifier": ^7.10.4
-    lodash: ^4.17.19
-    to-fast-properties: ^2.0.0
-  checksum: 00bdeb6f4687357750252f27d6f1a597596c6f727992df7b0c3d8f7ca6347a656f687c000e3ac141d7fc75f0171aa137126ecbe899f87b4ae5dd903bdccc1f01
   languageName: node
   linkType: hard
 
@@ -3114,19 +3103,6 @@ __metadata:
   dependencies:
     object.assign: ^4.1.0
   checksum: 6745b8edca96f6c8bc34ab65935b5676358d2e55323e8e823b8de7aa353e3e6398a495ce434c9c36ad5fb1609467a1b1a0028946e1490bf7de8f97df3ae7f3b1
-  languageName: node
-  linkType: hard
-
-"babel-plugin-inferno@npm:^6.1.1":
-  version: 6.1.1
-  resolution: "babel-plugin-inferno@npm:6.1.1"
-  dependencies:
-    "@babel/plugin-syntax-jsx": ^7
-    "@babel/types": ^7
-  peerDependencies:
-    "@babel/core": ^7
-    inferno: ">=7"
-  checksum: 81037a6b467518f901c1c430b6eb99f546187cda7d304ad94a9899257ecabbda22231658ee7a3cf4fce182015c9a747c89f02558ad284ee54181d89a365909dc
   languageName: node
   linkType: hard
 
@@ -5740,7 +5716,6 @@ __metadata:
     "@snowpack/plugin-build-script": ^2.0.5
     "@snowpack/plugin-postcss": ^1.0.1
     "@snowpack/plugin-run-script": ^2.1.0
-    babel-plugin-inferno: ^6.1.1
     babel-plugin-macros: ^2.8.0
     babel-plugin-transform-rename-import: ^2.3.0
     babel-preset-solid: ^0.18.14
