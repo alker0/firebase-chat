@@ -12,12 +12,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@alker/ts-filtered-css-class@file:./src/lib/ts-filtered-css-class::locator=firebase-chat%40workspace%3A.":
+"@alker/solid-js-types@file:./src/lib/packages/solid-js-types::locator=firebase-chat%40workspace%3A.":
   version: 0.0.1
-  resolution: "@alker/ts-filtered-css-class@file:./src/lib/ts-filtered-css-class::locator=firebase-chat%40workspace%3A."
+  resolution: "@alker/solid-js-types@file:./src/lib/packages/solid-js-types::locator=firebase-chat%40workspace%3A."
   peerDependencies:
-    clsx: 1.x
-  checksum: 35d48920cd64d1810c1e41f5240dea4ec5dd27fcb67cf6d80c33dd265a74d135e0e3bcd21b19089307e68ff0a0e2a5fdf93d1e5b6d413e7cf6b504627664e602
+    solid-js: 0.x
+  checksum: 7c8adfaef20f5d494b2025209bfb94182bb1576952db9f98a3aa16b3b0367b0a513681090840967dd9b7cbd149db946231da1ac49174b07faa195ad4f2221c1e
+  languageName: node
+  linkType: hard
+
+"@alker/solid-styled-tsx@file:./src/lib/packages/solid-styled-tsx::locator=firebase-chat%40workspace%3A.":
+  version: 0.0.1
+  resolution: "@alker/solid-styled-tsx@file:./src/lib/packages/solid-styled-tsx::locator=firebase-chat%40workspace%3A."
+  peerDependencies:
+    solid-js: 0.x
+    solid-styled-jsx: 0.x
+    styled-jsx: 3.x
+  checksum: 3e6878fdc8f40865ff4c2c7faf784db7d53cbc1dbc0621fba0682f1cebea3072f3bbc5710c08f5ba48300c0cefd06223b27a1ad17853268c714099400b70935b
   languageName: node
   linkType: hard
 
@@ -4005,10 +4016,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"clsx@file:./src/lib/clsx-cdn::locator=firebase-chat%40workspace%3A.":
+"clsx@file:./src/lib/packages/clsx-cdn::locator=firebase-chat%40workspace%3A.":
   version: 1.1.1
-  resolution: "clsx@file:./src/lib/clsx-cdn::locator=firebase-chat%40workspace%3A."
-  checksum: d17af73ef8205ef55a965519273b9d0ce947d7bdd066a1d8cddc834b62cba3a378e561478c6e3a2f7cf5336c99fed1d343f87c7e74a319a426fe7dd86c6a161d
+  resolution: "clsx@file:./src/lib/packages/clsx-cdn::locator=firebase-chat%40workspace%3A."
+  checksum: ff754a460defd89ef952b05754a90982101b648c2ac32eda5421437b172532ed13ca9cd4040ea3fd91ae319145c8a95280a36c82d9a0ae02149fe23c42b98e4e
   languageName: node
   linkType: hard
 
@@ -5313,23 +5324,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"execa@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "execa@npm:2.1.0"
-  dependencies:
-    cross-spawn: ^7.0.0
-    get-stream: ^5.0.0
-    is-stream: ^2.0.0
-    merge-stream: ^2.0.0
-    npm-run-path: ^3.0.0
-    onetime: ^5.1.0
-    p-finally: ^2.0.0
-    signal-exit: ^3.0.2
-    strip-final-newline: ^2.0.0
-  checksum: feed94b80eaeed8e1dde1a9c67aa08ae9846d88dac00c41d12e5c00e2b2905e07bef7724c2fed4ced7e59f09ebe1ffbc0eff2f3b1385cf7df24fc623f11a616a
-  languageName: node
-  linkType: hard
-
 "execa@npm:^4.0.0, execa@npm:^4.0.3":
   version: 4.0.3
   resolution: "execa@npm:4.0.3"
@@ -5705,7 +5699,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "firebase-chat@workspace:."
   dependencies:
-    "@alker/ts-filtered-css-class": "file:./src/lib/ts-filtered-css-class"
+    "@alker/solid-js-types": "file:./src/lib/packages/solid-js-types"
+    "@alker/solid-styled-tsx": "file:./src/lib/packages/solid-styled-tsx"
     "@babel/core": ^7.11.1
     "@babel/plugin-proposal-class-properties": ^7.10.4
     "@babel/plugin-proposal-object-rest-spread": ^7.11.0
@@ -5717,12 +5712,11 @@ __metadata:
     "@snowpack/plugin-postcss": ^1.0.1
     "@snowpack/plugin-run-script": ^2.1.0
     babel-plugin-macros: ^2.8.0
-    babel-plugin-transform-rename-import: ^2.3.0
     babel-preset-solid: ^0.18.14
-    clsx: "file:./src/lib/clsx-cdn"
+    clsx: "file:./src/lib/packages/clsx-cdn"
     connect: ^3.7.0
     firebase: ^7.19.0
-    firebase-tools: ^8.8.1
+    firebase-tools: ^8.9.0
     jest: ^26.4.1
     jest-github-actions-reporter: ^1.0.2
     npm-run-all: ^4.1.5
@@ -5737,19 +5731,19 @@ __metadata:
     posthtml-extend: ^0.5.0
     posthtml-include: ^1.4.3
     prettier: ^2.0.5
-    pretty-quick: ^2.0.2
+    pretty-quick: ^3.0.0
     purgecss: ^2.3.0
     purgecss-from-js: ^1.0.0
     snowpack: ^2.8.0
     solid-js: ^0.18.14
     solid-styled-jsx: ^0.18.14
-    solid-styled-tsx: "file:./src/lib/solid-styled-tsx"
     styled-jsx: ^3.3.0
     stylelint: ^13.6.1
     stylelint-config-prettier: ^8.0.2
     stylelint-config-standard: ^20.0.0
     stylelint-prettier: ^1.1.2
     superstatic: ^7.0.0
+    type-filtered-clsx: "file:./src/lib/packages/type-filtered-clsx"
     typescript: ^4.0.2
     websocket-driver: ^0.7.4
   dependenciesMeta:
@@ -5758,9 +5752,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"firebase-tools@npm:^8.8.1":
-  version: 8.8.1
-  resolution: "firebase-tools@npm:8.8.1"
+"firebase-tools@npm:^8.9.0":
+  version: 8.9.0
+  resolution: "firebase-tools@npm:8.9.0"
   dependencies:
     "@google-cloud/pubsub": ^1.7.0
     JSONStream: ^1.2.1
@@ -5814,7 +5808,7 @@ __metadata:
     ws: ^7.2.3
   bin:
     firebase: ./lib/bin/firebase.js
-  checksum: 5d6467bc74c87bfec1d213cc09567d986904d7333bed752bc3fef6729e00a6d76aaf74b91ffea32ee22942786069e71caa49907cd6ec2918671d7785f1b3c1f1
+  checksum: 11277db61370949dcae996260222b420f8eed483bbd8815af5e76421d695b0d7a21a3be42a97ac24901389ae0efa7c8f45526c5dffc70984472d6ece5fe0f966
   languageName: node
   linkType: hard
 
@@ -9261,7 +9255,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mri@npm:^1.1.4":
+"mri@npm:^1.1.5":
   version: 1.1.6
   resolution: "mri@npm:1.1.6"
   checksum: 87a09465063063da6d69d98ac75a6206a597c7533561c74e8aab5e6490ebe2a0e94c583fb6e02429e1f4291286a9549eb6a9699c83f5bad252c2c9b4eada97da
@@ -9583,15 +9577,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"npm-run-path@npm:^3.0.0":
-  version: 3.1.0
-  resolution: "npm-run-path@npm:3.1.0"
-  dependencies:
-    path-key: ^3.0.0
-  checksum: 52260837a214c88e5424dec66344b1c3f0b7e374cdea82158885998845d7a9fb16bff46d8d13bad4bed39aae5365d81e0bd56e0c347446a9db5b5c167e8b7892
-  languageName: node
-  linkType: hard
-
 "npm-run-path@npm:^4.0.0, npm-run-path@npm:^4.0.1":
   version: 4.0.1
   resolution: "npm-run-path@npm:4.0.1"
@@ -9858,13 +9843,6 @@ __metadata:
   version: 1.0.0
   resolution: "p-finally@npm:1.0.0"
   checksum: 01f49b2d9c67573b3a1cb253cd9e1ecf5c912b6ba5de8824118bbc8d647bfa6296820b5a536e91ec68a54395d4e1c58de9a381ded3b688074fb446a8fe351931
-  languageName: node
-  linkType: hard
-
-"p-finally@npm:^2.0.0":
-  version: 2.0.1
-  resolution: "p-finally@npm:2.0.1"
-  checksum: d90a9b6b51e2cee60131564b279e4ebaf92c2b05f1afb35477b8a1b7eb77b9c4d6d8c5dac329b45fc85b0efcfdf3a2047279dedb4c1e83fd3fd24eefa3439cfe
   languageName: node
   linkType: hard
 
@@ -10559,21 +10537,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pretty-quick@npm:^2.0.2":
-  version: 2.0.2
-  resolution: "pretty-quick@npm:2.0.2"
+"pretty-quick@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "pretty-quick@npm:3.0.0"
   dependencies:
-    chalk: ^2.4.2
-    execa: ^2.1.0
+    chalk: ^3.0.0
+    execa: ^4.0.0
     find-up: ^4.1.0
     ignore: ^5.1.4
-    mri: ^1.1.4
+    mri: ^1.1.5
     multimatch: ^4.0.0
   peerDependencies:
-    prettier: ">=1.8.0"
+    prettier: ">=2.0.0"
   bin:
     pretty-quick: bin/pretty-quick.js
-  checksum: 77d6db39464b9f4af1beeb30d1fa86c6e0376a530969248025b7ce0cba38a45ec61b375b89a8b5caf73e48a32ca5b734a405f39d68d5c63c968615d32c5cd02d
+  checksum: 3e8c721be94147f5efd63ea239c00d246890e149fc1afbb373737fa4d915fa515c94f40d4e046fbc2b6871b7abedfd05229f832df6ec27d3de51e4b81cea9fec
   languageName: node
   linkType: hard
 
@@ -11838,17 +11816,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"solid-styled-tsx@file:./src/lib/solid-styled-tsx::locator=firebase-chat%40workspace%3A.":
-  version: 0.0.1
-  resolution: "solid-styled-tsx@file:./src/lib/solid-styled-tsx::locator=firebase-chat%40workspace%3A."
-  peerDependencies:
-    solid-js: 0.x
-    solid-styled-jsx: 0.x
-    styled-jsx: 3.x
-  checksum: 01a76ced0d014a395e9621208ac47126e6e3ee218ad8b1bff6b5389468176a96254b46870a91deb808503f80b3f6e7dbf94466698e590daec6ed5f227cfafc44
-  languageName: node
-  linkType: hard
-
 "source-map-resolve@npm:^0.5.0":
   version: 0.5.3
   resolution: "source-map-resolve@npm:0.5.3"
@@ -13000,6 +12967,15 @@ __metadata:
   version: 0.8.1
   resolution: "type-fest@npm:0.8.1"
   checksum: f8c4b4249f52e8bea7a4fc55b3653c96c2d547240e4c772e001d02b7cc38b8c3eb493ab9fbe985a76a203cd1aa7044776b728a71ba12bf36e7131f989597885b
+  languageName: node
+  linkType: hard
+
+"type-filtered-clsx@file:./src/lib/packages/type-filtered-clsx::locator=firebase-chat%40workspace%3A.":
+  version: 0.0.1
+  resolution: "type-filtered-clsx@file:./src/lib/packages/type-filtered-clsx::locator=firebase-chat%40workspace%3A."
+  peerDependencies:
+    clsx: 1.x
+  checksum: 55a5c0bddbf1a237b6b7d6c1c80f9e79bb9d44c3771187ccac91be6563fabd27fcc40283391d8f53a6fd8b4f81e5ee0e513642f5b9e8b93ad9d848fde0ac563f
   languageName: node
   linkType: hard
 

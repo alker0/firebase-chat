@@ -46,12 +46,12 @@
   "include": [
     "./src/**/*",
     "node_modules/solid-js/dist/types/rendering/jsx.d.ts",
-    "node_modules/@alker/solid-styled-tsx/styled-jsx.d.ts"
+    "node_modules/@alker/solid-styled-tsx/typings/*",
+    "node_modules/@alker/solid-js-types/typings/*",
+    "node_modules/type-filtered-clsx/clsx.d.ts"
   ],
 
   "exclude": [
-    "node_modules",
-    "./src/lib/solid-styled-tsx/*",
-    "./src/lib/ts-filtered-css-class/*"
+    "node_modules"
   ],
 }

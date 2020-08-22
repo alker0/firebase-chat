@@ -9,18 +9,22 @@ module.exports = {
     '**/*.skip*',
     '**/.pnp.js',
     '**/.gitkeep',
-    '**/lib/inferno-*',
-    '**/lib/ferp/*',
-    '**/lib/styled-jsx/*'
   ],
   plugins: [
-    ['@snowpack/plugin-run-script',
-      {cmd: 'tsc --noEmit', watch: '$1 --watch'},
+    [
+      '@snowpack/plugin-run-script',
+      { cmd: 'tsc --noEmit', watch: '$1 --watch' },
     ],
     '@snowpack/plugin-babel',
-    ['@snowpack/plugin-build-script',{cmd: 'postcss', input: ['.pcss'], output: ['.css']}],
+    [
+      '@snowpack/plugin-build-script',
+      { cmd: 'postcss', input: ['.pcss'], output: ['.css'] },
+    ],
     ['./plugins/snowpack-firebase-proxy.js'],
-    ['./plugins/snowpack-posthtml.js', {inputDir: './src/templates', config: require('./posthtml.config')}]
+    [
+      './plugins/snowpack-posthtml.js',
+      { inputDir: './src/templates', config: require('./posthtml.config') },
+    ],
   ],
   mount: {
     'web_modules': '/web_modules',
@@ -32,28 +36,24 @@ module.exports = {
     'src/app/index': '/js',
     'src/app/404': '/js',
     'src/lib': '/lib',
-    'src/components': '/components'
+    'src/components': '/components',
   },
   alias: {
     // 'inferno': 'inferno/dist/index.dev.esm.js',// only development
     '@lib': './src/lib',
-    '@components': './src/components',
-    '@webModules': './web_modules'
+    '@components/raw': './src/components/raw',
+    '@components/cirrus': './src/components/cirrus/src',
+    '@webModules': './web_modules',
   },
   proxy: {
-    '/__/firebase': 'https://www.gstatic.com/firebasejs'
+    '/__/firebase': 'https://www.gstatic.com/firebasejs',
   },
   installOptions: {
     installTypes: true,
-    externalPackage: [
-      'https://cdn.skypack.dev',
-      'styled-jsx/css',
-      'firebase'
-    ]
+    externalPackage: ['https://cdn.skypack.dev', 'styled-jsx/css', 'firebase'],
   },
-  install: [
-  ],
+  install: [],
   devOptions: {
-    bundle: false
-  }
-}
+    bundle: false,
+  },
+};
