@@ -18,4 +18,3 @@ export const sessionStateChangedHandler = (user: UserState) =>
     isLoggedIn: Boolean(user),
     currentUser: user,
   })
-

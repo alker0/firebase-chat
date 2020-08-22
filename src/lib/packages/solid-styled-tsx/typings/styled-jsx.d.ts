@@ -1,11 +1,3 @@
-declare global {
-  import 'solid-js/types/rendering/jsx';
-  interface StyleHTMLAttributes<T> extends JSX.HTMLAttributes<T> {
-    jsx?: boolean,
-    global?: boolean
-  }
-}
-
 declare module 'styled-jsx/css' {
   type CSS = {
     (chunks: TemplateStringsArray, ...args: any[]): string

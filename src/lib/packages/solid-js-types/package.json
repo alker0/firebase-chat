@@ -1,0 +1,9 @@
+{
+  "name": "@alker/solid-js-types",
+  "version": "0.0.1",
+  "license": "MIT",
+  "main": "",
+  "peerDependencies": {
+    "solid-js": "0.x"
+  }
+}

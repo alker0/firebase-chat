@@ -1,12 +1,11 @@
-import { ComponentCreater } from '../../typings/component-creater'
-import { createFilteredClassFunction } from '@lib/filtered-class-function'
-import { wrapCss } from '@lib/solid-styled-jsx'
+import { ComponentCreater } from '../../../typings/component-creater'
 import { css } from 'styled-jsx/css'
-import { createSignal, setDefaults, For } from 'solid-js'
+import { createSignal, setDefaults, For, createRoot } from 'solid-js'
+import clsx, { Clsx } from 'clsx'
 
-const cn = createFilteredClassFunction<Cirrus | 'clicked'>()
+const cn: Clsx<Cirrus | 'clicked'> = clsx
 
-const { className: overlay, styles } = wrapCss(() => css.resolve`
+const { className: overlay, styles } = createRoot(() => css.resolve`
   div {
     width: 100%;
     height: 100%;
@@ -37,10 +36,8 @@ export const DropDownMenu: ComponentCreater<
   createComponent: (context = defaultContext) => {
     const fixedContext: DropDownMenu.FilledContext = {...defaultContext, ...context}
 
-    return propsArg => {
-      setDefaults(propsArg, defaultProps)
-
-      const props = propsArg as DropDownMenu.FilledProps
+    return props => {
+      setDefaults(props, defaultProps)
 
       const [shown, setShown] = createSignal(false)
 
@@ -50,7 +47,7 @@ export const DropDownMenu: ComponentCreater<
           <a class={cn('nav-dropdown-link', shown() && 'clicked')} onClick={toggleShown}>{fixedContext.buttonText}</a>
           <div class={overlay} style={{display: shown() ? 'block' : 'none'}} onClick={toggleShown}></div>
           <ul class={cn('dropdown-menu', shown() && 'dropdown-shown')} role="menu">
-            <For each={(props as DropDownMenu.FilledProps).menuItems}>
+            <For each={props.menuItems}>
               {item => <li>{item()}</li>}
             </For>
           </ul>

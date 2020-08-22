@@ -24,10 +24,10 @@
         "node_modules/*",
         // "web_modules/*.js"
       ],
-      // "https://cdn.skypack.dev/inferno*": ["src/typings/inferno-cdn"],
       "solid-js/*": ["solid-js/types/*"],
       "@lib/*": ["src/lib/*"],
-      "@components/*": ["src/components/*"]
+      "@components/*": ["src/components/*"],
+      "@components/cirrus/*": ["src/components/cirrus/src/*"]
     },
 
     // Skip npm module type check.
@@ -45,11 +45,13 @@
 
   "include": [
     "./src/**/*",
-    // "node_modules/inferno/dist/index.d.ts",
     "node_modules/solid-js/dist/types/rendering/jsx.d.ts",
+    "node_modules/@alker/solid-styled-tsx/typings/*",
+    "node_modules/@alker/solid-js-types/typings/*",
+    "node_modules/type-filtered-clsx/clsx.d.ts"
   ],
 
   "exclude": [
-    "node_modules",
+    "node_modules"
   ],
 }
