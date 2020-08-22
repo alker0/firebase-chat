@@ -37,24 +37,7 @@
       </div>
     </div>
 
-    <div id="signup-form">
-      <!-- <div class="row">
-        <div id="signup-email" class="form-group">
-          <div class="form-group-label label-small text-info">Email:</div>
-          <div class="form-group-input input-small"></div>
-          <input type="text" name="email" class="form-group-input input-small"></input>
-        </div>
-      </div>
-      <div class="row">
-        <div id="signup-password" class="form-group">
-          <div class="form-group-label label-small text-info">Password:</div>
-          <input type="text" name="password" class="form-group-input input-small"></input>
-        </div>
-      </div>
-      <div class="row">
-        <button id="signup-button" class="signup btn-small">Signup!</button>
-      </div> -->
-    </div>
+    <div id="signup-form"></div>
 
     <div id="message">
       <h2>Welcome</h2>
