@@ -3,7 +3,6 @@
   "version": "0.0.1",
   "license": "MIT",
   "main": "",
-  "types": "styled-jsx.d.ts",
   "peerDependencies": {
     "solid-js": "0.x",
     "solid-styled-jsx": "0.x",
