@@ -150,6 +150,7 @@
   },
   "dependencies": {
     "clsx": "^1.1.1",
+    "firebaseui": "^4.6.1",
     "solid-js": "^0.18.14",
     "solid-styled-jsx": "^0.18.14",
     "styled-jsx": "^3.3.0"

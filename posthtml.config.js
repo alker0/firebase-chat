@@ -20,7 +20,9 @@ module.exports = {
       firebaseInitPath: '/lib/firebase-init-app.js',
       firebaseSdk: ['auth', 'database', 'storage'],
       useAnalytics: true,
-      firebaseAnalyticsPath: '/lib/firebase-init-analytics.js'
+      firebaseAnalyticsPath: '/lib/firebase-init-analytics.js',
+      useFirebaseUI: true,
+      firebaseUIVersion: '3.5.2'
     }}),
   ],
 }

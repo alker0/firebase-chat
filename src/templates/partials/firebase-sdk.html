@@ -19,3 +19,8 @@
     <script src="{{ firebaseInitPath }}"></script>
   </case>
 </switch>
+
+<if condition="useFirebaseUI">
+  <script src="https://cdn.firebase.com/libs/firebaseui/{{ firebaseUIVersion }}/firebaseui.js"></script>
+  <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/{{ firebaseUIVersion }}/firebaseui.css" />
+</if>
