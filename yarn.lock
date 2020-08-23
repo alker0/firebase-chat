@@ -2200,6 +2200,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rollup/plugin-inject@npm:^4.0.2":
+  version: 4.0.2
+  resolution: "@rollup/plugin-inject@npm:4.0.2"
+  dependencies:
+    "@rollup/pluginutils": ^3.0.4
+    estree-walker: ^1.0.1
+    magic-string: ^0.25.5
+  peerDependencies:
+    rollup: ^1.20.0 || ^2.0.0
+  checksum: c2d541fac5dfd927915da62bce34e3af3e0b467167bcda4eb80f932856bb14742c1fe3821c8b585cfc1c770610a6d91b33899a49c910befc38f2c8e8f2b53814
+  languageName: node
+  linkType: hard
+
 "@rollup/plugin-json@npm:^4.0.0":
   version: 4.1.0
   resolution: "@rollup/plugin-json@npm:4.1.0"
@@ -2227,19 +2240,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rollup/plugin-replace@npm:^2.1.0":
-  version: 2.3.3
-  resolution: "@rollup/plugin-replace@npm:2.3.3"
-  dependencies:
-    "@rollup/pluginutils": ^3.0.8
-    magic-string: ^0.25.5
-  peerDependencies:
-    rollup: ^1.20.0 || ^2.0.0
-  checksum: d08a514b8f446a3fe3db7e9de7d1a57c4aaeaaa3d6f70c2e18925d893ed81480dbfd29fe939f61c1ef31194b036ab7b1df22a744ffd33196335f9fa1925d3c22
-  languageName: node
-  linkType: hard
-
-"@rollup/pluginutils@npm:^3.0.8, @rollup/pluginutils@npm:^3.1.0":
+"@rollup/pluginutils@npm:^3.0.4, @rollup/pluginutils@npm:^3.0.8, @rollup/pluginutils@npm:^3.1.0":
   version: 3.1.0
   resolution: "@rollup/pluginutils@npm:3.1.0"
   dependencies:
@@ -2284,42 +2285,43 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@snowpack/plugin-babel@npm:^2.0.3":
-  version: 2.0.3
-  resolution: "@snowpack/plugin-babel@npm:2.0.3"
+"@snowpack/plugin-babel@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "@snowpack/plugin-babel@npm:2.1.0"
   dependencies:
     "@babel/core": ^7.10.5
-  checksum: f1b6d7f98c0e02279551482d13a5e9af13a07e01150bb4da7736eb548d4f4f4455bf4529e6c325d0e47dee2c816802fd113b2702ca5779c2a42f5e8cce51cab8
+    workerpool: ^6.0.0
+  checksum: f8a6ef6a3dd43fb2d620e451133160d7d17c2dd28e8e9ec17a2b303934d1705f65ee6de30c07c560669f083c60e99202487514e4c6391972c9db39e7ccbf3864
   languageName: node
   linkType: hard
 
-"@snowpack/plugin-build-script@npm:^2.0.5":
-  version: 2.0.5
-  resolution: "@snowpack/plugin-build-script@npm:2.0.5"
+"@snowpack/plugin-build-script@npm:^2.0.6":
+  version: 2.0.6
+  resolution: "@snowpack/plugin-build-script@npm:2.0.6"
   dependencies:
     execa: ^4.0.3
     npm-run-path: ^4.0.1
-  checksum: df8584d33e6b50d91c303d78df0b4098bfcfb63e5c48cfc69cd4a70799d0572914b6d491ca30bce97f7edf01943d6d326e9a04396ad401d4258bc255f747b672
+  checksum: 223662fef2904ac86e476d5fb4809e3a5d02243e1837c283bab7c898f5878053bbeb60447b48f8dd36fc315dfe4b54671eeb5c5f2417544762abbee5bb1a3fd2
   languageName: node
   linkType: hard
 
-"@snowpack/plugin-postcss@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "@snowpack/plugin-postcss@npm:1.0.1"
+"@snowpack/plugin-postcss@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "@snowpack/plugin-postcss@npm:1.0.2"
   peerDependencies:
     postcss: "*"
     postcss-cli: "*"
-  checksum: b65d4e9cb2fbef4618b7a0ff14df7a096959413837b98e153821c3ba9ed0db443b437d4485f5cb2f8e0f9e478bbf268a00b875fec54022b3e6036bf411699f07
+  checksum: b0115619708f412d2f0db3f611a990c5b3614d4b019b1528c4a01c34c4020bfc59bfdabfde6d8a509300a92f33a2d5bef2c959180f6cebe9d64730f269a276bc
   languageName: node
   linkType: hard
 
-"@snowpack/plugin-run-script@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "@snowpack/plugin-run-script@npm:2.1.0"
+"@snowpack/plugin-run-script@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "@snowpack/plugin-run-script@npm:2.1.1"
   dependencies:
     execa: ^4.0.3
     npm-run-path: ^4.0.1
-  checksum: bb65d8aebc55d05a92d1b0518e59dee637e2dbece6facc0da7e82ccb17b7e61f72aafd2e58e3e823a83e6fd33a9ed19090627329cd26132a3102249992cf823d
+  checksum: fbe9735b727d435305233899609335c3edc0c520daa736bcb6abdf482f9ec3c9157d7403d92da17bd9e306a4c0017806583daf03827000c16733957c6835223a
   languageName: node
   linkType: hard
 
@@ -5714,10 +5716,10 @@ __metadata:
     "@babel/preset-env": ^7.11.0
     "@babel/preset-typescript": ^7.10.4
     "@fullhuman/postcss-purgecss": ^2.3.0
-    "@snowpack/plugin-babel": ^2.0.3
-    "@snowpack/plugin-build-script": ^2.0.5
-    "@snowpack/plugin-postcss": ^1.0.1
-    "@snowpack/plugin-run-script": ^2.1.0
+    "@snowpack/plugin-babel": ^2.1.0
+    "@snowpack/plugin-build-script": ^2.0.6
+    "@snowpack/plugin-postcss": ^1.0.2
+    "@snowpack/plugin-run-script": ^2.1.1
     babel-plugin-macros: ^2.8.0
     babel-preset-solid: ^0.18.14
     clsx: ^1.1.1
@@ -5735,14 +5737,14 @@ __metadata:
     postcss-ts-classnames: ^0.1.2
     posthtml: ^0.13.3
     posthtml-cli: ^0.7.5
-    posthtml-expressions: ^1.4.5
+    posthtml-expressions: ^1.4.6
     posthtml-extend: ^0.5.0
     posthtml-include: ^1.4.3
     prettier: ^2.0.5
     pretty-quick: ^3.0.0
     purgecss: ^2.3.0
     purgecss-from-js: ^1.0.0
-    snowpack: ^2.8.0
+    snowpack: ^2.9.0
     solid-js: ^0.18.14
     solid-styled-jsx: ^0.18.14
     styled-jsx: ^3.3.0
@@ -10431,7 +10433,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"posthtml-expressions@npm:^1.3.2, posthtml-expressions@npm:^1.4.5":
+"posthtml-expressions@npm:^1.3.2":
   version: 1.4.5
   resolution: "posthtml-expressions@npm:1.4.5"
   dependencies:
@@ -10439,6 +10441,17 @@ __metadata:
     posthtml-parser: ^0.4.2
     posthtml-render: ^1.2.2
   checksum: ca3b95d322322ee0006d246d71e43ffdec471798d5c51be94efeeff5cfd36bb508708a17b2c36041f94fb6b16a420f04bec737c1e68a2d87d473a3a17f39d92a
+  languageName: node
+  linkType: hard
+
+"posthtml-expressions@npm:^1.4.6":
+  version: 1.4.6
+  resolution: "posthtml-expressions@npm:1.4.6"
+  dependencies:
+    fclone: ^1.0.11
+    posthtml-parser: ^0.5.0
+    posthtml-render: ^1.2.3
+  checksum: 9a5cb96cdf75502239ccdc3bb1c5a42066805c20007128fdb69d17ddd9ffaa3aec165c790766cfba4bc550e73b9b46de8704f104dee95277758aef1d8f7dae84
   languageName: node
   linkType: hard
 
@@ -11789,18 +11802,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"snowpack@npm:^2.8.0":
-  version: 2.8.0
-  resolution: "snowpack@npm:2.8.0"
+"snowpack@npm:^2.9.0":
+  version: 2.9.0
+  resolution: "snowpack@npm:2.9.0"
   dependencies:
     "@babel/plugin-syntax-import-meta": ^7.10.4
     "@rollup/plugin-alias": ^3.0.1
     "@rollup/plugin-commonjs": ^15.0.0
+    "@rollup/plugin-inject": ^4.0.2
     "@rollup/plugin-json": ^4.0.0
     "@rollup/plugin-node-resolve": ^9.0.0
-    "@rollup/plugin-replace": ^2.1.0
-    "@snowpack/plugin-build-script": ^2.0.5
-    "@snowpack/plugin-run-script": ^2.1.0
+    "@snowpack/plugin-build-script": ^2.0.6
+    "@snowpack/plugin-run-script": ^2.1.1
     cacache: ^15.0.0
     cachedir: ^2.3.0
     chokidar: ^3.4.0
@@ -11839,7 +11852,7 @@ __metadata:
   bin:
     snowpack: dist-node/index.bin.js
     sp: dist-node/index.bin.js
-  checksum: 0ed2ccf6465d22687b73d1a1b9db8746cbc5a519f5f849f507af7a4d96b9746c0d711347ba5cb3ea5c9b371b72c74cb63c52323f62272aaf044b5ba398edb8f2
+  checksum: 30ef2a410b041acab5736a47ebbc2ec087c85a324131b0be67677a541543bbac84157aa6fea007318c0d5eab3abb37ecc0aba1c3da9230128688522ecfe5acc0
   languageName: node
   linkType: hard
 
@@ -13720,6 +13733,13 @@ typescript@^4.0.2:
   version: 1.2.3
   resolution: "word-wrap@npm:1.2.3"
   checksum: 6526abd75d4409c76d1989cf2fbf6080b903db29824be3d17d0a0b8f6221486c76a021174eda2616cf311199787983c34bae3c5e7b51d2ad7476f2066cddb75a
+  languageName: node
+  linkType: hard
+
+"workerpool@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "workerpool@npm:6.0.0"
+  checksum: 4dd5ba3ab4b42d498ee045473585ce455b4dc63dc9a0664e6770fbbc2bc31ae5c7081157bf60d95ab067c42dca936dc3d5c48bd75f714ad3e21095cf46d13c64
   languageName: node
   linkType: hard
 
