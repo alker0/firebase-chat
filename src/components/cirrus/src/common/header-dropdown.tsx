@@ -27,24 +27,24 @@ const { className: overlay, styles: overlayStyles } = createRoot(() => css.resol
 
 const cn: Clsx<Cirrus | LinkButtonClass> = clsx
 
-const defaultContext: DropDownMenu.FilledContext = {
+const defaultContext: HeaderMenu.FilledContext = {
   buttonText: 'Click Me',
 }
 
 const DO_NOTHING = () => {}
 
-const defaultProps: DropDownMenu.FilledProps = {
+const defaultProps: HeaderMenu.FilledProps = {
   buttonPlaceWhenNarrow: document.querySelector('.header-brand') ?? undefined,
   menuItems: [],
   onCleanup: DO_NOTHING
 }
 
-export const DropDownMenu: ComponentCreater<
-    DropDownMenu.Context,
-    DropDownMenu.Props
+export const HeaderMenu: ComponentCreater<
+    HeaderMenu.Context,
+    HeaderMenu.Props
   > = {
   createComponent: (context = defaultContext) => {
-    const fixedContext: DropDownMenu.FilledContext = {...defaultContext, ...context}
+    const fixedContext: HeaderMenu.FilledContext = {...defaultContext, ...context}
 
     return props => {
       setDefaults(props, defaultProps)
@@ -58,7 +58,6 @@ export const DropDownMenu: ComponentCreater<
       return <>
           <Portal mount={props.buttonPlaceWhenNarrow}>
             <div class={cn('nav-item', 'nav-btn', headerNavShown() && 'active')} onClick={toggleHeaderNavShown}>
-              {(() => {console.log('portal', props.buttonPlaceWhenNarrow); return ''})()}
               <span></span>
               <span></span>
               <span></span>
@@ -83,7 +82,7 @@ export const DropDownMenu: ComponentCreater<
   }
 }
 
-export declare module DropDownMenu {
+export declare module HeaderMenu {
   export interface Context {
     buttonText?: string,
   }

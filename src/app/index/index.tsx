@@ -1,13 +1,13 @@
 import 'solid-styled-jsx'
 import { render } from 'solid-js/dom'
-import { DropDown } from '@lib/auth-header-menu'
+import { HeaderMenu } from '@lib/auth-header-menu'
 import { sessionStateChangedHandler } from '@lib/solid-firebase-auth'
 // import { SighUpForm, SignUpSubmit, emailRegex, passwordRegex } from '@lib/auth-login-form'
 
 const dropDownTarget = document.getElementById('header-menu')
 
 if (dropDownTarget) {
-  render(() => <DropDown />, dropDownTarget)
+  render(() => <HeaderMenu />, dropDownTarget)
 }
 
 // const mockEmail = 'procyon@kyj.biglobe.ne.jp'
