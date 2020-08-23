@@ -1,4 +1,4 @@
-import { DropDownMenu } from '@components/cirrus/base/molecules/dropdown'
+import { DropDownMenu } from '@components/cirrus/common/header-dropdown'
 import { SessionState, sessionState } from "./solid-firebase-auth"
 import { createMemo } from "solid-js"
 

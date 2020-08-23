@@ -4,7 +4,7 @@ import { DropDown } from '@lib/auth-header-menu'
 import { sessionStateChangedHandler } from '@lib/solid-firebase-auth'
 import { SighUpForm, SignUpSubmit, emailRegex, passwordRegex } from '@lib/auth-login-form'
 
-const dropDownTarget = document.getElementById('dropdown-click')
+const dropDownTarget = document.getElementById('header-menu')
 
 if (dropDownTarget) {
   render(() => <DropDown />, dropDownTarget)

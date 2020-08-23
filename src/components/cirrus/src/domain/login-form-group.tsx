@@ -107,18 +107,18 @@ export const SignUpForm: ComponentCreater<
         [toSubmit]: DO_NOTHING
       })
 
-      createEffect(() => {
-        console.log('Effect',
-        '\n',
-        focuser[toEmail],
-        '\n',
-        focuser[toPassword],
-        '\n',
-        focuser[toConfirm],
-        '\n',
-        focuser[toSubmit]
-        )
-      })
+      // createEffect(() => {
+      //   console.log('Effect',
+      //   '\n',
+      //   focuser[toEmail],
+      //   '\n',
+      //   focuser[toPassword],
+      //   '\n',
+      //   focuser[toConfirm],
+      //   '\n',
+      //   focuser[toSubmit]
+      //   )
+      // })
 
       let emailRef: HTMLInputElement | undefined
       let passwordRef: HTMLInputElement | undefined
