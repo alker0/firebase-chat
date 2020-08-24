@@ -1,7 +1,7 @@
 import { ComponentCreater } from '../../typings/component-creater'
 import clsx, { Clsx } from 'clsx'
 import { css } from 'styled-jsx/css'
-import { afterEffects, createEffect, createRoot, createState, sample, setDefaults } from 'solid-js'
+import { afterEffects, createEffect, createRoot, createState, setDefaults } from 'solid-js'
 
 // export const emailRegex = '^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$'
 export const emailRegex = '^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$'
