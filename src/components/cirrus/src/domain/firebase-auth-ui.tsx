@@ -1,4 +1,4 @@
-import { ComponentCreater } from '../../typings/component-creater'
+import { ComponentCreater, LazyComponent } from '../../typings/component-creater'
 import { css } from 'styled-jsx/css'
 import { afterEffects, createRoot, setDefaults } from 'solid-js'
 
@@ -15,7 +15,6 @@ const { styles } = createRoot(() => css.resolve`
     padding-top: 0;
   }
 `)
-
 
 const defaultProps: FirebaseAuthUI.FilledProps = {
   uiConfig: {
@@ -53,7 +52,8 @@ export const FirebaseAuthUI: ComponentCreater<
 
 export declare module FirebaseAuthUI {
   export interface Context {
-    ui: firebaseui.auth.AuthUI
+    ui: firebaseui.auth.AuthUI,
+    lazy?: boolean
   }
 
   export interface FilledContext extends Required<Context> {}
@@ -64,4 +64,3 @@ export declare module FirebaseAuthUI {
 
   export interface FilledProps extends Required<Props> {}
 }
-

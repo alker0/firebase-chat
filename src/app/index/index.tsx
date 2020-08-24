@@ -1,8 +1,9 @@
 import 'solid-styled-jsx'
-import { render } from 'solid-js/dom'
+import { render, Suspense } from 'solid-js/dom'
 import { HeaderMenu } from '@lib/auth-header-menu'
 import { sessionStateChangedHandler } from '@lib/solid-firebase-auth'
-import { FirebaseAuthUI } from '@components/cirrus/domain/firebase-auth-ui'
+import { createLazyFirebaseAuthUI } from '@lib/lazy-components/firebase-auth-ui'
+import { lazy } from 'solid-js'
 
 const dropDownTarget = document.getElementById('header-menu')
 
@@ -11,8 +12,7 @@ if (dropDownTarget) {
 }
 
 const ui = new firebaseui.auth.AuthUI(firebase.auth())
-
-const AuthUI = FirebaseAuthUI.createComponent({ ui })
+const LazyAuthUI = lazy(createLazyFirebaseAuthUI({ ui }))
 
 document.addEventListener('DOMContentLoaded', function() {
   // firebase.auth().onAuthStateChanged(user => { });
@@ -24,7 +24,9 @@ document.addEventListener('DOMContentLoaded', function() {
   const authTarget = document.getElementById('firebase-auth-container')
 
   if (authTarget) {
-    render(() => <AuthUI />, authTarget)
+    render(() => <Suspense fallback={<div>Loading...</div>}>
+      <LazyAuthUI></LazyAuthUI>
+    </Suspense>, authTarget)
   }
 
   try {
