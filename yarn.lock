@@ -2577,6 +2577,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/source-map-support@npm:^0":
+  version: 0.5.3
+  resolution: "@types/source-map-support@npm:0.5.3"
+  dependencies:
+    source-map: ^0.6.0
+  checksum: b91a22010f83efbcde37861af7d57fc7c62fef2510a6cb39ed3316ee31c6e76cf98445589a0cbb97b9262490b3e3d03748bdc5a1f640b3a03f6965d02eda82d4
+  languageName: node
+  linkType: hard
+
 "@types/stack-utils@npm:^1.0.1":
   version: 1.0.1
   resolution: "@types/stack-utils@npm:1.0.1"
@@ -5720,6 +5729,7 @@ __metadata:
     "@snowpack/plugin-build-script": ^2.0.6
     "@snowpack/plugin-postcss": ^1.0.2
     "@snowpack/plugin-run-script": ^2.1.1
+    "@types/source-map-support": ^0
     babel-plugin-macros: ^2.8.0
     babel-preset-solid: ^0.18.14
     clsx: ^1.1.1
@@ -5747,6 +5757,7 @@ __metadata:
     snowpack: ^2.9.0
     solid-js: ^0.18.14
     solid-styled-jsx: ^0.18.14
+    source-map-support: ^0.5.19
     styled-jsx: ^3.3.0
     stylelint: ^13.6.1
     stylelint-config-prettier: ^8.0.2
@@ -5756,9 +5767,6 @@ __metadata:
     type-filtered-clsx: "file:./src/lib/packages/type-filtered-clsx"
     typescript: ^4.0.2
     websocket-driver: ^0.7.4
-  dependenciesMeta:
-    open:
-      unplugged: true
   languageName: unknown
   linkType: soft
 
@@ -11888,7 +11896,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"source-map-support@npm:^0.5.6":
+"source-map-support@npm:^0.5.19, source-map-support@npm:^0.5.6":
   version: 0.5.19
   resolution: "source-map-support@npm:0.5.19"
   dependencies:

@@ -53,6 +53,7 @@
     "@snowpack/plugin-build-script": "^2.0.6",
     "@snowpack/plugin-postcss": "^1.0.2",
     "@snowpack/plugin-run-script": "^2.1.1",
+    "@types/source-map-support": "^0",
     "babel-plugin-macros": "^2.8.0",
     "babel-preset-solid": "^0.18.14",
     "connect": "^3.7.0",
@@ -76,6 +77,7 @@
     "purgecss": "^2.3.0",
     "purgecss-from-js": "^1.0.0",
     "snowpack": "^2.9.0",
+    "source-map-support": "^0.5.19",
     "stylelint": "^13.6.1",
     "stylelint-config-prettier": "^8.0.2",
     "stylelint-config-standard": "^20.0.0",
@@ -142,11 +144,6 @@
   },
   "installConfig": {
     "pnp": true
-  },
-  "dependenciesMeta": {
-    "open": {
-      "unplugged": true
-    }
   },
   "dependencies": {
     "clsx": "^1.1.1",
