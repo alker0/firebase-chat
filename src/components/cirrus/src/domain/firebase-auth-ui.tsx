@@ -24,9 +24,7 @@ const defaultProps: FirebaseAuthUI.FilledProps = {
   }
 }
 
-const assertFilled = (context?: FirebaseAuthUI.Context): context is FirebaseAuthUI.FilledContext => {
-  return Boolean(context)
-}
+function assertFilled(context: FirebaseAuthUI.Context | undefined): asserts context is FirebaseAuthUI.FilledContext { }
 
 export const FirebaseAuthUI: ComponentCreater<
     FirebaseAuthUI.Context,
@@ -34,10 +32,10 @@ export const FirebaseAuthUI: ComponentCreater<
   > = {
   createComponent: context => {
 
-    if(!assertFilled(context)) return _ => <div></div>
+    assertFilled(context)
 
     return propsArg => {
-      const props = assignProps(propsArg, defaultProps)
+      const props = assignProps({}, defaultProps, propsArg)
 
       let authRef: HTMLDivElement | undefined
 

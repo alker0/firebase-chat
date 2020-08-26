@@ -4,17 +4,15 @@ import { createState } from 'solid-js'
 export type UserState = User | null
 
 export interface SessionState {
-  isLoggedIn: boolean,
-  currentUser: UserState
+  readonly isLoggedIn: boolean,
+  readonly currentUser: UserState
 }
 
 export const [sessionState, setSessionState] = createState({
-  isLoggedIn: false,
-  currentUser: null as UserState
+  currentUser: null as UserState,
+  get isLoggedIn(): boolean { return Boolean(sessionState.currentUser) }
 })
 
-export const sessionStateChangedHandler = (user: UserState) =>
-  setSessionState({
-    isLoggedIn: Boolean(user),
-    currentUser: user,
-  })
+export const sessionStateChangedHandler = (user: UserState) =>{
+  setSessionState('currentUser', user)
+}

@@ -12,23 +12,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@alker/solid-js-types@file:./src/lib/packages/solid-js-types::locator=firebase-chat%40workspace%3A.":
-  version: 0.0.1
-  resolution: "@alker/solid-js-types@file:./src/lib/packages/solid-js-types::locator=firebase-chat%40workspace%3A."
+"@alker/solid-js-types@file:/home/node/projects/firebase-chat/src/lib/packages/solid-js-types::locator=firebase-chat%40workspace%3A.":
+  version: 0.1.0
+  resolution: "@alker/solid-js-types@file:/home/node/projects/firebase-chat/src/lib/packages/solid-js-types::locator=firebase-chat%40workspace%3A."
   peerDependencies:
-    solid-js: 0.x
-  checksum: 7c8adfaef20f5d494b2025209bfb94182bb1576952db9f98a3aa16b3b0367b0a513681090840967dd9b7cbd149db946231da1ac49174b07faa195ad4f2221c1e
+    solid-js: 0.19.x
+  checksum: 344e0660f1ca8a81c21e5b281d52167b734eaabf9603c84b6ae21212705185182a80ffa2b5e2740e5c1e62b76de99b3dd7a04b298a41651f92cd6e623abaa1e7
   languageName: node
   linkType: hard
 
-"@alker/solid-styled-tsx@file:./src/lib/packages/solid-styled-tsx::locator=firebase-chat%40workspace%3A.":
+"@alker/solid-styled-tsx@file:/home/node/projects/firebase-chat/src/lib/packages/solid-styled-tsx::locator=firebase-chat%40workspace%3A.":
   version: 0.0.1
-  resolution: "@alker/solid-styled-tsx@file:./src/lib/packages/solid-styled-tsx::locator=firebase-chat%40workspace%3A."
+  resolution: "@alker/solid-styled-tsx@file:/home/node/projects/firebase-chat/src/lib/packages/solid-styled-tsx::locator=firebase-chat%40workspace%3A."
   peerDependencies:
-    solid-js: 0.x
+    solid-js: ~0.18.0
     solid-styled-jsx: 0.x
     styled-jsx: 3.x
-  checksum: 3e6878fdc8f40865ff4c2c7faf784db7d53cbc1dbc0621fba0682f1cebea3072f3bbc5710c08f5ba48300c0cefd06223b27a1ad17853268c714099400b70935b
+  checksum: c28760ee57b5beef231fe7d86fc496e098214c20938c69e5f608e0d550bc65e7a880d5470d9fd3a4c7bf04a08d2401ce0c7f52d3a8bca974fb82b223cb4c9f23
   languageName: node
   linkType: hard
 
@@ -111,15 +111,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/core@npm:^7.11.1":
-  version: 7.11.1
-  resolution: "@babel/core@npm:7.11.1"
+"@babel/core@npm:^7.11.4":
+  version: 7.11.4
+  resolution: "@babel/core@npm:7.11.4"
   dependencies:
     "@babel/code-frame": ^7.10.4
-    "@babel/generator": ^7.11.0
+    "@babel/generator": ^7.11.4
     "@babel/helper-module-transforms": ^7.11.0
     "@babel/helpers": ^7.10.4
-    "@babel/parser": ^7.11.1
+    "@babel/parser": ^7.11.4
     "@babel/template": ^7.10.4
     "@babel/traverse": ^7.11.0
     "@babel/types": ^7.11.0
@@ -131,7 +131,7 @@ __metadata:
     resolve: ^1.3.2
     semver: ^5.4.1
     source-map: ^0.5.0
-  checksum: c6bb33b1f7eb803de5832342841ed615f0152e333efa601bf18460c8070bfd0e77cea83010a18a409bf8886096ec57397dd8bf388bc4d85f1337dc2bc6e3f7ef
+  checksum: 21b40a4242f308c2ccbcc07393bc47ef1ed3f6b4f6db5081801cf4c504926e28e24130bf4afd81ff9b0d6c61cdbb873492c892d0cebdb2e5f5cfb9711b17f089
   languageName: node
   linkType: hard
 
@@ -155,6 +155,17 @@ __metadata:
     jsesc: ^2.5.1
     source-map: ^0.5.0
   checksum: aec10e0792f506b88b0abf859d7a76d7d4a8e9a4c3865f13ce9c2fc6d67234e205859c20f8aef633f2b6a23acc7b8af1d70d77ad186b3d0af155ab9252e13b10
+  languageName: node
+  linkType: hard
+
+"@babel/generator@npm:^7.11.4":
+  version: 7.11.4
+  resolution: "@babel/generator@npm:7.11.4"
+  dependencies:
+    "@babel/types": ^7.11.0
+    jsesc: ^2.5.1
+    source-map: ^0.5.0
+  checksum: 1244facf6e03ea120ee6f7520eb7e7347ef97a3ece7ccf5d3efd5a70e6c4f85c67d7e8b9dc533ee071c95d91fe0ff8c1b9cf1a59447f4bc1caddcace64e77dfb
   languageName: node
   linkType: hard
 
@@ -465,12 +476,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/parser@npm:^7.11.1":
-  version: 7.11.1
-  resolution: "@babel/parser@npm:7.11.1"
+"@babel/parser@npm:^7.11.4":
+  version: 7.11.4
+  resolution: "@babel/parser@npm:7.11.4"
   bin:
     parser: ./bin/babel-parser.js
-  checksum: a9eb7293d5e7ed4fe1d7d3898cfe45deca0a1a78ebf7cf1a805e9fb918654d9b8f56720ead85cd568d27900bb0b19c778fdc6421a89963e3fbc4062efb028604
+  checksum: 06337dd30f432634503542a489bc4106a7505e7551c2feae0f1d25f35dfed9d1192373b3366ffd3a9a3ee65aeec60bb9c7d0612f9e0cfc17835eae467701b42a
   languageName: node
   linkType: hard
 
@@ -5718,9 +5729,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "firebase-chat@workspace:."
   dependencies:
-    "@alker/solid-js-types": "file:./src/lib/packages/solid-js-types"
-    "@alker/solid-styled-tsx": "file:./src/lib/packages/solid-styled-tsx"
-    "@babel/core": ^7.11.1
+    "@alker/solid-js-types": /home/node/projects/firebase-chat/src/lib/packages/solid-js-types
+    "@alker/solid-styled-tsx": /home/node/projects/firebase-chat/src/lib/packages/solid-styled-tsx
+    "@babel/core": ^7.11.4
     "@babel/plugin-proposal-class-properties": ^7.10.4
     "@babel/plugin-proposal-object-rest-spread": ^7.11.0
     "@babel/preset-env": ^7.11.0
@@ -5736,7 +5747,7 @@ __metadata:
     clsx: ^1.1.1
     connect: ^3.7.0
     firebase: ^7.19.0
-    firebase-tools: ^8.9.0
+    firebase-tools: ^8.9.2
     firebaseui: ^4.6.1
     jest: ^26.4.2
     jest-github-actions-reporter: ^1.0.2
@@ -5751,7 +5762,7 @@ __metadata:
     posthtml-expressions: ^1.4.6
     posthtml-extend: ^0.5.0
     posthtml-include: ^1.4.3
-    prettier: ^2.1.0
+    prettier: ^2.1.1
     pretty-quick: ^3.0.0
     purgecss: ^2.3.0
     purgecss-from-js: ^1.0.0
@@ -5771,9 +5782,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"firebase-tools@npm:^8.9.0":
-  version: 8.9.0
-  resolution: "firebase-tools@npm:8.9.0"
+"firebase-tools@npm:^8.9.2":
+  version: 8.9.2
+  resolution: "firebase-tools@npm:8.9.2"
   dependencies:
     "@google-cloud/pubsub": ^1.7.0
     JSONStream: ^1.2.1
@@ -5827,7 +5838,7 @@ __metadata:
     ws: ^7.2.3
   bin:
     firebase: ./lib/bin/firebase.js
-  checksum: 11277db61370949dcae996260222b420f8eed483bbd8815af5e76421d695b0d7a21a3be42a97ac24901389ae0efa7c8f45526c5dffc70984472d6ece5fe0f966
+  checksum: b14edddf758019b07866ff978b21f88f08c3a36197bea7e44d34c268fb015328bb794555a777d396f3a15f2f3dbc02b377276802870cc47d2aa2aef6294c1d01
   languageName: node
   linkType: hard
 
@@ -10577,12 +10588,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "prettier@npm:2.1.0"
+"prettier@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "prettier@npm:2.1.1"
   bin:
     prettier: bin-prettier.js
-  checksum: f955d380d2892284c28bbfe32b1601cfcd7a24d8b310832937773b9e733f624e38ff70cbafee80e9553bdb3c55783d019163667bf9a69df4e6f7c2acdcf54c06
+  checksum: 420a807cda2d482388daa42379a7aaa1be629cb71f5792362a971a5ed1c6ff377d2e311818d24e9390a4a8a6eac3fda9ebe6975f2168efec893790c0497d8a93
   languageName: node
   linkType: hard
 

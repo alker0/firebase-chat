@@ -73,7 +73,7 @@ export const SignUpForm: ComponentCreater<
   SignUpForm.Props
   > = {
   createComponent: contextArg => {
-    const context = assignProps(contextArg, defaultSignUpContext)
+    const context = assignProps({}, defaultSignUpContext, contextArg)
 
     const {itemSize} = context
 
@@ -89,8 +89,7 @@ export const SignUpForm: ComponentCreater<
 
 
     return propsArg => {
-      // setDefaults(props, defaultSignUpProps)
-      const props = assignProps(propsArg, defaultSignUpProps)
+      const props = assignProps({}, defaultSignUpProps, propsArg)
 
       const [state, setState] = createState({
         email: '',

@@ -29,8 +29,8 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   try {
-    let firebaseApp = firebase.app();
-    let features = (['database', 'storage'] as const).filter(feature => typeof firebaseApp[feature] === 'function');
+    const firebaseApp = firebase.app();
+    const features = (['database', 'storage'] as const).filter(feature => typeof firebaseApp[feature] === 'function');
     document.getElementById('load')!.innerHTML = `Firebase SDK loaded with ${features.join(', ')}`;
   } catch (e) {
     console.error(e);

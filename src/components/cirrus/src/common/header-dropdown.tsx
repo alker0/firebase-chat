@@ -1,6 +1,6 @@
 import { ComponentCreater } from '../../typings/component-creater'
 import { css } from 'styled-jsx/css'
-import { createSignal, For, createRoot, assignProps } from 'solid-js'
+import { createSignal, For, createRoot, assignProps, createEffect } from 'solid-js'
 import clsx, { Clsx } from 'clsx'
 import { Portal } from 'solid-js/dom'
 
@@ -44,10 +44,11 @@ export const HeaderMenu: ComponentCreater<
     HeaderMenu.Props
   > = {
   createComponent: (context = defaultContext) => {
-    const fixedContext: HeaderMenu.FilledContext = {...defaultContext, ...context}
+    const fixedContext = assignProps({}, defaultContext, context)
 
     return propsArg => {
-      const props = assignProps(propsArg, defaultProps)
+
+      const props = assignProps({}, defaultProps, propsArg)
 
       const [shown, setShown] = createSignal(false)
       const [headerNavShown, setHeaderNavShown] = createSignal(false)
