@@ -40,7 +40,7 @@
     "strictNullChecks": true,
 
     // Disallow implicit any.
-    "noImplicitAny": true
+    "noImplicitAny": true,
   },
 
   "include": [

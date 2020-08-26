@@ -16,7 +16,7 @@ const { styles } = createRoot(() => css.resolve`
   }
 `)
 
-const defaultProps: Args.FilledProps = {
+const defaultProps: FirebaseAuthUI.FilledProps = {
   uiConfig: {
     signInOptions: [
       firebase.auth.EmailAuthProvider.PROVIDER_ID
@@ -24,13 +24,13 @@ const defaultProps: Args.FilledProps = {
   }
 }
 
-const assertFilled = (context?: Args.Context): context is Args.FilledContext => {
+const assertFilled = (context?: FirebaseAuthUI.Context): context is FirebaseAuthUI.FilledContext => {
   return Boolean(context)
 }
 
 export const FirebaseAuthUI: ComponentCreater<
-    Args.Context,
-    Args.Props
+    FirebaseAuthUI.Context,
+    FirebaseAuthUI.Props
   > = {
   createComponent: context => {
 
@@ -64,5 +64,3 @@ export declare module FirebaseAuthUI {
 
   export interface FilledProps extends Required<Props> {}
 }
-
-import Args = FirebaseAuthUI
