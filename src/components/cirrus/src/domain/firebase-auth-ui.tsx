@@ -1,6 +1,6 @@
-import { ComponentCreater, LazyComponent } from '../../typings/component-creater'
+import { ComponentCreater } from '../../typings/component-creater'
 import { css } from 'styled-jsx/css'
-import { afterEffects, createRoot, setDefaults } from 'solid-js'
+import { afterEffects, assignProps, createRoot } from 'solid-js'
 
 const { styles } = createRoot(() => css.resolve`
   .mdl-textfield__label {
@@ -16,7 +16,7 @@ const { styles } = createRoot(() => css.resolve`
   }
 `)
 
-const defaultProps: FirebaseAuthUI.FilledProps = {
+const defaultProps: Args.FilledProps = {
   uiConfig: {
     signInOptions: [
       firebase.auth.EmailAuthProvider.PROVIDER_ID
@@ -24,20 +24,20 @@ const defaultProps: FirebaseAuthUI.FilledProps = {
   }
 }
 
-const assertFilled = (context?: FirebaseAuthUI.Context): context is FirebaseAuthUI.FilledContext => {
+const assertFilled = (context?: Args.Context): context is Args.FilledContext => {
   return Boolean(context)
 }
 
 export const FirebaseAuthUI: ComponentCreater<
-    FirebaseAuthUI.Context,
-    FirebaseAuthUI.Props
+    Args.Context,
+    Args.Props
   > = {
   createComponent: context => {
 
     if(!assertFilled(context)) return _ => <div></div>
 
-    return props => {
-      setDefaults(props, defaultProps)
+    return propsArg => {
+      const props = assignProps(propsArg, defaultProps)
 
       let authRef: HTMLDivElement | undefined
 
@@ -64,3 +64,5 @@ export declare module FirebaseAuthUI {
 
   export interface FilledProps extends Required<Props> {}
 }
+
+import Args = FirebaseAuthUI

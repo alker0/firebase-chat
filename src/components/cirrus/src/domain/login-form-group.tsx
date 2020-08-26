@@ -1,7 +1,7 @@
 import { ComponentCreater } from '../../typings/component-creater'
 import clsx, { Clsx } from 'clsx'
 import { css } from 'styled-jsx/css'
-import { afterEffects, createEffect, createRoot, createState, setDefaults } from 'solid-js'
+import { afterEffects, createRoot, createState, assignProps } from 'solid-js'
 
 // export const emailRegex = '^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$'
 export const emailRegex = '^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$'
@@ -72,8 +72,8 @@ export const SignUpForm: ComponentCreater<
   SignUpForm.Context,
   SignUpForm.Props
   > = {
-  createComponent: context => {
-    setDefaults(context, defaultSignUpContext)
+  createComponent: contextArg => {
+    const context = assignProps(contextArg, defaultSignUpContext)
 
     const {itemSize} = context
 
@@ -87,8 +87,10 @@ export const SignUpForm: ComponentCreater<
     const inputClass = cn('form-group-input', sizedInput)
     const buttonClass = cn(sizedButton)
 
-    return props => {
-      setDefaults(props, defaultSignUpProps)
+
+    return propsArg => {
+      // setDefaults(props, defaultSignUpProps)
+      const props = assignProps(propsArg, defaultSignUpProps)
 
       const [state, setState] = createState({
         email: '',

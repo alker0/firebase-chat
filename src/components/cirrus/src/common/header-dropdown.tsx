@@ -1,6 +1,6 @@
 import { ComponentCreater } from '../../typings/component-creater'
 import { css } from 'styled-jsx/css'
-import { createSignal, setDefaults, For, createRoot } from 'solid-js'
+import { createSignal, For, createRoot, assignProps } from 'solid-js'
 import clsx, { Clsx } from 'clsx'
 import { Portal } from 'solid-js/dom'
 
@@ -27,27 +27,27 @@ const { className: overlay, styles: overlayStyles } = createRoot(() => css.resol
 
 const cn: Clsx<Cirrus | LinkButtonClass> = clsx
 
-const defaultContext: HeaderMenu.FilledContext = {
+const defaultContext: Args.FilledContext = {
   buttonText: 'Click Me',
 }
 
 const DO_NOTHING = () => {}
 
-const defaultProps: HeaderMenu.FilledProps = {
+const defaultProps: Args.FilledProps = {
   buttonPlaceWhenNarrow: document.querySelector('.header-brand') ?? undefined,
   menuItems: [],
   onCleanup: DO_NOTHING
 }
 
 export const HeaderMenu: ComponentCreater<
-    HeaderMenu.Context,
-    HeaderMenu.Props
+    Args.Context,
+    Args.Props
   > = {
   createComponent: (context = defaultContext) => {
-    const fixedContext: HeaderMenu.FilledContext = {...defaultContext, ...context}
+    const fixedContext: Args.FilledContext = {...defaultContext, ...context}
 
-    return props => {
-      setDefaults(props, defaultProps)
+    return propsArg => {
+      const props = assignProps(propsArg, defaultProps)
 
       const [shown, setShown] = createSignal(false)
       const [headerNavShown, setHeaderNavShown] = createSignal(false)
@@ -101,3 +101,5 @@ export declare module HeaderMenu {
 
   export type MenuItemsChildren = JSX.Element[]
 }
+
+import Args = HeaderMenu

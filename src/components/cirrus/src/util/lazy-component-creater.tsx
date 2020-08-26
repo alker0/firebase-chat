@@ -1,24 +1,31 @@
-import { ComponentCreater, LazyComponent } from "../../typings/component-creater";
+import { Component, lazy } from "solid-js";
+import { ComponentCreater } from "../../typings/component-creater";
 
-export function createLazyComponent<
-    K extends string,
-    S,
-    T = unknown,
-    U = unknown
-  >(
-    importer: () => Promise<Record<K, ComponentCreater<S, T, U>>>,
-    path: K,
-    context: S
-  ): LazyComponent<T> {
+export type Resolved<P> = P extends () => Promise<infer R> ? R : never
 
-  return async () => {
-    const component = await importer()
-      .then(result => result[path].createComponent(context))
-      .catch(err => {
-        console.error(err)
-        return () => <div />
-      })
+type CreaterFilter<P> = Resolved<P> extends Record<infer K, ComponentCreater<infer S, infer T, infer U>> ? {
+  importer: () => Promise<Resolved<P>>
+  context: S,
+  result: Component<T> & U
+} : never
 
-    return { default: component }
+export function createLazyComponent<P extends () => Promise<{}>, R extends Resolved<P>, M extends CreaterFilter<P>>(
+  importer: M["importer"],
+  createrKey: keyof R,
+  context: M["context"]
+): M["result"] {
+
+  let loadRunner: Promise<{default: Component}> = Promise.resolve({
+    default: () => <div />
+  })
+
+  let loader = async () => {
+    loadRunner = importer().then(result => ({ default: result[createrKey].createComponent(context) }))
+
+    loader = async () => await loadRunner
+
+    return await loadRunner
   }
+
+  return lazy(() => loader())
 }
