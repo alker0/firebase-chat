@@ -28,9 +28,9 @@
       </div>
     </div>
 
-    <div id="firebase-auth-container"></div>
+    <div id="main-contents"></div>
 
-    <div id="signup-form"></div>
+    <div id="firebase-auth-container"></div>
 
     <p id="load">Firebase SDK Loading&hellip;</p>
 
