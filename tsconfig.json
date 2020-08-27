@@ -27,7 +27,8 @@
       "solid-js/*": ["solid-js/types/*"],
       "@lib/*": ["src/lib/*"],
       "@components/*": ["src/components/*"],
-      "@components/cirrus/*": ["src/components/cirrus/src/*"]
+      "@components/common/*": ["src/components/common/src/*"],
+      "@components/cirrus/*": ["src/components/common/src/cirrus/*"]
     },
 
     // Skip npm module type check.

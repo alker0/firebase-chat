@@ -41,8 +41,8 @@
     "page:delete": "node ./scripts/delete-page.js"
   },
   "devDependencies": {
-    "@alker/solid-js-types": "/home/node/projects/firebase-chat/src/lib/packages/solid-js-types",
-    "@alker/solid-styled-tsx": "/home/node/projects/firebase-chat/src/lib/packages/solid-styled-tsx",
+    "@alker/solid-js-types": "file:./src/lib/packages/solid-js-types",
+    "@alker/solid-styled-tsx": "file:./src/lib/packages/solid-styled-tsx",
     "@babel/core": "^7.11.4",
     "@babel/plugin-proposal-class-properties": "^7.10.4",
     "@babel/plugin-proposal-object-rest-spread": "^7.11.0",
@@ -76,7 +76,7 @@
     "pretty-quick": "^3.0.0",
     "purgecss": "^2.3.0",
     "purgecss-from-js": "^1.0.0",
-    "snowpack": "^2.9.0",
+    "snowpack": "^2.9.3",
     "source-map-support": "^0.5.19",
     "stylelint": "^13.6.1",
     "stylelint-config-prettier": "^8.0.2",

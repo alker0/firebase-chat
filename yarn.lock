@@ -12,23 +12,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@alker/solid-js-types@file:/home/node/projects/firebase-chat/src/lib/packages/solid-js-types::locator=firebase-chat%40workspace%3A.":
-  version: 0.1.0
-  resolution: "@alker/solid-js-types@file:/home/node/projects/firebase-chat/src/lib/packages/solid-js-types::locator=firebase-chat%40workspace%3A."
+"@alker/solid-js-types@file:./src/lib/packages/solid-js-types::locator=firebase-chat%40workspace%3A.":
+  version: 0.0.1
+  resolution: "@alker/solid-js-types@file:./src/lib/packages/solid-js-types::locator=firebase-chat%40workspace%3A."
   peerDependencies:
-    solid-js: 0.19.x
-  checksum: 344e0660f1ca8a81c21e5b281d52167b734eaabf9603c84b6ae21212705185182a80ffa2b5e2740e5c1e62b76de99b3dd7a04b298a41651f92cd6e623abaa1e7
+    solid-js: 0.x
+  checksum: 7c8adfaef20f5d494b2025209bfb94182bb1576952db9f98a3aa16b3b0367b0a513681090840967dd9b7cbd149db946231da1ac49174b07faa195ad4f2221c1e
   languageName: node
   linkType: hard
 
-"@alker/solid-styled-tsx@file:/home/node/projects/firebase-chat/src/lib/packages/solid-styled-tsx::locator=firebase-chat%40workspace%3A.":
+"@alker/solid-styled-tsx@file:./src/lib/packages/solid-styled-tsx::locator=firebase-chat%40workspace%3A.":
   version: 0.0.1
-  resolution: "@alker/solid-styled-tsx@file:/home/node/projects/firebase-chat/src/lib/packages/solid-styled-tsx::locator=firebase-chat%40workspace%3A."
+  resolution: "@alker/solid-styled-tsx@file:./src/lib/packages/solid-styled-tsx::locator=firebase-chat%40workspace%3A."
   peerDependencies:
-    solid-js: ~0.18.0
+    solid-js: 0.x
     solid-styled-jsx: 0.x
     styled-jsx: 3.x
-  checksum: c28760ee57b5beef231fe7d86fc496e098214c20938c69e5f608e0d550bc65e7a880d5470d9fd3a4c7bf04a08d2401ce0c7f52d3a8bca974fb82b223cb4c9f23
+  checksum: 3e6878fdc8f40865ff4c2c7faf784db7d53cbc1dbc0621fba0682f1cebea3072f3bbc5710c08f5ba48300c0cefd06223b27a1ad17853268c714099400b70935b
   languageName: node
   linkType: hard
 
@@ -5729,8 +5729,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "firebase-chat@workspace:."
   dependencies:
-    "@alker/solid-js-types": /home/node/projects/firebase-chat/src/lib/packages/solid-js-types
-    "@alker/solid-styled-tsx": /home/node/projects/firebase-chat/src/lib/packages/solid-styled-tsx
+    "@alker/solid-js-types": "file:./src/lib/packages/solid-js-types"
+    "@alker/solid-styled-tsx": "file:./src/lib/packages/solid-styled-tsx"
     "@babel/core": ^7.11.4
     "@babel/plugin-proposal-class-properties": ^7.10.4
     "@babel/plugin-proposal-object-rest-spread": ^7.11.0
@@ -5766,7 +5766,7 @@ __metadata:
     pretty-quick: ^3.0.0
     purgecss: ^2.3.0
     purgecss-from-js: ^1.0.0
-    snowpack: ^2.9.0
+    snowpack: ^2.9.3
     solid-js: ^0.19.0
     solid-styled-jsx: ^0.19.0
     source-map-support: ^0.5.19
@@ -11822,9 +11822,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"snowpack@npm:^2.9.0":
-  version: 2.9.0
-  resolution: "snowpack@npm:2.9.0"
+"snowpack@npm:^2.9.3":
+  version: 2.9.3
+  resolution: "snowpack@npm:2.9.3"
   dependencies:
     "@babel/plugin-syntax-import-meta": ^7.10.4
     "@rollup/plugin-alias": ^3.0.1
@@ -11872,7 +11872,7 @@ __metadata:
   bin:
     snowpack: dist-node/index.bin.js
     sp: dist-node/index.bin.js
-  checksum: 30ef2a410b041acab5736a47ebbc2ec087c85a324131b0be67677a541543bbac84157aa6fea007318c0d5eab3abb37ecc0aba1c3da9230128688522ecfe5acc0
+  checksum: 01932db43b153bafa35aedddd3e7fa558507e89dd3cbbc7014ff440a5d334bf81eba75264cd6c9180f02f4a08d85e81eeb1b5c73e05d76640bcc993a8cb189ae
   languageName: node
   linkType: hard
 

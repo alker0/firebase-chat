@@ -1,5 +1,5 @@
 {
-  "name": "@alker/solid-cirrus-components",
+  "name": "@alker/solid-components",
   "version": "0.0.1",
   "license": "MIT",
   "main": "",
@@ -24,6 +24,12 @@
     "solid-js": "0.19.x",
     "solid-styled-jsx": "0.19.x",
     "styled-jsx": "~3.3.0",
-    "type-filtered-clsx": "0.x"
+    "type-filtered-clsx": "0.x",
+    "cirrus-ui": "^0.5.5"
+  },
+  "peerDependenciesMeta": {
+    "cirrus-ui": {
+      "optional": true
+    }
   }
 }

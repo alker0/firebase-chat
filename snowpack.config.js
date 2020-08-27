@@ -41,8 +41,9 @@ module.exports = {
   alias: {
     // 'inferno': 'inferno/dist/index.dev.esm.js',// only development
     '@lib': './src/lib',
-    '@components/raw': './src/components/raw',
-    '@components/cirrus': './src/components/cirrus/src',
+    '@components/common': './src/components/common/src',
+    '@components/cirrus': './src/components/common/src/cirrus',
+    '@components': './src/components',
     '@webModules': './web_modules',
   },
   proxy: {

@@ -1,4 +1,4 @@
-import { ComponentCreater } from '../../typings/component-creater'
+import { ComponentCreater } from '../../../typings/component-creater'
 import clsx, { Clsx } from 'clsx'
 import { css } from 'styled-jsx/css'
 import { afterEffects, createRoot, createState, assignProps } from 'solid-js'

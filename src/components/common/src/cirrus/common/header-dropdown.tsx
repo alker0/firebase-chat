@@ -1,6 +1,6 @@
-import { ComponentCreater } from '../../typings/component-creater'
+import { ComponentCreater } from '../../../typings/component-creater'
 import { css } from 'styled-jsx/css'
-import { createSignal, For, createRoot, assignProps, createEffect } from 'solid-js'
+import { createSignal, For, createRoot, assignProps } from 'solid-js'
 import clsx, { Clsx } from 'clsx'
 import { Portal } from 'solid-js/dom'
 

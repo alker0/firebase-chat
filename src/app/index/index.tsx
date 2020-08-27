@@ -2,7 +2,7 @@ import 'solid-styled-jsx'
 import { render, Suspense } from 'solid-js/dom'
 import { HeaderMenu } from '@lib/auth-header-menu'
 import { sessionStateChangedHandler } from '@lib/solid-firebase-auth'
-import { createLazyFirebaseAuthUI } from '@lib/lazy-components/firebase-auth-ui'
+import { createLazyFirebaseAuthUI } from '@components/project/firebase-auth-ui'
 
 const dropDownTarget = document.getElementById('header-menu')
 

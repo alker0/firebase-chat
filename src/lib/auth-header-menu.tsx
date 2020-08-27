@@ -20,5 +20,3 @@ const HeaderMenuComponent = () => {
 }
 
 export { HeaderMenuComponent as HeaderMenu }
-
-
