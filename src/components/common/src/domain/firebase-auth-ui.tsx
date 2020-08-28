@@ -2,20 +2,6 @@ import { ComponentCreater } from '../../typings/component-creater'
 import { css } from 'styled-jsx/css'
 import { afterEffects, assignProps, createRoot } from 'solid-js'
 
-const { styles } = createRoot(() => css.resolve`
-  .mdl-textfield__label {
-    margin-left: unset;
-    margin-top: unset;
-    margin-right: unset;
-    padding-top: 0.5rem;
-    padding-left: 0.5rem;
-  }
-
-  .is-focused > .mdl-textfield__label {
-    padding-top: 0;
-  }
-`)
-
 const defaultProps: FirebaseAuthUI.DefaultProps = {
   uiConfig: {
     signInOptions: [
@@ -37,8 +23,20 @@ export const FirebaseAuthUI: ComponentCreater<
 
       afterEffects(() => context.ui.start(authRef!, props.uiConfig))
 
-      return <div style="display: contents;" ref={authRef}>
-        {styles}
+      return <div class="auth-ui-mounted" style="display: contents;" ref={authRef}>
+        <style jsx global>{`
+            label.mdl-textfield__label {
+              margin-left: unset;
+              margin-top: unset;
+              margin-right: unset;
+              padding-top: 0.5rem;
+              padding-left: 0.5rem;
+            }
+
+            .is-focused > label.mdl-textfield__label {
+              padding-top: 0;
+            }
+        `}</style>
       </div>
     }
   }
