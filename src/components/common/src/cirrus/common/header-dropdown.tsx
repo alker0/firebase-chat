@@ -6,13 +6,13 @@ import { Portal } from 'solid-js/dom'
 
 type LinkButtonClass = 'LinkButtonClassName'
 
-const { className: linkButton, styles: linkButtonStyles } = createRoot(() => css.resolve`
+const createLinkButtonClassName = () => css.resolve`
   a {
     z-index: 6;
   }
-`) as {className: LinkButtonClass, styles: string}
+` as { className: LinkButtonClass }
 
-const { className: overlay, styles: overlayStyles } = createRoot(() => css.resolve`
+const createOverlayClassName = () => css.resolve`
   div {
     width: 100%;
     height: 100%;
@@ -23,7 +23,7 @@ const { className: overlay, styles: overlayStyles } = createRoot(() => css.resol
     left: 0;
     z-index: 5;
   }
-`)
+`
 
 const cn: Clsx<Cirrus | LinkButtonClass> = clsx
 
@@ -44,11 +44,15 @@ export const HeaderMenu: ComponentCreater<
     HeaderMenu.Props
   > = {
   createComponent: (context?) => {
-    const fixedContext = assignProps({}, defaultContext, context)
+    const fixedContext = assignProps({}, defaultContext, context ?? {})
 
     return propsArg => {
 
       const props = assignProps({}, defaultProps, propsArg)
+
+      const { className: linkButton } = createLinkButtonClassName()
+
+      const { className: overlay } = createOverlayClassName()
 
       const [shown, setShown] = createSignal(false)
       const [headerNavShown, setHeaderNavShown] = createSignal(false)
@@ -74,7 +78,6 @@ export const HeaderMenu: ComponentCreater<
                     {item => <li>{item()}</li>}
                   </For>
                 </ul>
-                {overlayStyles}
               </div>
             </div>
           </div>
