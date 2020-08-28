@@ -1546,21 +1546,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@firebase/firestore-types@npm:1.12.0":
-  version: 1.12.0
-  resolution: "@firebase/firestore-types@npm:1.12.0"
+"@firebase/firestore-types@npm:1.12.1":
+  version: 1.12.1
+  resolution: "@firebase/firestore-types@npm:1.12.1"
   peerDependencies:
     "@firebase/app-types": 0.x
-  checksum: 99d6049d024e92397b9ee4bb0af50c85b71673f4bbcde18b8e66a49180cdc79597f9c13d9c16ac68d9a64abffb026c9c1e41bbeb14b553aafed19768fef3023d
+  checksum: 98c6bdc9a2e661d02d013180419a61773cdcba6bc886f560b945ee7892810fe584dbbf37a791e53212d1c0fa1cbbd54207441d2d3c95b1959ff1bb0b66a1fb8c
   languageName: node
   linkType: hard
 
-"@firebase/firestore@npm:1.16.5":
-  version: 1.16.5
-  resolution: "@firebase/firestore@npm:1.16.5"
+"@firebase/firestore@npm:1.16.6":
+  version: 1.16.6
+  resolution: "@firebase/firestore@npm:1.16.6"
   dependencies:
     "@firebase/component": 0.1.18
-    "@firebase/firestore-types": 1.12.0
+    "@firebase/firestore-types": 1.12.1
     "@firebase/logger": 0.2.6
     "@firebase/util": 0.3.1
     "@firebase/webchannel-wrapper": 0.3.0
@@ -1571,7 +1571,7 @@ __metadata:
   peerDependencies:
     "@firebase/app": 0.x
     "@firebase/app-types": 0.x
-  checksum: 1eaeb79022bee6698d9a0bcb2e3cd5103af53cef09b7d4dce163a0600f811c9e4939a2e939e4816dfaef95c3a4f614ccef12447ab1e8aba8d6d95a2859c51d85
+  checksum: 209aee847f34dd300cf4b3dfa864a50ee19e7fa6c07bfd6e2f54827792b15442c8225889735a887c94a795eeaa7c07fadb711627eb61fa38f10976b8230ee55f
   languageName: node
   linkType: hard
 
@@ -5746,7 +5746,7 @@ __metadata:
     babel-preset-solid: ^0.19.0
     clsx: ^1.1.1
     connect: ^3.7.0
-    firebase: ^7.19.0
+    firebase: ^7.19.1
     firebase-tools: ^8.9.2
     firebaseui: ^4.6.1
     jest: ^26.4.2
@@ -5842,16 +5842,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"firebase@npm:^7.19.0":
-  version: 7.19.0
-  resolution: "firebase@npm:7.19.0"
+"firebase@npm:^7.19.1":
+  version: 7.19.1
+  resolution: "firebase@npm:7.19.1"
   dependencies:
     "@firebase/analytics": 0.4.2
     "@firebase/app": 0.6.10
     "@firebase/app-types": 0.6.1
     "@firebase/auth": 0.14.9
     "@firebase/database": 0.6.11
-    "@firebase/firestore": 1.16.5
+    "@firebase/firestore": 1.16.6
     "@firebase/functions": 0.4.50
     "@firebase/installations": 0.4.16
     "@firebase/messaging": 0.7.0
@@ -5860,7 +5860,7 @@ __metadata:
     "@firebase/remote-config": 0.1.27
     "@firebase/storage": 0.3.42
     "@firebase/util": 0.3.1
-  checksum: d4a60e414ec3eec537248111b693b6b0aefb3f3d6ec6488a8ac153a27dd40094ec7d94634d33217c59f1434839d3def05c52cd121fea89f4415e4143368e770e
+  checksum: 6ffbc3c07abe6c11d5992fca76fe9a5c62ef4de36a53db680e93be18644d68a2b0e551a9b6bdd818ad977ca2d5243140b1c8c5d79a2dea8cf720f141f7e08020
   languageName: node
   linkType: hard
 
