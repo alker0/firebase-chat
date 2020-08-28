@@ -3,15 +3,15 @@ import { ComponentCreater } from "../../typings/component-creater";
 
 export type Resolved<P> = P extends () => Promise<infer R> ? R : never
 
-type CreaterFilter<P> = Resolved<P> extends Record<infer K, ComponentCreater<infer S, infer T, infer U>> ? {
-  importer: () => Promise<Resolved<P>>
+type CreaterFilter<P> = P extends Record<keyof P, ComponentCreater<infer S, infer T, infer U>> ? {
+  importer: () => Promise<P>,
   context: S,
   result: Component<T> & U
 } : never
 
-export function createLazyComponent<P extends () => Promise<{}>, R extends Resolved<P>, M extends CreaterFilter<P>>(
+export function createLazyComponent<P, M extends CreaterFilter<P>>(
   importer: M["importer"],
-  createrKey: keyof R,
+  createrKey: keyof P,
   context: M["context"]
 ): M["result"] {
 
