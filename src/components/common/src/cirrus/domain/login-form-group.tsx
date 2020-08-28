@@ -36,11 +36,11 @@ const buttonSizeSuffixMap = {
   xsmall: '-tiny'
 }
 
-const defaultSignUpContext: SignUpForm.FilledContext = {
+const defaultSignUpContext: SignUpForm.DefaultContext = {
   itemSize: false
 }
 
-const defaultSignUpProps: SignUpForm.FilledProps = {
+const defaultSignUpProps: SignUpForm.DefaultProps = {
   onSubmit: () => {}
 }
 
@@ -69,10 +69,10 @@ function enterFocus<K extends number | string | symbol, T extends Record<K, OnEn
 const getFocuser = (element: HTMLElement | undefined) => HTMLElement.prototype.focus.bind(element)
 
 export const SignUpForm: ComponentCreater<
-  SignUpForm.Context,
+  SignUpForm.Context | undefined,
   SignUpForm.Props
   > = {
-  createComponent: contextArg => {
+  createComponent: (contextArg?) => {
     const context = assignProps({}, defaultSignUpContext, contextArg)
 
     const {itemSize} = context
@@ -185,13 +185,13 @@ export declare module SignUpForm {
     itemSize?: 'xsmall' | 'small' | false | 'large' | 'xlarge'
   }
 
-  export interface FilledContext extends Required<Context> {}
+  export interface DefaultContext extends Required<Context> {}
 
   export interface Props {
     onSubmit?: (state: SignUpState) => void
   }
 
-  export interface FilledProps extends Required<Props> {}
+  export interface DefaultProps extends Required<Props> {}
 
   export interface SignUpState {
     email: string,

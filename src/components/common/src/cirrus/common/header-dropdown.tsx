@@ -27,23 +27,23 @@ const { className: overlay, styles: overlayStyles } = createRoot(() => css.resol
 
 const cn: Clsx<Cirrus | LinkButtonClass> = clsx
 
-const defaultContext: HeaderMenu.FilledContext = {
+const defaultContext: HeaderMenu.DefaultContext = {
   buttonText: 'Click Me',
 }
 
 const DO_NOTHING = () => {}
 
-const defaultProps: HeaderMenu.FilledProps = {
+const defaultProps: HeaderMenu.DefaultProps = {
   buttonPlaceWhenNarrow: document.querySelector('.header-brand') ?? undefined,
   menuItems: [],
   onCleanup: DO_NOTHING
 }
 
 export const HeaderMenu: ComponentCreater<
-    HeaderMenu.Context,
+    HeaderMenu.Context | undefined,
     HeaderMenu.Props
   > = {
-  createComponent: (context = defaultContext) => {
+  createComponent: (context?) => {
     const fixedContext = assignProps({}, defaultContext, context)
 
     return propsArg => {
@@ -88,7 +88,7 @@ export declare module HeaderMenu {
     buttonText?: string,
   }
 
-  export interface FilledContext extends Required<Context> {}
+  export interface DefaultContext extends Required<Context> {}
 
   export interface Props {
     buttonPlaceWhenNarrow?: Node
@@ -96,9 +96,9 @@ export declare module HeaderMenu {
     onCleanup?: () => void
   }
 
-  type FilledPropsType = Props & Required<Omit<Props, 'buttonPlaceWhenNarrow'>>
+  type FixedPropsType = Props & Required<Omit<Props, 'buttonPlaceWhenNarrow'>>
 
-  export interface FilledProps extends FilledPropsType {}
+  export interface DefaultProps extends FixedPropsType {}
 
   export type MenuItemsChildren = JSX.Element[]
 }
