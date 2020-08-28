@@ -9,6 +9,7 @@
     "prepare": "run-s build:*"
   },
   "devDependencies": {
+    "@alker/solid-styled-tsx": "0.x",
     "@babel/core": "^7.11.4",
     "@babel/cli": "^7.10.5",
     "@babel/preset-typescript": "^7.10.4",
@@ -17,7 +18,6 @@
     "solid-js": "0.19.x",
     "solid-styled-jsx": "0.19.x",
     "styled-jsx": "~3.3.0",
-    "@alker/solid-styled-tsx": "0.x",
     "type-filtered-clsx": "0.x"
   },
   "peerDependencies": {
@@ -25,10 +25,14 @@
     "solid-styled-jsx": "0.19.x",
     "styled-jsx": "~3.3.0",
     "type-filtered-clsx": "0.x",
-    "cirrus-ui": "^0.5.5"
+    "cirrus-ui": "^0.5.5",
+    "firebaseui": "~4.6.1"
   },
   "peerDependenciesMeta": {
     "cirrus-ui": {
+      "optional": true
+    },
+    "firebaseui": {
       "optional": true
     }
   }
