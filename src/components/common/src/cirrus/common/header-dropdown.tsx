@@ -1,29 +1,31 @@
 import { ComponentCreater } from '../../../typings/component-creater'
 import { css } from 'styled-jsx/css'
-import { createSignal, For, createRoot, assignProps } from 'solid-js'
+import { createSignal, For, assignProps } from 'solid-js'
 import clsx, { Clsx } from 'clsx'
 import { Portal } from 'solid-js/dom'
 
 type LinkButtonClass = 'LinkButtonClassName'
 
-const createLinkButtonClassName = () => css.resolve`
-  a {
-    z-index: 6;
-  }
-` as { className: LinkButtonClass }
+const createStyles = () => ({
+  linkButtonClass: css.resolve`
+    a {
+      z-index: 6;
+    }
+  `.className as LinkButtonClass,
 
-const createOverlayClassName = () => css.resolve`
-  div {
-    width: 100%;
-    height: 100%;
-    cursor: default;
-    background-color: transparent;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 5;
-  }
-`
+  overlayClass: css.resolve`
+    div {
+      width: 100%;
+      height: 100%;
+      cursor: default;
+      background-color: transparent;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 5;
+    }
+  `.className
+})
 
 const cn: Clsx<Cirrus | LinkButtonClass> = clsx
 
@@ -50,9 +52,7 @@ export const HeaderMenu: ComponentCreater<
 
       const props = assignProps({}, defaultProps, propsArg)
 
-      const { className: linkButton } = createLinkButtonClassName()
-
-      const { className: overlay } = createOverlayClassName()
+      const { linkButtonClass, overlayClass } = createStyles()
 
       const [shown, setShown] = createSignal(false)
       const [headerNavShown, setHeaderNavShown] = createSignal(false)
@@ -71,8 +71,8 @@ export const HeaderMenu: ComponentCreater<
           <div class={cn('header-nav', headerNavShown() && 'active')}>
             <div class={cn('nav-right', 'nav-menu', 'u-text-center')}>
               <div class={cn('nav-item', 'has-sub', shown() && 'active')}>
-                <a class={cn('nav-dropdown-link', linkButton)} onClick={toggleShown}>{fixedContext.buttonText}</a>
-                <div class={overlay} style={{ display: shown() ? 'block' : 'none' }} onClick={toggleShown}></div>
+                <a class={cn('nav-dropdown-link', linkButtonClass)} onClick={toggleShown}>{fixedContext.buttonText}</a>
+                <div class={overlayClass} style={{ display: shown() ? 'block' : 'none' }} onClick={toggleShown}></div>
                 <ul class={cn('dropdown-menu', 'dropdown-animated', shown() && 'dropdown-shown')} role="menu">
                   <For each={props.menuItems}>
                     {item => <li>{item()}</li>}

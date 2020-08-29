@@ -1,6 +1,5 @@
 import { ComponentCreater } from '../../typings/component-creater'
-import { css } from 'styled-jsx/css'
-import { afterEffects, assignProps, createRoot } from 'solid-js'
+import { afterEffects, assignProps } from 'solid-js'
 
 const defaultProps: FirebaseAuthUI.DefaultProps = {
   uiConfig: {
@@ -21,11 +20,13 @@ export const FirebaseAuthUI: ComponentCreater<
 
       let authRef: HTMLDivElement | undefined
 
-      afterEffects(() => context.ui.start(authRef!, props.uiConfig))
+      afterEffects(() => {
+        context.ui.start(authRef!, props.uiConfig)
+      })
 
-      return <div class="auth-ui-mounted" style="display: contents;" ref={authRef}>
-        <style jsx global>{`
-            label.mdl-textfield__label {
+      return <div style="display: contents;" ref={authRef}>
+        <style jsx>{`
+            div :global(label.mdl-textfield__label:not(.no-match)) {
               margin-left: unset;
               margin-top: unset;
               margin-right: unset;
@@ -33,7 +34,7 @@ export const FirebaseAuthUI: ComponentCreater<
               padding-left: 0.5rem;
             }
 
-            .is-focused > label.mdl-textfield__label {
+            div :global(.is-focused) > :global(label.mdl-textfield__label) {
               padding-top: 0;
             }
         `}</style>
