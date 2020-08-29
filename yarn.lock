@@ -5759,7 +5759,7 @@ __metadata:
     postcss-ts-classnames: ^0.1.2
     posthtml: ^0.13.3
     posthtml-cli: ^0.7.5
-    posthtml-expressions: ^1.4.6
+    posthtml-expressions: ^1.4.7
     posthtml-extend: ^0.5.0
     posthtml-include: ^1.4.3
     prettier: ^2.1.1
@@ -10464,14 +10464,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"posthtml-expressions@npm:^1.4.6":
-  version: 1.4.6
-  resolution: "posthtml-expressions@npm:1.4.6"
+"posthtml-expressions@npm:^1.4.7":
+  version: 1.4.7
+  resolution: "posthtml-expressions@npm:1.4.7"
   dependencies:
     fclone: ^1.0.11
     posthtml-parser: ^0.5.0
     posthtml-render: ^1.2.3
-  checksum: 9a5cb96cdf75502239ccdc3bb1c5a42066805c20007128fdb69d17ddd9ffaa3aec165c790766cfba4bc550e73b9b46de8704f104dee95277758aef1d8f7dae84
+  checksum: 63de6922fc89b7ac9309c99435cce732890e288079a605ded2d769fca4cb3081b17b3dd78e037dba47654d7502ffa4c020a6654fdfdb54f04f8f65528a61fed7
   languageName: node
   linkType: hard
 
