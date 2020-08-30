@@ -1,15 +1,20 @@
 import { ComponentCreater } from "../../typings/component-creater";
 import { Router } from "../base/molecules/router";
 
-const matchPath = (target: string) => location.pathname.startsWith(target)
+const withHashAndQuery = () => location.href.replace(location.origin, '')
+const staticMatch = (matchText: string) => location.pathname === matchText
+
+export const matchUtils = {
+  withHashAndQuery
+}
 
 export const PathMatchRouter: ComponentCreater<PathMatchRouter.Context, PathMatchRouter.Props> = {
   createComponent: context => {
-  const RouteComponent = Router.createComponent(context)
+    const RouteComponent = Router.createComponent(context)
     return props => <RouteComponent routingTable={props.routingTable.map(info => ({
-      matchFn: () => matchPath(info.matchPath),
+      matchFn: () => typeof info.matcher === 'string' ? staticMatch(info.matcher) : info.matcher(matchUtils),
       getComponent: info.getComponent
-    }))}></RouteComponent>
+    }))} routeSignal={props.routeSignal}></RouteComponent>
   }
 }
 
@@ -18,12 +23,15 @@ export declare module PathMatchRouter {
 
   export interface DefaultContext extends Router.DefaultContext {}
 
+  export type Matcher = string | ((utils: typeof matchUtils) => boolean)
+
   export interface RoutingInfo {
-    matchPath: string,
+    matcher: Matcher,
     getComponent: Router.RoutingInfo["getComponent"]
   }
 
   export interface Props {
+    routeSignal: Router.Props["routeSignal"]
     routingTable: RoutingInfo[]
   }
 }

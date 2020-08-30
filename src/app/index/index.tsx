@@ -1,17 +1,15 @@
 import 'solid-styled-jsx'
-import { render, Suspense } from 'solid-js/dom'
+import { For, render } from 'solid-js/dom'
 import { HeaderMenu } from '@lib/auth-header-menu'
-import { sessionStateChangedHandler } from '@lib/solid-firebase-auth'
-import { createLazyFirebaseAuthUI } from '@components/project/firebase-auth-ui'
+import { sessionState, sessionStateChangedHandler } from '@lib/solid-firebase-auth'
+import { createRouter, routingPaths } from '@lib/router'
+import { createEffect, createRoot } from 'solid-js'
 
 const dropDownTarget = document.getElementById('header-menu')
 
 if (dropDownTarget) {
   render(() => <HeaderMenu />, dropDownTarget)
 }
-
-const ui = new firebaseui.auth.AuthUI(firebase.auth())
-const LazyAuthUI = createLazyFirebaseAuthUI({ ui })
 
 document.addEventListener('DOMContentLoaded', function() {
   // firebase.auth().onAuthStateChanged(user => { });
@@ -20,12 +18,35 @@ document.addEventListener('DOMContentLoaded', function() {
 
   firebase.auth().onAuthStateChanged(sessionStateChangedHandler)
 
-  const authTarget = document.getElementById('firebase-auth-container')
+  firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
 
-  if (authTarget) {
-    render(() => <Suspense fallback={<div>Loading...</div>}>
-      <LazyAuthUI></LazyAuthUI>
-    </Suspense>, authTarget)
+  createRoot(() => createEffect(() => console.log(sessionState.isLoggedIn)))
+
+  const Links = () => <ul>
+    <For each={[routingPaths.home, routingPaths.auth, routingPaths.chat, routingPaths.createRoom, routingPaths.searchRoom]}>
+      {path => <li><a onClick={e => {
+        e.preventDefault()
+        history.pushState({}, '', `.${path}`)
+        window.dispatchEvent(new Event('popstate'))
+      }}>{path}</a></li>}
+    </For>
+    <li>
+      <a onClick={e => {
+        e.preventDefault()
+        firebase.auth().signOut()
+      }}>Logout</a>
+    </li>
+  </ul>
+
+  const Router = createRouter()
+
+  const mainTarget = document.getElementById('main-contents')
+
+  if(mainTarget) {
+    render(() => <>
+      <Links />
+      <Router />
+    </>, mainTarget)
   }
 
   try {

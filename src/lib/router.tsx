@@ -1,6 +1,14 @@
 import { PathMatchRouter } from "@components/common/case/path-match-router"
 import { FirebaseAuthUI } from "@components/common/domain/firebase-auth-ui"
-import { Component } from "solid-js"
+import { createLazyFirebaseAuthUI } from "@components/project/firebase-auth-ui"
+import { Component, createSignal } from "solid-js"
+
+const [routeSignal, sendRouteSignal] = createSignal('', true)
+
+window.addEventListener('popstate', ev => {
+  console.log(window.location.href.replace(window.location.origin, ''))
+  sendRouteSignal(window.location.pathname)
+})
 
 export const routingPaths = {
   home: '/home',
@@ -10,7 +18,26 @@ export const routingPaths = {
   createRoom: '/create-room'
 }
 
-export const createRouter = (context: PathMatchRouter.Context) => {
+const uiConfig: firebaseui.auth.Config = {
+  signInOptions: [
+    {
+      provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
+      fullLabel: 'Use Email and Passward'
+    }
+  ],
+  callbacks: {
+    signInSuccessWithAuthResult: (authResult, redirectURL) => {
+      console.log('signInSuccessWithAuthResult', authResult, redirectURL)
+
+      history.pushState({}, '', `.${routingPaths.home}`)
+      window.dispatchEvent(new Event('popstate'))
+
+      return false
+    }
+  }
+}
+
+export const createRouter = (context?: PathMatchRouter.Context) => {
   const routerContext: PathMatchRouter.Context = {
     loadingElement: () => <div>Loading...</div>,
     unmatchElement: () => <div>Any Pages Not Found</div>
@@ -22,30 +49,30 @@ export const createRouter = (context: PathMatchRouter.Context) => {
 
   return () => <RouteComponent routingTable={[
     {
-      matchPath: routingPaths.home,
+      matcher: routingPaths.home,
       getComponent: () => <div>Home Page</div>
     },
     {
-      matchPath: routingPaths.chat,
+      matcher: routingPaths.chat,
       getComponent: () => <div>Chat Page</div>
     },
     {
-      matchPath: routingPaths.auth,
+      matcher: ({withHashAndQuery}) => withHashAndQuery().startsWith(routingPaths.auth),
       getComponent: () => {
         if(!AuthUIComponent) {
           const authUI = new firebaseui.auth.AuthUI(firebase.auth())
-          AuthUIComponent = FirebaseAuthUI.createComponent({ui: authUI})
+          AuthUIComponent = createLazyFirebaseAuthUI({ ui: authUI })
         }
-        return <AuthUIComponent />
+        return <AuthUIComponent uiConfig={uiConfig} />
       }
     },
     {
-      matchPath: routingPaths.searchRoom,
+      matcher: routingPaths.searchRoom,
       getComponent: () => <div>Search Room Page</div>
     },
     {
-      matchPath: routingPaths.createRoom,
-      getComponent: () => <div>Create Room Page</div>
+      matcher: routingPaths.createRoom,
+    getComponent: () => <div>Create Room Page</div>
     },
-  ]}></RouteComponent>
+  ]} routeSignal={routeSignal}></RouteComponent>
 }
