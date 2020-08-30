@@ -5767,8 +5767,8 @@ __metadata:
     purgecss: ^2.3.0
     purgecss-from-js: ^1.0.0
     snowpack: ^2.9.3
-    solid-js: ^0.19.0
-    solid-styled-jsx: ^0.19.0
+    solid-js: ^0.19.1
+    solid-styled-jsx: ^0.19.1
     source-map-support: ^0.5.19
     styled-jsx: ^3.3.0
     stylelint: ^13.6.1
@@ -11876,22 +11876,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"solid-js@npm:^0.19.0":
-  version: 0.19.0
-  resolution: "solid-js@npm:0.19.0"
-  checksum: 69eed04d24c4c7db434f6fc827cb702ddf92c70bbfc8b33d2d5d9d6c4ffe950c178c2fe4c96260c8b402b0ff8506cca27bfc37e3ca98983a57114de1e155f286
+"solid-js@npm:^0.19.1":
+  version: 0.19.1
+  resolution: "solid-js@npm:0.19.1"
+  checksum: 941af4c7492e81eb08f5619517e89ccd2eb9d6674dbf46afbef1b5d8284b5e57b7ff6ecb905f97386063f8f8067bb7dc9749a9dfd2e09a41755aa71324716e70
   languageName: node
   linkType: hard
 
-"solid-styled-jsx@npm:^0.19.0":
-  version: 0.19.0
-  resolution: "solid-styled-jsx@npm:0.19.0"
+"solid-styled-jsx@npm:^0.19.1":
+  version: 0.19.1
+  resolution: "solid-styled-jsx@npm:0.19.1"
   dependencies:
     babel-plugin-transform-rename-import: ^2.3.0
   peerDependencies:
     solid-js: ^0.18.0
     styled-jsx: ^3.2.5
-  checksum: 69e2082034a4735ebd7ddbca347d1baa3ce39c2155b5108fdc69da2c4416d8be38b139d988543ee2bc8578adac84df943d23265ad9aa0173507d5ec85e46cf0e
+  checksum: ddb278826e7a855d9ff4e73ac8d05944fc44a04ee54d01d184c4bfbf20b3b4d826d097d10692dbae62e309d2730c1e3af2efd11dcb59eaf2eb01565c883318f2
   languageName: node
   linkType: hard
 
