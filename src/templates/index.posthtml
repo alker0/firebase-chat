@@ -18,37 +18,21 @@
 
     <include src="partials/firebase-sdk.html"></include>
 
-    <div class="header header-fixed unselectable header-animated">
+    <div id="header" class="header header-fixed unselectable header-animated">
       <div class="header-brand">
         <div class="nav-item no-hover">
           <a><h5 class="title">Talker</h5></a>
         </div>
-        <div class="nav-item nav-btn" id="header-btn">
-          <span>First Child</span>
-          <span>Second Child</span>
-          <span>Third Child</span>
-        </div>
       </div>
-      <div class="header-nav" id="header-menu">
-        <div class="nav-right">
-          <div class="nav-item has-sub" id="dropdown-click">
-          </div>
-        </div>
+      <div id="header-menu" class="display-contents">
       </div>
     </div>
 
-    <div id="signup-form"></div>
+    <div id="main-contents"></div>
 
-    <div id="message">
-      <h2>Welcome</h2>
-      <h1>Firebase Hosting Setup Complete</h1>
-      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
-      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
-    </div>
+    <div id="firebase-auth-container"></div>
+
     <p id="load">Firebase SDK Loading&hellip;</p>
-
-    <div>hello, my name is foo !</div>
-    <div class="bg-success">rendering is success !</div>
 
     <script type="module" src="/js/index.js"></script>
   </block>

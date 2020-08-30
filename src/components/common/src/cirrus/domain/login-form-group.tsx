@@ -1,7 +1,7 @@
-import { ComponentCreater } from '../../typings/component-creater'
+import { ComponentCreater } from '../../../typings/component-creater'
 import clsx, { Clsx } from 'clsx'
 import { css } from 'styled-jsx/css'
-import { afterEffects, createEffect, createRoot, createState, sample, setDefaults } from 'solid-js'
+import { afterEffects, createRoot, createState, assignProps } from 'solid-js'
 
 // export const emailRegex = '^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$'
 export const emailRegex = '^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$'
@@ -36,11 +36,11 @@ const buttonSizeSuffixMap = {
   xsmall: '-tiny'
 }
 
-const defaultSignUpContext: SignUpForm.FilledContext = {
+const defaultSignUpContext: SignUpForm.DefaultContext = {
   itemSize: false
 }
 
-const defaultSignUpProps: SignUpForm.FilledProps = {
+const defaultSignUpProps: SignUpForm.DefaultProps = {
   onSubmit: () => {}
 }
 
@@ -69,11 +69,11 @@ function enterFocus<K extends number | string | symbol, T extends Record<K, OnEn
 const getFocuser = (element: HTMLElement | undefined) => HTMLElement.prototype.focus.bind(element)
 
 export const SignUpForm: ComponentCreater<
-  SignUpForm.Context,
+  SignUpForm.Context | undefined,
   SignUpForm.Props
   > = {
-  createComponent: context => {
-    setDefaults(context, defaultSignUpContext)
+  createComponent: (contextArg?) => {
+    const context = assignProps({}, defaultSignUpContext, contextArg)
 
     const {itemSize} = context
 
@@ -87,8 +87,9 @@ export const SignUpForm: ComponentCreater<
     const inputClass = cn('form-group-input', sizedInput)
     const buttonClass = cn(sizedButton)
 
-    return props => {
-      setDefaults(props, defaultSignUpProps)
+
+    return propsArg => {
+      const props = assignProps({}, defaultSignUpProps, propsArg)
 
       const [state, setState] = createState({
         email: '',
@@ -107,18 +108,18 @@ export const SignUpForm: ComponentCreater<
         [toSubmit]: DO_NOTHING
       })
 
-      createEffect(() => {
-        console.log('Effect',
-        '\n',
-        focuser[toEmail],
-        '\n',
-        focuser[toPassword],
-        '\n',
-        focuser[toConfirm],
-        '\n',
-        focuser[toSubmit]
-        )
-      })
+      // createEffect(() => {
+      //   console.log('Effect',
+      //   '\n',
+      //   focuser[toEmail],
+      //   '\n',
+      //   focuser[toPassword],
+      //   '\n',
+      //   focuser[toConfirm],
+      //   '\n',
+      //   focuser[toSubmit]
+      //   )
+      // })
 
       let emailRef: HTMLInputElement | undefined
       let passwordRef: HTMLInputElement | undefined
@@ -184,13 +185,13 @@ export declare module SignUpForm {
     itemSize?: 'xsmall' | 'small' | false | 'large' | 'xlarge'
   }
 
-  export interface FilledContext extends Required<Context> {}
+  export interface DefaultContext extends Required<Context> {}
 
   export interface Props {
     onSubmit?: (state: SignUpState) => void
   }
 
-  export interface FilledProps extends Required<Props> {}
+  export interface DefaultProps extends Required<Props> {}
 
   export interface SignUpState {
     email: string,

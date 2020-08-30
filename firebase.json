@@ -7,8 +7,20 @@
     "ignore": [
       "firebase.json",
       "**/.*",
-      "**/node_modules/**"
-    ]
+      "**/node_modules/**",
+      "yarn*",
+      "babel.config.js",
+      "*.code-workspace",
+      "*.config.js",
+      "tsconfig*",
+      "src/**",
+      "scripts/**",
+      "plugins/**"
+    ],
+    "rewrites": [{
+      "source": "**",
+      "destination": "/index.html"
+    }]
   },
   "storage": {
     "rules": "storage.rules"

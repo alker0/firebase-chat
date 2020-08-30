@@ -1,19 +1,22 @@
-import { DropDownMenu } from '@components/cirrus/base/molecules/dropdown'
-import { SessionState, sessionState } from "./solid-firebase-auth"
+import { HeaderMenu } from '@components/cirrus/common/header-dropdown'
+import { sessionState } from "./solid-firebase-auth"
 import { createMemo } from "solid-js"
 
-const createMenuItems = (sessionState: SessionState) => createMemo(() => [
+const createMenuItems = () => createMemo(() => [
   () => <a>First Item</a>,
   () => <a>Second Item</a>,
   () => <a>Third Item</a>,
   () => <a>Fourth Item</a>,
+  () => <div>{sessionState.isLoggedIn}</div>
 ])
 
-const Component = DropDownMenu.createComponent()
+const Component = HeaderMenu.createComponent()
 
-export const DropDown = () => {
-  const menuItems = createMenuItems(sessionState)
+const HeaderMenuComponent = () => {
+
+  const menuItems = createMenuItems()
+
   return <Component menuItems={menuItems()} />
 }
 
-
+export { HeaderMenuComponent as HeaderMenu }
