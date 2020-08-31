@@ -1,28 +1,11 @@
 import { ComponentCreater } from '../../../typings/component-creater'
 import clsx, { Clsx } from 'clsx'
 import { css } from 'styled-jsx/css'
-import { afterEffects, createRoot, createState, assignProps } from 'solid-js'
+import { afterEffects, createRoot, createState, assignProps, Component, SetStateFunction, For } from 'solid-js'
+import { onlyWrap, OnlyWrap } from '../../util/only-wrap-style'
+import { emailRegex, passwordRegex } from '../../util/inputRegex'
 
-// export const emailRegex = '^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$'
-export const emailRegex = '^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$'
-
-export const passwordRegex = '^[a-zA-Z0-9]{8,}$'
-
-const cn: Clsx<Cirrus> = clsx
-
-const { className: formRoot, styles: rootStyles } = createRoot(() => css.resolve`
-  div {
-    justify-content: center;
-  }
-`)
-
-const {className: formRow, styles: rowStyles} = createRoot(() => css.resolve`
-  div.row {
-    margin: 0 20px;
-    flex-shrink: 0;
-    min-width: 180px;
-  }
-`)
+const cn: Clsx<Cirrus | OnlyWrap> = clsx
 
 const sizeSuffixMap = {
   xsmall: '-xsmall',
@@ -37,11 +20,64 @@ const buttonSizeSuffixMap = {
 }
 
 const defaultSignUpContext: SignUpForm.DefaultContext = {
+  useFields: ['email', 'password', 'passConfirm'],
+  focusMap: {
+    email: 'password',
+    password: 'passConfirm',
+    passConfirm: 'submit'
+  },
   itemSize: false
 }
 
 const defaultSignUpProps: SignUpForm.DefaultProps = {
   onSubmit: () => {}
+}
+
+const toEmail = Symbol()
+const toPassword = Symbol()
+const toPassConfirm = Symbol()
+const toSubmit = Symbol()
+
+const symbolMap = {
+  email: toEmail,
+  password: toPassword,
+  passConfirm: toPassConfirm,
+  submit: toSubmit
+} as const
+
+interface ValueState extends Record<keyof NativeFields, string> { }
+
+interface ValueSetState {
+  (key: keyof NativeFields): OnChange
+}
+
+interface FocuserSetState extends SetStateFunction<Record<keyof FocuserState, () => void>> { }
+
+type SizedStyleClassKey = 'label' | 'input' | 'btn'
+
+interface SizedStyleClassMap extends Record<SizedStyleClassKey, SizedFormItem> { }
+
+interface RefMap {
+  email: InputRef,
+  password: InputRef,
+  passConfirm: InputRef,
+  submit: ButtonRef
+}
+
+type NativeField = Component<{
+  fieldRef: RefMap,
+  focuser: FocuserState,
+  setFocuser: FocuserSetState
+  sizedStyle: SizedStyleClassMap,
+  focusTarget: number | string | symbol
+  value: ValueState,
+  setValue: ValueSetState
+}>
+
+interface NativeFields extends Record<'email' | 'password' | 'passConfirm', NativeField> {
+  email: NativeField,
+  password: NativeField,
+  passConfirm: NativeField
 }
 
 type OnChange = JSX.DOMAttributes<HTMLInputElement>["onChange"]
@@ -50,23 +86,66 @@ type OnEnterKey = () => void
 
 const DO_NOTHING = () => {}
 
-const toEmail = Symbol()
-const toPassword = Symbol()
-const toConfirm = Symbol()
-const toSubmit = Symbol()
+type InputRef = HTMLInputElement | undefined
+type ButtonRef = HTMLButtonElement | undefined
+
+type FocuserState = {
+  [toEmail]: () => void,
+  [toPassword]: () => void,
+  [toPassConfirm]: () => void,
+  [toSubmit]: () => void
+}
 
 const enterKeyCheck = (onEnterKey: OnEnterKey): OnKeyDown => ev => {
-  if(ev.key === 'Enter' && ev.keyCode === 13) {
-    console.log('EnterKeyCheck', onEnterKey)
-    onEnterKey()
-  }
+  return;
+  // if(ev.key === 'Enter' && ev.keyCode === 13) {
+  //   console.log('EnterKeyCheck', onEnterKey)
+  //   onEnterKey()
+  // }
 }
 
 function enterFocus<K extends number | string | symbol, T extends Record<K, OnEnterKey>>(focuser: T, key: K): OnKeyDown {
   return enterKeyCheck(() => setTimeout(focuser[key]))
 }
 
-const getFocuser = (element: HTMLElement | undefined) => HTMLElement.prototype.focus.bind(element)
+const getFocuser: (element: HTMLElement | undefined) => () => void = element => HTMLElement.prototype.focus.bind(element)
+
+function valueSetter<T>(setValueState: (key: T, value: string) => void): (key: T) => OnChange {
+  return key => ev => setValueState(key, ev.target.value)
+}
+
+const nativeFields: NativeFields = {
+  email: props => <div id="signup-email" class={cn(onlyWrap)}>
+      <div class={cn('input-control')}>
+        <div class={cn('text-info', props.sizedStyle.label)}>Email</div>
+        <input type="text" name="email" class={cn(props.sizedStyle.input)}
+          required pattern={emailRegex}
+          ref={props.fieldRef.email}
+          onKeyDown={enterFocus(props.focuser, props.focusTarget)}
+          value={props.value.email} onChange={props.setValue('email')}></input>
+      </div>
+    </div>,
+  password: props => <div id="signup-password" class={cn(onlyWrap)}>
+    <div class={cn('input-control')}>
+      <div class={cn('text-info', props.sizedStyle.label)}>Password</div>
+      <input type="password" name="password" class={cn(props.sizedStyle.input)}
+        required pattern={passwordRegex}
+        ref={props.fieldRef.password}
+        onKeyDown={enterFocus(props.focuser, props.focusTarget)}
+        value={props.value.password} onChange={props.setValue('password')}></input>
+    </div>
+  </div>,
+  passConfirm: props => <div id="signup-password-confirm" class={cn(onlyWrap)}>
+    <div class={cn('input-control')}>
+      <div class={cn('text-info', props.sizedStyle.label)}>Confirm</div>
+      <input type="password" name="password-confirm" class={cn(props.sizedStyle.input)}
+        required pattern={passwordRegex}
+        ref={props.fieldRef.passConfirm}
+        onKeyDown={enterFocus(props.focuser, props.focusTarget)}
+        value={props.value.passConfirm} onChange={props.setValue('passConfirm')}></input>
+    </div>
+  </div>,
+}
 
 export const SignUpForm: ComponentCreater<
   SignUpForm.Context | undefined,
@@ -74,6 +153,8 @@ export const SignUpForm: ComponentCreater<
   > = {
   createComponent: (contextArg?) => {
     const context = assignProps({}, defaultSignUpContext, contextArg)
+
+    const useFields = context.useFields.filter((elm, index, array) => array.indexOf(elm) === index)
 
     const {itemSize} = context
 
@@ -83,105 +164,89 @@ export const SignUpForm: ComponentCreater<
         return `${item}${(item === 'btn' ? buttonSizeSuffixMap : sizeSuffixMap)[itemSize]}` as SizedFormItem
       })
 
-    const labelClass = cn('form-group-label', sizedLabel, 'text-info')
-    const inputClass = cn('form-group-input', sizedInput)
-    const buttonClass = cn(sizedButton)
-
+    const refMap: RefMap = {
+      email: undefined,
+      password: undefined,
+      passConfirm: undefined,
+      submit: undefined
+    }
 
     return propsArg => {
       const props = assignProps({}, defaultSignUpProps, propsArg)
 
-      const [state, setState] = createState({
+      const { className: formRoot, styles: rootStyles } = createRoot(() => css.resolve`
+        div {
+          justify-content: center;
+        }
+      `)
+
+      const [valueState, setValueState] = createState({
         email: '',
         password: '',
-        passwordConfirm: ''
+        passConfirm: ''
       })
 
-      const setEmail: OnChange = (event) => setState('email', event.target.value)
-      const setPassword: OnChange = (event => setState('password', event.target.value))
-      const setPasswordConfirm: OnChange = (event => setState('passwordConfirm', event.target.value))
-
-      const [focuser, setFocuser] = createState({
+      const [focuserState, setFocuserState] = createState({
         [toEmail]: DO_NOTHING,
         [toPassword]: DO_NOTHING,
-        [toConfirm]: DO_NOTHING,
+        [toPassConfirm]: DO_NOTHING,
         [toSubmit]: DO_NOTHING
       })
 
-      // createEffect(() => {
-      //   console.log('Effect',
-      //   '\n',
-      //   focuser[toEmail],
-      //   '\n',
-      //   focuser[toPassword],
-      //   '\n',
-      //   focuser[toConfirm],
-      //   '\n',
-      //   focuser[toSubmit]
-      //   )
-      // })
-
-      let emailRef: HTMLInputElement | undefined
-      let passwordRef: HTMLInputElement | undefined
-      let confirmRef: HTMLInputElement | undefined
-      let submitRef: HTMLButtonElement | undefined
-
       afterEffects(() => {
-        setFocuser(prev => {
-          prev[toEmail] = getFocuser(emailRef)
-          prev[toPassword] = getFocuser(passwordRef)
-          prev[toConfirm] = getFocuser(confirmRef)
-          prev[toSubmit] = getFocuser(submitRef)
+        setFocuserState({
+          ...Object.fromEntries(useFields.map(name => [symbolMap[name], getFocuser(refMap[name])])),
+          [toSubmit]: getFocuser(refMap.submit)
         })
       })
 
-      return <div class={`content ${formRoot}`}>
-        <div class={`row ${formRow}`}>
-          <div id="signup-email" class="form-group col-12">
-            <div class={labelClass}>Email:</div>
-            <input type="text" name="email" class={inputClass}
-              required pattern={emailRegex}
-              ref={emailRef}
-              onKeyDown={enterFocus(focuser, toPassword)}
-              value={state.email} onChange={setEmail}></input>
+      return <form onSubmit={ev => props.onSubmit(valueState)}>
+        <div class={cn('content')}>
+          <For each={useFields}>
+            {fieldName => {
+              const Field = nativeFields[fieldName]
+              return <Field
+                fieldRef={refMap}
+                focuser={focuserState}
+                setFocuser={setFocuserState}
+                focusTarget={context.focusMap[fieldName]}
+                value={valueState}
+                setValue={valueSetter(setValueState)}
+                sizedStyle={{
+                  label: sizedLabel,
+                  input: sizedInput,
+                  btn: sizedButton
+                }}
+              />
+            }}
+          </For>
+          <div id="signup-button" class={cn(onlyWrap)}>
+            <div class={cn('input-control')}>
+              <button class={sizedButton}
+                ref={refMap.submit}
+                onClick={() => props.onSubmit(valueState)}>Signup!</button>
+            </div>
           </div>
         </div>
-        <div class={`row ${formRow}`}>
-          <div id="signup-password" class="form-group col-12">
-            <div class={labelClass}>Password:</div>
-            <input type="password" name="password" class={inputClass}
-              required pattern={passwordRegex}
-              ref={passwordRef}
-              onKeyDown={enterFocus(focuser, toConfirm)}
-              value={state.password} onChange={setPassword}></input>
-          </div>
-        </div>
-        <div class={`row ${formRow}`}>
-          <div id="signup-password-confirm" class="form-group col-12">
-            <div class={labelClass}>Confirm:</div>
-            <input type="password" name="password-confirm" class={inputClass}
-              required pattern={passwordRegex}
-              ref={confirmRef}
-              onKeyDown={enterFocus(focuser, toSubmit)}
-              value={state.passwordConfirm} onChange={setPasswordConfirm}></input>
-          </div>
-        </div>
-        <div class={`row ${formRow}`}>
-          <div id="signup-button" class="form-group col-12">
-            <button class={`${buttonClass}`}
-              ref={submitRef}
-              onClick={() => props.onSubmit(state)}>Signup!</button>
-          </div>
-        </div>
-        {rootStyles}
-        {rowStyles}
-      </div>
+      </form>
     }
   }
 }
 
 export declare module SignUpForm {
+
+  export type NativeFieldName = keyof NativeFields
+  export type NativeFieldNameWithSubmit = NativeFieldName | 'submit'
+
+  export interface SignUpState {
+    email: string,
+    password: string,
+    passConfirm: string
+  }
+
   export interface Context {
+    useFields?: NativeFieldName[],
+    focusMap?: Record<NativeFieldName, NativeFieldNameWithSubmit>
     itemSize?: 'xsmall' | 'small' | false | 'large' | 'xlarge'
   }
 
@@ -192,10 +257,4 @@ export declare module SignUpForm {
   }
 
   export interface DefaultProps extends Required<Props> {}
-
-  export interface SignUpState {
-    email: string,
-    password: string,
-    passwordConfirm: string
-  }
 }

@@ -1,5 +1,6 @@
 import { PathMatchRouter } from "@components/common/case/path-match-router"
 import { FirebaseAuthUI } from "@components/common/domain/firebase-auth-ui"
+import { createLazyAuthUI } from "@components/project/firebase-auth-own-ui"
 import { createLazyFirebaseAuthUI } from "@components/project/firebase-auth-ui"
 import { Component, createSignal } from "solid-js"
 
@@ -45,6 +46,8 @@ export const createRouter = (context?: PathMatchRouter.Context) => {
 
   const RouteComponent = PathMatchRouter.createComponent(routerContext)
 
+  const AuthComponent = createLazyAuthUI({})
+
   let AuthUIComponent: Component<FirebaseAuthUI.Props>
 
   return () => <RouteComponent routingTable={[
@@ -58,13 +61,12 @@ export const createRouter = (context?: PathMatchRouter.Context) => {
     },
     {
       matcher: ({withHashAndQuery}) => withHashAndQuery().startsWith(routingPaths.auth),
-      getComponent: () => {
-        if(!AuthUIComponent) {
-          const authUI = new firebaseui.auth.AuthUI(firebase.auth())
-          AuthUIComponent = createLazyFirebaseAuthUI({ ui: authUI })
-        }
-        return <AuthUIComponent uiConfig={uiConfig} />
-      }
+        // if(!AuthUIComponent) {
+        //   const authUI = new firebaseui.auth.AuthUI(firebase.auth())
+        //   AuthUIComponent = createLazyFirebaseAuthUI({ ui: authUI })
+        // }
+        // return <AuthUIComponent uiConfig={uiConfig} />
+      getComponent: () => <AuthComponent />
     },
     {
       matcher: routingPaths.searchRoom,
