@@ -1,3 +1,5 @@
+import { SizedFormItem } from "@components/common/typings/cirrus-form";
+import { Cirrus } from "@components/common/typings/cirrus-style";
 import clsx, { Clsx } from "clsx";
 import { assignProps, Component } from "solid-js";
 import { sizeSuffixMap } from "../../util/cirrus-utils";
