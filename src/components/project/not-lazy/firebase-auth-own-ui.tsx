@@ -2,10 +2,10 @@ import { Form } from "@components/common/base/form/form";
 import { FormContainer } from "@components/common/base/form/form-container";
 import { BasicInputField } from "@components/common/cirrus/common/basic-input-field";
 import { LoginBasicBottom } from "@components/common/cirrus/domain/login-basic-bottom";
-import { inputRegex } from "@components/common/util/input-field-utils";
+import { inputRegex, loginMethodCreater } from "@components/common/util/input-field-utils";
 import { sessionState } from "@lib/solid-firebase-auth";
 import clsx, { Clsx } from "clsx";
-import { assignProps, batch, Component, createEffect, createMemo, createRoot, createSignal, createState, SetStateFunction, untrack } from "solid-js";
+import { assignProps, Component, createEffect, createMemo, createRoot, createSignal, createState, SetStateFunction, untrack } from "solid-js";
 import { css } from "styled-jsx/css";
 
 type LinkMargin = 'This is Link Margin'
@@ -67,35 +67,6 @@ interface InputValueState {
 }
 
 type OnSubmit = NonNullable<JSX.FormHTMLAttributes<HTMLFormElement>["onSubmit"]>
-type CallableSubmit = JSX.EventHandler<HTMLFormElement, FocusEvent>
-
-const loginMethodCreater = (methodArg: {
-  setInputValue: InputValueState["setter"],
-  validations: { condition: () => boolean, errorMessage: () => string }[],
-  whenValid: CallableSubmit
-}): OnSubmit => e => {
-  e.preventDefault()
-  batch(() => {
-    methodArg.setInputValue('errorMessage', '')
-    const { lastErrorMessage, hasError } = methodArg
-      .validations
-      .reduce(({ sep, lastErrorMessage, hasError }, { condition, errorMessage }) => {
-        if (condition()) {
-          return { sep, lastErrorMessage, hasError }
-        }
-        else {
-          return { sep: '\n', lastErrorMessage: `${lastErrorMessage}${sep}${errorMessage()}`, hasError: true }
-        }
-      }, { sep: '', lastErrorMessage: '', hasError: false })
-
-    if (hasError) {
-      methodArg.setInputValue('errorMessage', lastErrorMessage)
-    }
-    else {
-      methodArg.whenValid(e)
-    }
-  })
-}
 
 const createLoginMethods = (methodArg: {
   getInputValue: InputValueState["getter"],
@@ -118,7 +89,7 @@ const createLoginMethods = (methodArg: {
   ]
 
   const signUp = loginMethodCreater({
-    setInputValue,
+    errorMessageHandler: errorMessage => setInputValue('errorMessage', errorMessage),
     validations: [
       ...commonValidations,
       {
@@ -142,7 +113,7 @@ const createLoginMethods = (methodArg: {
   })
 
   const signIn = loginMethodCreater({
-    setInputValue,
+    errorMessageHandler: errorMessage => setInputValue('errorMessage', errorMessage),
     validations: commonValidations,
     whenValid: () => {
       firebase
