@@ -2,7 +2,7 @@ import 'solid-styled-jsx'
 import { For, render } from 'solid-js/dom'
 import { HeaderMenu } from '@lib/auth-header-menu'
 import { sessionState, sessionStateChangedHandler } from '@lib/solid-firebase-auth'
-import { createRouter, routingPaths } from '@lib/router'
+import { createRouter, routingPaths, movePage } from '@lib/router'
 import { createEffect, createRoot } from 'solid-js'
 
 const dropDownTarget = document.getElementById('header-menu')
@@ -20,14 +20,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
   firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
 
-  createRoot(() => createEffect(() => console.log(sessionState.isLoggedIn)))
+  createRoot(() => createEffect(() => console.log('Is Logged In =>', sessionState.isLoggedIn)))
 
   const Links = () => <ul>
     <For each={[routingPaths.home, routingPaths.auth, routingPaths.chat, routingPaths.createRoom, routingPaths.searchRoom]}>
       {path => <li><a onClick={e => {
         e.preventDefault()
-        history.pushState({}, '', `.${path}`)
-        window.dispatchEvent(new Event('popstate'))
+        movePage(`.${path}`)
       }}>{path}</a></li>}
     </For>
     <li>

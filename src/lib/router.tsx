@@ -1,7 +1,8 @@
 import { PathMatchRouter } from "@components/common/case/path-match-router"
-import { FirebaseAuthUI } from "@components/common/domain/firebase-auth-ui"
-import { createLazyFirebaseAuthUI } from "@components/project/firebase-auth-ui"
-import { Component, createSignal } from "solid-js"
+import { Redirector } from "@components/common/base/atoms/redirect"
+import { createLazyAuthUI } from "@components/project/firebase-auth-own-ui"
+import { createSignal, untrack } from "solid-js"
+import { sessionState } from "./solid-firebase-auth"
 
 const [routeSignal, sendRouteSignal] = createSignal('', true)
 
@@ -10,32 +11,43 @@ window.addEventListener('popstate', ev => {
   sendRouteSignal(window.location.pathname)
 })
 
+export const movePage = (url: string) => {
+  history.pushState({}, '', url)
+  window.dispatchEvent(new Event('popstate'))
+}
+
+const Redirect = Redirector.createComponent({
+  redirector: path => {
+    movePage(`${location.origin}${path}`)
+  }
+})
+
 export const routingPaths = {
-  home: '/home',
+  home: '/',
   chat: '/chat',
   auth: '/auth',
   searchRoom: '/search-room',
   createRoom: '/create-room'
 }
 
-const uiConfig: firebaseui.auth.Config = {
-  signInOptions: [
-    {
-      provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
-      fullLabel: 'Use Email and Passward'
-    }
-  ],
-  callbacks: {
-    signInSuccessWithAuthResult: (authResult, redirectURL) => {
-      console.log('signInSuccessWithAuthResult', authResult, redirectURL)
+// const uiConfig: firebaseui.auth.Config = {
+//   signInOptions: [
+//     {
+//       provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
+//       fullLabel: 'Use Email and Passward'
+//     }
+//   ],
+//   callbacks: {
+//     signInSuccessWithAuthResult: (authResult, redirectURL) => {
+//       console.log('signInSuccessWithAuthResult', authResult, redirectURL)
 
-      history.pushState({}, '', `.${routingPaths.home}`)
-      window.dispatchEvent(new Event('popstate'))
+//       history.pushState({}, '', `.${routingPaths.home}`)
+//       window.dispatchEvent(new Event('popstate'))
 
-      return false
-    }
-  }
-}
+//       return false
+//     }
+//   }
+// }
 
 export const createRouter = (context?: PathMatchRouter.Context) => {
   const routerContext: PathMatchRouter.Context = {
@@ -45,9 +57,9 @@ export const createRouter = (context?: PathMatchRouter.Context) => {
 
   const RouteComponent = PathMatchRouter.createComponent(routerContext)
 
-  let AuthUIComponent: Component<FirebaseAuthUI.Props>
+  const AuthComponent = createLazyAuthUI()
 
-  return () => <RouteComponent routingTable={[
+  return () => <RouteComponent routeSignal={routeSignal} routingTable={[
     {
       matcher: routingPaths.home,
       getComponent: () => <div>Home Page</div>
@@ -58,13 +70,11 @@ export const createRouter = (context?: PathMatchRouter.Context) => {
     },
     {
       matcher: ({withHashAndQuery}) => withHashAndQuery().startsWith(routingPaths.auth),
-      getComponent: () => {
-        if(!AuthUIComponent) {
-          const authUI = new firebaseui.auth.AuthUI(firebase.auth())
-          AuthUIComponent = createLazyFirebaseAuthUI({ ui: authUI })
-        }
-        return <AuthUIComponent uiConfig={uiConfig} />
-      }
+      getComponent: () => untrack(() => !sessionState.isLoggedIn)
+        ? <AuthComponent redirectToSuccessUrl={() => {
+          movePage(`${location.origin}${routingPaths.home}`)
+      }} />
+        : <Redirect url={routingPaths.home} />
     },
     {
       matcher: routingPaths.searchRoom,
@@ -72,7 +82,7 @@ export const createRouter = (context?: PathMatchRouter.Context) => {
     },
     {
       matcher: routingPaths.createRoom,
-    getComponent: () => <div>Create Room Page</div>
+      getComponent: () => <div>Create Room Page</div>
     },
-  ]} routeSignal={routeSignal}></RouteComponent>
+  ]}></RouteComponent>
 }

@@ -3,6 +3,7 @@ import { css } from 'styled-jsx/css'
 import { createSignal, For, assignProps } from 'solid-js'
 import clsx, { Clsx } from 'clsx'
 import { Portal } from 'solid-js/dom'
+import { Cirrus } from '@components/common/typings/cirrus-style'
 
 type LinkButtonClass = 'LinkButtonClassName'
 

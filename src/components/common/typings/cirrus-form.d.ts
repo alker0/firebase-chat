@@ -1,4 +1,4 @@
-type SizedFormItem = Extract<
+export type SizedFormItem = Extract<
   ''
   | 'label-xsmall'
   | 'label-small'

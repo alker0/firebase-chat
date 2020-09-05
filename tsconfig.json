@@ -27,7 +27,7 @@
       "solid-js/*": ["solid-js/types/*"],
       "@lib/*": ["src/lib/*"],
       "@components/*": ["src/components/*"],
-      "@components/common/*": ["src/components/common/src/*"],
+      "@components/common/*": ["src/components/common/src/*", "src/components/common/*"],
       "@components/cirrus/*": ["src/components/common/src/cirrus/*"]
     },
 
