@@ -80,11 +80,11 @@ const createLoginMethods = (methodArg: {
   const {getInputValue, setInputValue, redirectToSuccessUrl} = methodArg
   const commonValidations = [
     {
-      condition: () => RegExp(inputRegex.email).test(getInputValue.email),
+      condition: () => inputRegex.emailRegex.test(getInputValue.email),
       errorMessage: () => 'Email is invalid format'
     },
     {
-      condition: () => RegExp(inputRegex.password(passwordLength)).test(getInputValue.password),
+      condition: () => inputRegex.passwordRegex(passwordLength).test(getInputValue.password),
       errorMessage: () => 'Password is invalid format'
     },
   ]
