@@ -1,9 +1,9 @@
 import { PathMatchRouter } from "@components/common/case/path-match-router"
 import { Redirect as RedirectCreator } from "@components/common/base/atoms/redirect"
-import { createLazyAuthUI } from "@components/project/firebase-auth-own-ui"
+import { createLazyAuthUI } from "./lazy/firebase-auth-own-ui"
 import { createSignal, untrack } from "solid-js"
-import { sessionState } from "./solid-firebase-auth"
-import { TopMenu as TopMenuCreator } from "@components/project/not-lazy/top-menu"
+import { sessionState } from "@lib/solid-firebase-auth"
+import { TopMenu as TopMenuCreator } from "./top-menu"
 import clsx, { Clsx } from "clsx"
 import { Cirrus } from "@components/common/typings/cirrus-style"
 

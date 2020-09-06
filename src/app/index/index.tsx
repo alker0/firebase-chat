@@ -2,7 +2,7 @@ import 'solid-styled-jsx'
 import { For, render } from 'solid-js/dom'
 import { HeaderMenu } from '@lib/auth-header-menu'
 import { sessionState, sessionStateChangedHandler } from '@lib/solid-firebase-auth'
-import { createRouter, routingPaths, movePage, movePageFromPath } from '@lib/router'
+import { createRouter, routingPaths, movePageFromPath } from '@components/project/router'
 import { createEffect, createRoot } from 'solid-js'
 
 const dropDownTarget = document.getElementById('header-menu')
