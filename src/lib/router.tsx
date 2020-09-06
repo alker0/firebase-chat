@@ -1,8 +1,9 @@
 import { PathMatchRouter } from "@components/common/case/path-match-router"
-import { Redirector } from "@components/common/base/atoms/redirect"
+import { Redirect as RedirectCreator } from "@components/common/base/atoms/redirect"
 import { createLazyAuthUI } from "@components/project/firebase-auth-own-ui"
 import { createSignal, untrack } from "solid-js"
 import { sessionState } from "./solid-firebase-auth"
+import { TopMenu as TopMenuCreator } from "@components/project/not-lazy/top-menu"
 
 const [routeSignal, sendRouteSignal] = createSignal('', true)
 
@@ -16,7 +17,9 @@ export const movePage = (url: string) => {
   window.dispatchEvent(new Event('popstate'))
 }
 
-const Redirect = Redirector.createComponent({
+const TopMenu = TopMenuCreator.createComponent()
+
+const Redirect = RedirectCreator.createComponent({
   redirector: path => {
     movePage(`${location.origin}${path}`)
   }
@@ -62,7 +65,7 @@ export const createRouter = (context?: PathMatchRouter.Context) => {
   return () => <RouteComponent routeSignal={routeSignal} routingTable={[
     {
       matcher: routingPaths.home,
-      getComponent: () => <div>Home Page</div>
+      getComponent: () => <TopMenu />
     },
     {
       matcher: routingPaths.chat,

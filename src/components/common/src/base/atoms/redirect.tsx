@@ -1,7 +1,7 @@
 import { afterEffects, Component } from "solid-js"
 
-export const Redirector = {
-  createComponent(context: Redirector.Context): Component<Redirector.Props> {
+export const Redirect = {
+  createComponent(context: Redirect.Context): Component<Redirect.Props> {
     return props => {
       afterEffects(() => {
         context.redirector(typeof props.url === 'string' ? props.url : props.url())
@@ -11,7 +11,7 @@ export const Redirector = {
   }
 }
 
-export declare module Redirector {
+export declare module Redirect {
   export interface Context {
     redirector: (url: string) => void
   }
