@@ -4,6 +4,10 @@ import { createLazyAuthUI } from "@components/project/firebase-auth-own-ui"
 import { createSignal, untrack } from "solid-js"
 import { sessionState } from "./solid-firebase-auth"
 import { TopMenu as TopMenuCreator } from "@components/project/not-lazy/top-menu"
+import clsx, { Clsx } from "clsx"
+import { Cirrus } from "@components/common/typings/cirrus-style"
+
+const cn: Clsx<Cirrus> = clsx
 
 const [routeSignal, sendRouteSignal] = createSignal('', true)
 
@@ -17,11 +21,30 @@ export const movePage = (url: string) => {
   window.dispatchEvent(new Event('popstate'))
 }
 
-const TopMenu = TopMenuCreator.createComponent()
+export const movePageFromPath = (path: string) => movePage(`${location.origin}${path}`)
+
+const onSessionButtonClick = () => {
+  if(sessionState.isLoggedIn) {
+    firebase.auth().signOut()
+  }
+  else {
+    movePageFromPath(routingPaths.auth)
+  }
+}
+
+const TopMenu = TopMenuCreator.createComponent({
+  headerContents: () => <h1 class={cn('offset-center')}>Welcome To Talker</h1>,
+  getSessionButtonText: () => sessionState.isLoggedIn ? 'Sign Out' : 'Sign Up',
+  onSessionButtonClick,
+  leftButtonText: 'Search Room',
+  onLeftButtonClick: () => movePageFromPath(routingPaths.searchRoom),
+  rightButtonText: 'Create Room',
+  onRightButtonClick: () => movePageFromPath(routingPaths.createRoom),
+})
 
 const Redirect = RedirectCreator.createComponent({
   redirector: path => {
-    movePage(`${location.origin}${path}`)
+    movePageFromPath(path)
   }
 })
 
@@ -75,7 +98,7 @@ export const createRouter = (context?: PathMatchRouter.Context) => {
       matcher: ({withHashAndQuery}) => withHashAndQuery().startsWith(routingPaths.auth),
       getComponent: () => untrack(() => !sessionState.isLoggedIn)
         ? <AuthComponent redirectToSuccessUrl={() => {
-          movePage(`${location.origin}${routingPaths.home}`)
+          movePageFromPath(routingPaths.home)
       }} />
         : <Redirect url={routingPaths.home} />
     },
