@@ -23,6 +23,7 @@ module.exports = {
     ['styled-jsx/babel', { styleModule: '/web_modules/solid-styled-jsx.js' }],
     'macros',
     '@babel/proposal-class-properties',
-    '@babel/proposal-object-rest-spread'
+    '@babel/proposal-object-rest-spread',
+    ...(process.env.NODE_ENV === 'production' ? ['transform-remove-console'] : [])
   ],
 };

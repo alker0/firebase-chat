@@ -2599,15 +2599,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/source-map-support@npm:^0.5.3":
-  version: 0.5.3
-  resolution: "@types/source-map-support@npm:0.5.3"
-  dependencies:
-    source-map: ^0.6.0
-  checksum: b91a22010f83efbcde37861af7d57fc7c62fef2510a6cb39ed3316ee31c6e76cf98445589a0cbb97b9262490b3e3d03748bdc5a1f640b3a03f6965d02eda82d4
-  languageName: node
-  linkType: hard
-
 "@types/stack-utils@npm:^1.0.1":
   version: 1.0.1
   resolution: "@types/stack-utils@npm:1.0.1"
@@ -3203,6 +3194,13 @@ __metadata:
   version: 6.18.0
   resolution: "babel-plugin-syntax-jsx@npm:6.18.0"
   checksum: a5c8174ad6165d5f541f9f31cf4b6338ccfb7d586cec111537fa567f13b5fbdcf54f7928db44429d4610aa1be9d07bb03d017b22ba521ff819a6a2090b694797
+  languageName: node
+  linkType: hard
+
+"babel-plugin-transform-remove-console@npm:^6.9.4":
+  version: 6.9.4
+  resolution: "babel-plugin-transform-remove-console@npm:6.9.4"
+  checksum: 8addd68d91266f374ab44e5d9f08158ac225ad28934e133c356c2ee1d32933f5028e5286366a50e35fe03ca7e7b73bbe0c8d7782cc5f95e538ddf58546de0706
   languageName: node
   linkType: hard
 
@@ -5668,8 +5666,8 @@ __metadata:
     "@snowpack/plugin-build-script": ^2.0.6
     "@snowpack/plugin-postcss": ^1.0.2
     "@snowpack/plugin-run-script": ^2.1.1
-    "@types/source-map-support": ^0.5.3
     babel-plugin-macros: ^2.8.0
+    babel-plugin-transform-remove-console: ^6.9.4
     babel-preset-solid: ^0.19.0
     clsx: ^1.1.1
     connect: ^3.7.0
