@@ -1,4 +1,4 @@
-import { assignProps, createMemo, Dynamic, Suspense } from "solid-js";
+import { assignProps, createMemo, Dynamic, Match, Suspense, Switch } from "solid-js";
 import { ComponentCreater } from "../../../typings/component-creater";
 
 const defaultContext: Router.DefaultContext = {
@@ -11,12 +11,19 @@ export const Router: ComponentCreater<Router.Context, Router.Props> = {
     const context = assignProps({}, defaultContext, contextArg)
 
     return props => {
-      const routeResult = createMemo(() => {
-        props.routeSignal()
-        return props.routingTable.find(info => info.matchFn())?.getComponent ?? context.unmatchElement
+      const routeComponent = () => <Switch fallback={context.unmatchElement()}>
+        {props.routingTable.map(info => <Match when={info.matchFn()}>
+          {info.getComponent()}
+        </Match>)}
+      </Switch>
+
+      const getRouteComponent = createMemo(() => {
+        void(props.routeSignal())
+        return routeComponent
       })
+
       return <Suspense fallback={context.loadingElement()}>
-        <Dynamic component={routeResult()} />
+        <Dynamic component={getRouteComponent()} />
       </Suspense>
     }
   }
