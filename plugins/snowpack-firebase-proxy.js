@@ -27,9 +27,10 @@ module.exports = function(snowpackConfig, pluginOption) {
       }
 
       const proxyOption = {
-        resourceEndPoint: 'localhost:8080',
+        resourceOrigin: 'localhost:8080',
         port: 8081,
         logger: logger,
+        protocols: ['esm-hmr'],
         ...(pluginOption ? pluginOption : {})
       }
 

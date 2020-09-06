@@ -7,9 +7,9 @@ const websocket = require('websocket-driver')// npm package
 const superstatic = require('superstatic')// npm package
 const firebaseConfig = require('firebase-tools/lib/config').load({ cwd: process.cwd() })
 
-function createProxyProvider({endPoint, logger}) {
+function createProxyProvider({origin, logger}) {
   return (_req, path) => {
-    const resourcePath = endPoint + path
+    const resourcePath = origin + path
     const passThrough = new stream.PassThrough()
     return new Promise((resolve, reject) => {
       http.request(resourcePath)
@@ -39,36 +39,37 @@ const sigint = 'SIGINT'
 const localhost = 'localhost'
 const httpPrefix = 'http://'
 
-module.exports = ({resourceEndPoint, port, logger}) => {
+module.exports = ({resourceOrigin, port, logger, protocols = []}) => {
   logger = logger || console
 
-  const proxyEndPoint = `${localhost}:${port}`
+  const proxyOrigin = `${localhost}:${port}`
 
   const app = connect()
 
   app.use(superstatic({
       config: firebaseConfig.data.hosting,
       provider: createProxyProvider({
-        endPoint: httpPrefix + resourceEndPoint,
-        logger: logger
+        origin: httpPrefix + resourceOrigin,
+        logger
       })
   }))
 
   const server = app.listen(port, () => {
     logger.log(['Superstatic proxy is running',
-    `Resource(${resourceEndPoint}) <-> Proxy(${proxyEndPoint}) <-> Browser`
+    `Resource(${resourceOrigin}) <-> Proxy(${proxyOrigin}) <-> Browser`
     ].join('\n'))
   })
 
   server.on('upgrade', function(req, socket, body){
     if(!websocket.isWebSocket(req)) return;
 
-    // req.headers.host = proxyBase
+    // req.headers.host = proxyOrigin
 
     // const wsDriver = websocket.http(req)
-    const wsDriver = websocket.http(req, {protocols: ['esm-hmr']})
+    const wsDriver = websocket.http(req, {protocols})
 
     wsDriver.io.write(body)
+
     socket.pipe(wsDriver.io).pipe(socket)
 
     wsDriver.start()

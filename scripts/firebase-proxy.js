@@ -5,14 +5,14 @@ const proxy = require('./firebase-proxy-core')
 const localhost = 'localhost'
 const args =  process.argv.slice(2)
 let port = 8081
-let resourceEndPoint = `${localhost}:8080`
+let resourceOrigin = `${localhost}:8080`
 
 while(args.length){
   const arg = args.shift()
   switch (arg) {
     case '-r':
     case '--resource':
-      resourceEndPoint = args.shift()
+      resourceOrigin = args.shift()
       break
     case '-p':
     case '--port':
@@ -21,4 +21,4 @@ while(args.length){
   }
 }
 
-proxy({resourceEndPoint, port})
+proxy({resourceOrigin, port})
