@@ -1,53 +1,65 @@
-import 'solid-styled-jsx'
-import { For, render } from 'solid-js/dom'
-import { HeaderMenu } from '@lib/auth-header-menu'
-import { sessionState, sessionStateChangedHandler } from '@lib/solid-firebase-auth'
-import { createRouter, routingPaths, movePageFromPath } from '@components/project/router'
-import { createEffect, createRoot } from 'solid-js'
+import 'solid-styled-jsx';
+import { For, render } from 'solid-js/dom';
+import { HeaderMenu } from '@lib/auth-header-menu';
+import { sessionState, sessionStateChangedHandler } from '@lib/solid-firebase-auth';
+import { createRouter, routingPaths, movePageFromPath } from '@components/project/router';
+import { createEffect, createRoot } from 'solid-js';
 
-const dropDownTarget = document.getElementById('header-menu')
+const dropDownTarget = document.getElementById('header-menu');
 
 if (dropDownTarget) {
-  render(() => <HeaderMenu />, dropDownTarget)
+  render(() => <HeaderMenu />, dropDownTarget);
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   // firebase.auth().onAuthStateChanged(user => { });
   // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
   // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
 
-  firebase.auth().onAuthStateChanged(sessionStateChangedHandler)
+  firebase.auth().onAuthStateChanged(sessionStateChangedHandler);
 
-  firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
+  firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);
 
-  createRoot(() => createEffect(() => console.log('Is Logged In =>', sessionState.isLoggedIn)))
+  createRoot(() =>
+    createEffect(() => console.log('Is Logged In =>', sessionState.isLoggedIn)),
+  );
 
-  const Links = () => <ul>
-    <For each={[routingPaths.home, routingPaths.chat]}>
-      {path => <li><a onClick={e => {
-        e.preventDefault()
-        movePageFromPath(path)
-      }}>{path}</a></li>}
-    </For>
-  </ul>
+  const Links = () => (
+    <ul><For each={[routingPaths.home, routingPaths.chat]}>
+      {path => <li>
+        <a onClick={e => {
+          e.preventDefault();
+          movePageFromPath(path);
+        }}>{path}
+        </a>
+      </li>
+      }
+    </For></ul>
+  );
 
-  const Router = createRouter()
+  const Router = createRouter();
 
-  const mainTarget = document.getElementById('main-contents')
+  const mainTarget = document.getElementById('main-contents');
 
-  if(mainTarget) {
+  if (mainTarget) {
     render(() => <>
       <Links />
       <Router />
-    </>, mainTarget)
+    </>,
+      mainTarget,
+    );
   }
 
   try {
     const firebaseApp = firebase.app();
-    const features = (['database', 'storage'] as const).filter(feature => typeof firebaseApp[feature] === 'function');
-    document.getElementById('load')!.innerHTML = `Firebase SDK loaded with ${features.join(', ')}`;
+    const features = (['database', 'storage'] as const).filter(
+      feature => typeof firebaseApp[feature] === 'function',
+    );
+    document.getElementById('load')!.innerHTML =
+      `Firebase SDK loaded with ${features.join(', ')}`;
   } catch (e) {
     console.error(e);
-    document.getElementById('load')!.innerHTML = 'Error loading the Firebase SDK, check the console.';
+    document.getElementById('load')!.innerHTML =
+      'Error loading the Firebase SDK, check the console.';
   }
 });

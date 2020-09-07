@@ -16,4 +16,4 @@ export type SizedFormItem = Extract<
   | 'btn-large'
   | 'btn-xlarge'
   , Cirrus
-  >
+>;

@@ -5,6 +5,6 @@ const postcssConfig = ctx => ({
       content: ['./src/templates/**/*.html']
     }
   }
-})
+});
 
-module.exports = postcssConfig
+module.exports = postcssConfig;

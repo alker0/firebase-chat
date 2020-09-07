@@ -1,6 +1,5 @@
-import ui from 'firebaseui'
+import ui from 'firebaseui';
 
 declare global {
-  const firebaseui: typeof ui
+  const firebaseui: typeof ui;
 }
-

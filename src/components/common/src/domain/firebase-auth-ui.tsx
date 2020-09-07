@@ -1,5 +1,5 @@
-import { ComponentCreater } from '../../typings/component-creater'
-import { afterEffects, assignProps } from 'solid-js'
+import { ComponentCreater } from '../../typings/component-creater';
+import { afterEffects, assignProps } from 'solid-js';
 
 const defaultProps: FirebaseAuthUI.DefaultProps = {
   uiConfig: {
@@ -7,22 +7,22 @@ const defaultProps: FirebaseAuthUI.DefaultProps = {
       firebase.auth.EmailAuthProvider.PROVIDER_ID
     ]
   }
-}
+};
 
 export const FirebaseAuthUI: ComponentCreater<
-    FirebaseAuthUI.Context,
-    FirebaseAuthUI.Props
-  > = {
+  FirebaseAuthUI.Context,
+  FirebaseAuthUI.Props
+> = {
   createComponent: context => {
 
     return propsArg => {
-      const props = assignProps({}, defaultProps, propsArg)
+      const props = assignProps({}, defaultProps, propsArg);
 
-      let authRef: HTMLDivElement | undefined
+      let authRef: HTMLDivElement | undefined;
 
       afterEffects(() => {
-        context.ui.start(authRef!, props.uiConfig)
-      })
+        context.ui.start(authRef!, props.uiConfig);
+      });
 
       return <div style="display: contents;" ref={authRef}>
         <style jsx>{`
@@ -38,19 +38,19 @@ export const FirebaseAuthUI: ComponentCreater<
               padding-top: 0;
             }
         `}</style>
-      </div>
-    }
+      </div>;
+    };
   }
-}
+};
 
 export declare module FirebaseAuthUI {
   export interface Context {
-    ui: firebaseui.auth.AuthUI
+    ui: firebaseui.auth.AuthUI;
   }
 
   export interface Props {
-    uiConfig?: firebaseui.auth.Config
+    uiConfig?: firebaseui.auth.Config;
   }
 
-  export interface DefaultProps extends Required<Props> {}
+  export interface DefaultProps extends Required<Props> { }
 }

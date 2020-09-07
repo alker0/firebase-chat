@@ -1,36 +1,36 @@
-import { PathMatchRouter } from "@components/common/case/path-match-router"
-import { Redirect as RedirectCreator } from "@components/common/base/atoms/redirect"
-import { createLazyAuthUI } from "./lazy/firebase-auth-own-ui"
-import { createSignal, untrack } from "solid-js"
-import { sessionState } from "@lib/solid-firebase-auth"
-import { TopMenu as TopMenuCreator } from "./top-menu"
-import clsx, { Clsx } from "clsx"
-import { Cirrus } from "@components/common/typings/cirrus-style"
+import { PathMatchRouter } from "@components/common/case/path-match-router";
+import { Redirect as RedirectCreator } from "@components/common/base/atoms/redirect";
+import { createLazyAuthUI } from "./lazy/firebase-auth-own-ui";
+import { createSignal, untrack } from "solid-js";
+import { sessionState } from "@lib/solid-firebase-auth";
+import { TopMenu as TopMenuCreator } from "./top-menu";
+import clsx, { Clsx } from "clsx";
+import { Cirrus } from "@components/common/typings/cirrus-style";
 
-const cn: Clsx<Cirrus> = clsx
+const cn: Clsx<Cirrus> = clsx;
 
-const [routeSignal, sendRouteSignal] = createSignal('', true)
+const [routeSignal, sendRouteSignal] = createSignal('', true);
 
 window.addEventListener('popstate', ev => {
-  console.log(window.location.href.replace(window.location.origin, ''))
-  sendRouteSignal(window.location.pathname)
-})
+  console.log(window.location.href.replace(window.location.origin, ''));
+  sendRouteSignal(window.location.pathname);
+});
 
 export const movePage = (url: string) => {
-  history.pushState({}, '', url)
-  window.dispatchEvent(new Event('popstate'))
-}
+  history.pushState({}, '', url);
+  window.dispatchEvent(new Event('popstate'));
+};
 
-export const movePageFromPath = (path: string) => movePage(`${location.origin}${path}`)
+export const movePageFromPath = (path: string) => movePage(`${location.origin}${path}`);
 
 const onSessionButtonClick = () => {
-  if(sessionState.isLoggedIn) {
-    firebase.auth().signOut()
+  if (sessionState.isLoggedIn) {
+    firebase.auth().signOut();
   }
   else {
-    movePageFromPath(routingPaths.auth)
+    movePageFromPath(routingPaths.auth);
   }
-}
+};
 
 const TopMenu = TopMenuCreator.createComponent({
   headerContents: () => <h1 class={cn('offset-center')}>Welcome To Talker</h1>,
@@ -40,13 +40,13 @@ const TopMenu = TopMenuCreator.createComponent({
   onLeftButtonClick: () => movePageFromPath(routingPaths.searchRoom),
   rightButtonText: 'Create Room',
   onRightButtonClick: () => movePageFromPath(routingPaths.createRoom),
-})
+});
 
 const Redirect = RedirectCreator.createComponent({
   redirector: path => {
-    movePageFromPath(path)
+    movePageFromPath(path);
   }
-})
+});
 
 export const routingPaths = {
   home: '/',
@@ -54,7 +54,7 @@ export const routingPaths = {
   auth: '/auth',
   searchRoom: '/search-room',
   createRoom: '/create-room'
-}
+};
 
 // const uiConfig: firebaseui.auth.Config = {
 //   signInOptions: [
@@ -79,11 +79,11 @@ export const createRouter = (context?: PathMatchRouter.Context) => {
   const routerContext: PathMatchRouter.Context = {
     loadingElement: () => <div>Loading...</div>,
     unmatchElement: () => <div>Any Pages Not Found</div>
-  }
+  };
 
-  const RouteComponent = PathMatchRouter.createComponent(routerContext)
+  const RouteComponent = PathMatchRouter.createComponent(routerContext);
 
-  const AuthComponent = createLazyAuthUI()
+  const AuthComponent = createLazyAuthUI();
 
   return () => <RouteComponent routeSignal={routeSignal} routingTable={[
     {
@@ -95,11 +95,11 @@ export const createRouter = (context?: PathMatchRouter.Context) => {
       getComponent: () => <div>Chat Page</div>
     },
     {
-      matcher: ({withHashAndQuery}) => withHashAndQuery().startsWith(routingPaths.auth),
+      matcher: ({ withHashAndQuery }) => withHashAndQuery().startsWith(routingPaths.auth),
       getComponent: () => untrack(() => !sessionState.isLoggedIn)
         ? <AuthComponent redirectToSuccessUrl={() => {
-          movePageFromPath(routingPaths.home)
-      }} />
+          movePageFromPath(routingPaths.home);
+        }} />
         : <Redirect url={routingPaths.home} />
     },
     {
@@ -110,5 +110,5 @@ export const createRouter = (context?: PathMatchRouter.Context) => {
       matcher: routingPaths.createRoom,
       getComponent: () => <div>Create Room Page</div>
     },
-  ]}></RouteComponent>
-}
+  ]}></RouteComponent>;
+};

@@ -7,4 +7,4 @@ module.exports = {
   ignoreFiles: [
     'src/public/**/*.css'
   ]
-}
+};

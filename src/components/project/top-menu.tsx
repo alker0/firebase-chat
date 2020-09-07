@@ -3,10 +3,10 @@ import { Cirrus } from "@components/common/typings/cirrus-style";
 import clsx, { Clsx } from "clsx";
 import { assignProps, Component } from "solid-js";
 
-const cn: Clsx<Cirrus> = clsx
+const cn: Clsx<Cirrus> = clsx;
 
-type OnDivClick = JSX.HTMLAttributes<HTMLDivElement>["onClick"]
-type OnButtonClick = JSX.ButtonHTMLAttributes<HTMLButtonElement>["onClick"]
+type OnDivClick = JSX.HTMLAttributes<HTMLDivElement>["onClick"];
+type OnButtonClick = JSX.ButtonHTMLAttributes<HTMLButtonElement>["onClick"];
 
 const defaultContext: Required<TopMenu.Context> = {
   headerContents: () => undefined,
@@ -16,12 +16,12 @@ const defaultContext: Required<TopMenu.Context> = {
   onLeftButtonClick: DO_NOTHING,
   rightButtonText: 'Right Button',
   onRightButtonClick: DO_NOTHING,
-}
+};
 
 
 export const TopMenu = {
   createComponent: (contextArg?: TopMenu.Context): Component<TopMenu.Props> => {
-    const context = assignProps({}, defaultContext, contextArg)
+    const context = assignProps({}, defaultContext, contextArg);
     return props => {
       return <div class={cn('content')}>
         <div class={cn('row')}>{context.headerContents()}</div>
@@ -40,10 +40,10 @@ export const TopMenu = {
             </div>
           </div></div>
         </div>
-      </div>
-    }
+      </div>;
+    };
   }
-}
+};
 
 export declare module TopMenu {
   export interface Context {

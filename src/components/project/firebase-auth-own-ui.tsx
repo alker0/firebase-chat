@@ -9,8 +9,8 @@ import clsx, { Clsx } from "clsx";
 import { assignProps, Component, createEffect, createMemo, createRoot, createSignal, createState, SetStateFunction, untrack } from "solid-js";
 import { css } from "styled-jsx/css";
 
-type LinkMargin = 'This is Link Margin'
-type BottomPadding = 'This is Bottom Margin'
+type LinkMargin = 'This is Link Margin';
+type BottomPadding = 'This is Bottom Margin';
 
 const [linkMargin, bottomPadding] = createRoot(() => {
   return [
@@ -24,37 +24,37 @@ const [linkMargin, bottomPadding] = createRoot(() => {
         padding-right: 0;
       }
     `
-  ].map(pair => pair.className)
-}) as [LinkMargin, BottomPadding]
+  ].map(pair => pair.className);
+}) as [LinkMargin, BottomPadding];
 
-const cn: Clsx<Cirrus | LinkMargin | BottomPadding> = clsx
+const cn: Clsx<Cirrus | LinkMargin | BottomPadding> = clsx;
 
 const Container = FormContainer.createComponent({
   createContainer: () => (propsArg: ContainerProps) => {
-    const props = assignProps({}, defaultContainerProps, propsArg)
+    const props = assignProps({}, defaultContainerProps, propsArg);
     return <form {...(props.ofForm) ?? {}}>
       <div {...props.ofInternalContainer}>
         <div {...props.ofInternalTitle} />
         <div {...props.ofInternalBody} children={props.children} />
       </div>
-    </form>
+    </form>;
   }
-})
+});
 
 const InputField = BasicInputField.createComponent({
-  fieldSize:'small',
-})
+  fieldSize: 'small',
+});
 
 // button.animated.btn-info.outline
-const Bottom = LoginBasicBottom.createComponent()
+const Bottom = LoginBasicBottom.createComponent();
 
 const
   SignUpMode = Symbol(),
-  SignInMode = Symbol()
+  SignInMode = Symbol();
 
-type LoginMode = typeof SignUpMode | typeof SignInMode
+type LoginMode = typeof SignUpMode | typeof SignInMode;
 
-const passwordLength = 8
+const passwordLength = 8;
 
 interface InputValueState {
   scheme: {
@@ -64,20 +64,20 @@ interface InputValueState {
     errorMessage: string,
   },
   getter: InputValueState["scheme"],
-  setter: SetStateFunction<InputValueState["scheme"]>
+  setter: SetStateFunction<InputValueState["scheme"]>;
 }
 
-type OnSubmit = NonNullable<JSX.FormHTMLAttributes<HTMLFormElement>["onSubmit"]>
+type OnSubmit = NonNullable<JSX.FormHTMLAttributes<HTMLFormElement>["onSubmit"]>;
 
 const createLoginMethods = (methodArg: {
   getInputValue: InputValueState["getter"],
   setInputValue: InputValueState["setter"],
-  redirectToSuccessUrl: () => void
+  redirectToSuccessUrl: () => void;
 }): {
   signUp: OnSubmit,
   signIn: OnSubmit,
 } => {
-  const {getInputValue, setInputValue, redirectToSuccessUrl} = methodArg
+  const { getInputValue, setInputValue, redirectToSuccessUrl } = methodArg;
   const commonValidations = [
     {
       condition: () => inputRegex.emailRegex.test(getInputValue.email),
@@ -87,7 +87,7 @@ const createLoginMethods = (methodArg: {
       condition: () => inputRegex.passwordRegex(passwordLength).test(getInputValue.password),
       errorMessage: () => 'Password is invalid format'
     },
-  ]
+  ];
 
   const signUp = loginMethodCreater({
     errorMessageHandler: errorMessage => setInputValue('errorMessage', errorMessage),
@@ -103,15 +103,15 @@ const createLoginMethods = (methodArg: {
         .auth()
         .createUserWithEmailAndPassword(getInputValue.email, getInputValue.password)
         .then(info => {
-          console.log('Sign Up')
-          redirectToSuccessUrl()
+          console.log('Sign Up');
+          redirectToSuccessUrl();
         })
         .catch(err => {
-          setInputValue('errorMessage', err.message)
-          console.log(err.code)
-        })
+          setInputValue('errorMessage', err.message);
+          console.log(err.code);
+        });
     }
-  })
+  });
 
   const signIn = loginMethodCreater({
     errorMessageHandler: errorMessage => setInputValue('errorMessage', errorMessage),
@@ -121,18 +121,18 @@ const createLoginMethods = (methodArg: {
         .auth()
         .signInWithEmailAndPassword(getInputValue.email, getInputValue.password)
         .then(info => {
-          console.log('Sign In')
-          redirectToSuccessUrl()
+          console.log('Sign In');
+          redirectToSuccessUrl();
         })
         .catch(err => {
-          setInputValue('errorMessage', err.message)
-          console.log(err.code)
-        })
+          setInputValue('errorMessage', err.message);
+          console.log(err.code);
+        });
     }
-  })
+  });
 
-  return {signUp, signIn}
-}
+  return { signUp, signIn };
+};
 
 
 interface ContainerProps {
@@ -140,7 +140,7 @@ interface ContainerProps {
   ofInternalContainer?: JSX.HTMLAttributes<HTMLDivElement>,
   ofInternalTitle?: JSX.HTMLAttributes<HTMLDivElement>,
   ofInternalBody?: JSX.HTMLAttributes<HTMLDivElement>,
-  children?: JSX.HTMLAttributes<HTMLElement>["children"]
+  children?: JSX.HTMLAttributes<HTMLElement>["children"];
 }
 
 const defaultContainerProps: Required<ContainerProps> = {
@@ -149,7 +149,7 @@ const defaultContainerProps: Required<ContainerProps> = {
   ofInternalTitle: {},
   ofInternalBody: {},
   children: ''
-}
+};
 
 interface InputProps {
   loginMode: () => LoginMode,
@@ -159,7 +159,7 @@ interface InputProps {
 
 interface BottomProps {
   loginMode: () => LoginMode,
-  toggleLoginMode: () => void
+  toggleLoginMode: () => void;
 }
 
 export const FirebaseAuthOwnUI = {
@@ -203,8 +203,8 @@ export const FirebaseAuthOwnUI = {
           class: cn('underline', 'level-item', 'offset-left', linkMargin),
           href: '',
           onClick: e => {
-            e.preventDefault()
-            props.toggleLoginMode()
+            e.preventDefault();
+            props.toggleLoginMode();
           },
           children: props.loginMode() === SignUpMode ? 'Sign In' : 'Sign Up'
         }}
@@ -212,50 +212,50 @@ export const FirebaseAuthOwnUI = {
           class: cn('animated', 'btn-primary', 'level-item', 'level-right'),
           disabled: sessionState.isLoggedIn
         }} />
-    })
+    });
 
     return props => {
 
-      const [loginMode, setLoginMode] = createSignal<LoginMode>(SignUpMode)
+      const [loginMode, setLoginMode] = createSignal<LoginMode>(SignUpMode);
 
       const [getInputValue, setInputValue] = createState<InputValueState["scheme"]>({
         email: '',
         password: '',
         passConfirm: '',
         errorMessage: '',
-      })
+      });
 
-      const {signUp, signIn} = createLoginMethods({
+      const { signUp, signIn } = createLoginMethods({
         getInputValue,
         setInputValue,
         redirectToSuccessUrl: () => props.redirectToSuccessUrl()
-      })
+      });
 
       const onSubmit: () => OnSubmit = createMemo(() => {
 
         if (untrack(() => sessionState.isLoggedIn)) {
           return e => {
-            e.preventDefault()
-            console.log('Already Logged In')
-            props.redirectToSuccessUrl()
-          }
+            e.preventDefault();
+            console.log('Already Logged In');
+            props.redirectToSuccessUrl();
+          };
         }
         else {
           if (loginMode() === SignUpMode) {
-            return signUp
+            return signUp;
           }
           else {
-            return signIn
+            return signIn;
           }
         }
-      })
+      });
 
-      const toggleLoginMode = () => setLoginMode(untrack(loginMode) === SignUpMode ? SignInMode : SignUpMode)
+      const toggleLoginMode = () => setLoginMode(untrack(loginMode) === SignUpMode ? SignInMode : SignUpMode);
 
       createEffect(() => {
-        void(loginMode())
-        setInputValue(['password', 'passConfirm', 'errorMessage'], '')
-      })
+        void (loginMode());
+        setInputValue(['password', 'passConfirm', 'errorMessage'], '');
+      });
 
       return <FormComponent ofContainer={{
         containerProps: {
@@ -280,14 +280,14 @@ export const FirebaseAuthOwnUI = {
       }} ofBottomContents={{
         loginMode,
         toggleLoginMode
-      }} />
-    }
+      }} />;
+    };
   }
-}
+};
 
 export declare module FirebaseAuthOwnUI {
   export interface Context { }
   export interface Props {
-    redirectToSuccessUrl: () => void
+    redirectToSuccessUrl: () => void;
   }
 }
