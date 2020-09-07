@@ -7,19 +7,48 @@ const websocket = require('websocket-driver')// npm package
 const superstatic = require('superstatic')// npm package
 const firebaseConfig = require('firebase-tools/lib/config').load({ cwd: process.cwd() })
 
-function createProxyProvider({origin, logger}) {
+const httpPrefix = 'http://'
+const websocketPrefix = 'ws://'
+
+function createProxyProvider({resourceEndPoint, logger, wsProtocols = []}) {
   return (_req, path) => {
-    const resourcePath = origin + path
+    const resourceUrl = httpPrefix + resourceEndPoint + path
     const passThrough = new stream.PassThrough()
+
     return new Promise((resolve, reject) => {
-      http.request(resourcePath)
+      if(websocket.isWebSocket(_req)) resolve(null);
+      // if(websocket.isWebSocket(_req)) {
+      //   _req.url = path
+      //   _req.headers.origin = websocketPrefix + resourceEndPoint
+
+      //   const wsDriver = websocket.http(_req, {protocols: wsProtocols})
+
+      //   _req.socket.pipe(wsDriver.io).pipe(_req.socket)
+
+      //   wsDriver
+      //   .on('error', reject)
+      //   .on('open', () => {
+      //     logger.log('Websocket Open')
+      //     resolve({ stream: wsDriver.io, size: '', etag: '', modified: '' })
+      //   })
+      //   .on('message', (ev) => {
+      //     logger.log(Object.keys(ev))
+      //   })
+      //   .on('close', () => logger.log('Websocket Close'))
+
+      //   wsDriver.start()
+
+      //   return;
+      // }
+
+      http.request(resourceUrl)
       .on('error', reject)
       .on('response', (res) => {
         if (res.statusCode != 200) {
           resolve(null)
           logger.error([
             `StatusCode: ${res.statusCode}`,
-            `Path: ${resourcePath}`
+            `Path: ${resourceUrl}`
           ].join('\n'))
           return;
         }
@@ -37,43 +66,84 @@ function createProxyProvider({origin, logger}) {
 const sigint = 'SIGINT'
 
 const localhost = 'localhost'
-const httpPrefix = 'http://'
 
-module.exports = ({resourceOrigin, port, logger, protocols = []}) => {
+module.exports = ({resourceEndPoint, port, logger, protocols = []}) => {
   logger = logger || console
 
-  const proxyOrigin = `${localhost}:${port}`
+  const proxyEndPoint = `${localhost}:${port}`
 
   const app = connect()
+
+  app.use((req, res, next) => {
+    if (websocket.isWebSocket(req)) {
+      req.headers.host = resourceEndPoint
+      req.headers.origin = websocketPrefix + resourceEndPoint
+
+      // const wsDriver = websocket.http(req)
+      const wsDriver = websocket.http(req, {protocols})
+
+      req.socket.pipe(wsDriver.io).pipe(req.socket)
+
+      wsDriver
+        .on('error', () => logger.error('Error'))
+        .on('open', () => {
+          logger.log('Websocket Open');
+        })
+        .on('message', (ev) => {
+          logger.log(Object.keys(ev));
+        })
+        .on('close', () => logger.log('Websocket Close'));
+
+      wsDriver.start()
+    }
+    else {
+      next();
+    }
+  })
 
   app.use(superstatic({
       config: firebaseConfig.data.hosting,
       provider: createProxyProvider({
-        origin: httpPrefix + resourceOrigin,
-        logger
+        resourceEndPoint,
+        logger,
+        wsProtocols: protocols,
       })
   }))
 
   const server = app.listen(port, () => {
     logger.log(['Superstatic proxy is running',
-    `Resource(${resourceOrigin}) <-> Proxy(${proxyOrigin}) <-> Browser`
+    `Resource(${resourceEndPoint}) <-> Proxy(${proxyEndPoint}) <-> Browser`
     ].join('\n'))
   })
 
-  server.on('upgrade', function(req, socket, body){
-    if(!websocket.isWebSocket(req)) return;
+  // server.on('upgrade', function(req, socket, body){
+  //   if(!websocket.isWebSocket(req)) return;
+  //   logger.log('Upgrade')
+  //   logger.log(req.headers.host)
+  //   logger.log(req.headers.origin)
 
-    // req.headers.host = proxyOrigin
+  //   req.headers.host = resourceEndPoint
+  //   req.headers.origin = websocketPrefix + resourceEndPoint
 
-    // const wsDriver = websocket.http(req)
-    const wsDriver = websocket.http(req, {protocols})
+  //   // const wsDriver = websocket.http(req)
+  //   const wsDriver = websocket.http(req, {protocols})
 
-    wsDriver.io.write(body)
+  //   wsDriver.io.write(body)
 
-    socket.pipe(wsDriver.io).pipe(socket)
+  //   socket.pipe(wsDriver.io).pipe(socket)
 
-    wsDriver.start()
-  })
+  //   wsDriver
+  //     .on('error', logger.error)
+  //     .on('open', () => {
+  //       logger.log('Websocket Open');
+  //     })
+  //     .on('message', (ev) => {
+  //       logger.log(Object.keys(ev));
+  //     })
+  //     .on('close', () => logger.log('Websocket Close'));
+
+  //   wsDriver.start()
+  // })
 
   const closer = () => {
     server.close(() => {
