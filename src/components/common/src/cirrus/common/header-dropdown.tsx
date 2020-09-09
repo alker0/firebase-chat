@@ -2,9 +2,9 @@ import { css } from 'styled-jsx/css';
 import { createSignal, For, assignProps } from 'solid-js';
 import clsx, { Clsx } from 'clsx';
 import { Portal } from 'solid-js/dom';
-import { Cirrus } from '@components/common/typings/cirrus-style';
+import { Cirrus } from '../../../typings/cirrus-style';
 import { ComponentCreater } from '../../../typings/component-creater';
-import { buttonize } from '../../util/creater-utils';
+import { buttonize } from '../../util/component-utils';
 
 type LinkButtonClass = 'LinkButtonClassName';
 

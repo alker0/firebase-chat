@@ -1,6 +1,6 @@
 import 'solid-styled-jsx';
 import { For, render } from 'solid-js/dom';
-import { HeaderMenu } from '@lib/auth-header-menu';
+import { HeaderMenu } from '@components/project/header-menu';
 import {
   sessionState,
   sessionStateChangedHandler,

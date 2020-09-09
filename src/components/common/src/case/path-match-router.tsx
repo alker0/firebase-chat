@@ -1,14 +1,8 @@
 import { ComponentCreater } from '../../typings/component-creater';
 import { Router } from '../base/molecules/router';
 
-const pathInfo = () => window.location.href.replace(window.location.origin, '');
-
 const staticMatch = (matchText: string) =>
   window.location.pathname === matchText;
-
-export const matchUtils = {
-  pathInfo,
-};
 
 export const PathMatchRouter: ComponentCreater<
   PathMatchRouter.Context,
@@ -22,7 +16,7 @@ export const PathMatchRouter: ComponentCreater<
           matchFn: () =>
             typeof info.matcher === 'string'
               ? staticMatch(info.matcher)
-              : info.matcher(matchUtils),
+              : info.matcher(),
           getComponent: info.getComponent,
         }))}
         routeSignal={props.routeSignal}
@@ -36,7 +30,7 @@ export declare module PathMatchRouter {
 
   export interface DefaultContext extends Router.DefaultContext {}
 
-  export type Matcher = string | ((utils: typeof matchUtils) => boolean);
+  export type Matcher = string | (() => boolean);
 
   export interface RoutingInfo {
     matcher: Matcher;

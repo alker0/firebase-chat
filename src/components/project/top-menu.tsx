@@ -2,7 +2,7 @@ import {
   buttonize,
   ClickHandle,
   DO_NOTHING,
-} from '@components/common/util/creater-utils';
+} from '@components/common/util/component-utils';
 import { Cirrus } from '@components/common/typings/cirrus-style';
 import clsx, { Clsx } from 'clsx';
 import { assignProps, Component } from 'solid-js';

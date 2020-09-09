@@ -1,6 +1,6 @@
 import { HeaderMenu } from '@components/cirrus/common/header-dropdown';
 import { createMemo } from 'solid-js';
-import { sessionState } from './solid-firebase-auth';
+import { sessionState } from '@lib/solid-firebase-auth';
 
 /* eslint-disable jsx-a11y/anchor-is-valid */
 const createMenuItems = () =>

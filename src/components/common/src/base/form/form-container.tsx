@@ -1,5 +1,5 @@
-import { DO_NOTHING } from '@components/common/util/creater-utils';
 import { assignProps, Component } from 'solid-js';
+import { DO_NOTHING } from '../../util/component-utils';
 
 const defaultFormProps = {
   onSubmit: DO_NOTHING,
