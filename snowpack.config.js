@@ -27,7 +27,7 @@ module.exports = {
     ],
   ],
   mount: {
-    'web_modules': '/web_modules',
+    web_modules: '/web_modules',
     'src/public': '/',
     // 'src/templates': '/',
     'src/assets': '/assets',

@@ -1,5 +1,5 @@
-import firebaseSdk from 'firebase/app'
+import firebaseSdk from 'firebase/app';
 
 declare global {
-  const firebase: typeof firebaseSdk
+  const firebase: typeof firebaseSdk;
 }

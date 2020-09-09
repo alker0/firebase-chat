@@ -1,33 +1,33 @@
 #!/usr/bin/env node
 
-const fs = require('fs').promises
-const path = require('path')
+const fs = require('fs').promises;
+const path = require('path');
 
-const cwd = process.cwd()
+const cwd = process.cwd();
 
-const srcDir = path.join(process.cwd(), 'src')
+const srcDir = path.join(process.cwd(), 'src');
 
-const appDir = path.join(srcDir, 'app')
-const templateDir = path.join(srcDir, 'templates')
-const styleDir = path.join(srcDir, 'styles')
+const appDir = path.join(srcDir, 'app');
+const templateDir = path.join(srcDir, 'templates');
+const styleDir = path.join(srcDir, 'styles');
 
-const templateExtension = '.posthtml'
-const styleExtension = '.pcss'
-const scriptExtension = '.tsx'
-const skipExtension = '.skip'
+const templateExtension = '.posthtml';
+const styleExtension = '.pcss';
+const scriptExtension = '.tsx';
+const skipExtension = '.skip';
 
-const args = process.argv.slice(2)
+const args = process.argv.slice(2);
 
 // Console format
-const red = '\x1b[31m%s\x1b[0m'
-const green = '\x1b[32m%s\x1b[0m'
-const cyan = '\x1b[36m%s\x1b[0m'
-const normal = '%s'
-const greenNormal = `${green}${normal}`
-const cyanNormal = `${cyan}${normal}`
+const red = '\x1b[31m%s\x1b[0m';
+const green = '\x1b[32m%s\x1b[0m';
+const cyan = '\x1b[36m%s\x1b[0m';
+const normal = '%s';
+const greenNormal = `${green}${normal}`;
+const cyanNormal = `${cyan}${normal}`;
 
 // Check exist required targets
-;(async function () {
+(async () => {
   await Promise.all(
     [
       { target: path.join(cwd, 'package.json'), msg: 'Not Project Root' },
@@ -37,136 +37,142 @@ const cyanNormal = `${cyan}${normal}`
     ].map(({ target, msg }) => {
       return (async () => {
         try {
-          await fs.access(target)
+          await fs.access(target);
         } catch (err) {
-          if (err.code === 'ENOENT') err.message = msg
+          if (err.code === 'ENOENT') err.message = msg;
 
-          throw err
+          throw err;
         }
-      })()
-    })
-  )
+      })();
+    }),
+  );
 
-  if (args.count < 1) throw new Error('No Targets')
+  if (args.count < 1) throw new Error('No Targets');
 
-  const successLog = function (messageInfo) {
-    [messages, formats] = messageInfo
-    console.log(formats, ...messages)
-  }
+  const successLog = (messageInfo) => {
+    const [messages, formats] = messageInfo;
+    console.log(formats, ...messages);
+  };
 
-  const alert = function (error) {
-    console.error(red, error)
-  }
+  const alert = (error) => {
+    console.error(red, error);
+  };
 
-  const relative = function (to) {
-    return path.relative(cwd, to)
-  }
+  const relative = (to) => {
+    return path.relative(cwd, to);
+  };
 
-  const catchExistItem = async function (err, path, typeCheck, itemTypeText) {
-    if(err.code === 'EEXIST') {
-      if(typeCheck(await fs.lstat(path))){
+  const catchExistItem = async (err, itemPath, typeCheck, itemTypeText) => {
+    if (err.code === 'EEXIST') {
+      if (typeCheck(await fs.lstat(itemPath))) {
         successLog([
-          ['Skip', ` Creating ${path} <= It is already exists`],
+          ['Skip', ` Creating ${itemPath} <= It is already exists`],
           cyanNormal,
-        ])
-        return
+        ]);
+        return;
       }
-      else{
-        err.message = `Non ${itemTypeText} item is exist on '${path}'`
-      }
-    }
-    throw err
-  }
 
-  const touch = async function (path, successMsgInfo) {
+      // eslint-disable-next-line no-param-reassign
+      err.message = `Non ${itemTypeText} item is exist on '${itemPath}'`;
+    }
+    throw err;
+  };
+
+  const touch = async (itemPath, successMsgInfo) => {
     try {
-      await fs.writeFile(path, '', { flag: 'wx' })
-      successLog(successMsgInfo)
+      await fs.writeFile(itemPath, '', { flag: 'wx' });
+      successLog(successMsgInfo);
     } catch (err) {
-      catchExistItem(err, path, stats => stats.isFile(), 'file')
+      catchExistItem(err, itemPath, (stats) => stats.isFile(), 'file');
     }
-  }
+  };
 
-  const createSymlink = async function (target, path, successMsgInfo) {
+  const createSymlink = async (target, itemPath, successMsgInfo) => {
     try {
-      await fs.symlink(target, path)
-      successLog(successMsgInfo)
+      await fs.symlink(target, itemPath);
+      successLog(successMsgInfo);
     } catch (err) {
-      catchExistItem(err, path, stats => stats.isSymbolicLink(), 'symLink')
+      catchExistItem(
+        err,
+        itemPath,
+        (stats) => stats.isSymbolicLink(),
+        'symLink',
+      );
     }
-  }
+  };
 
-  const afterAllSettled = function (results, successMsgInfo) {
-    const [successes, errors] = results.reduce(
+  const afterAllSettled = (results, successMsgInfo) => {
+    const [, errors] = results.reduce(
       (accum, result) => {
-        accum[result.status == 'fulfilled' ? 0 : 1].push(result)
-        return accum
+        accum[result.status === 'fulfilled' ? 0 : 1].push(result);
+        return accum;
       },
-      [[], []]
-    )
+      [[], []],
+    );
     if (!errors.length) {
-      successLog(successMsgInfo)
+      successLog(successMsgInfo);
     } else {
-      errors.forEach((error) => alert(error.reason))
+      errors.forEach((error) => alert(error.reason));
     }
-  }
+  };
 
-  allResults = await Promise.allSettled(
+  const allResults = await Promise.allSettled(
     args.map((name) =>
       (async () => {
         // src/app/name
-        const targetDir = path.join(appDir, name)
+        const targetDir = path.join(appDir, name);
 
         try {
-          await fs.mkdir(targetDir)
-          successLog([
-            ['Create', ` Page Dir : ${targetDir}`],
-            greenNormal,
-          ])
+          await fs.mkdir(targetDir);
+          successLog([['Create', ` Page Dir : ${targetDir}`], greenNormal]);
         } catch (err) {
-          catchExistItem(err, targetDir, stats => stats.isDirectory(), 'directory')
+          catchExistItem(
+            err,
+            targetDir,
+            (stats) => stats.isDirectory(),
+            'directory',
+          );
         }
 
         // src/app/name/name
-        const targetBasePath = path.join(targetDir, name)
+        const targetBasePath = path.join(targetDir, name);
 
         // src/templates/name.ext
         const targetTemplatePath = path.join(
           templateDir,
-          name + templateExtension
-        )
+          name + templateExtension,
+        );
 
         const createTemplateFile = touch(targetTemplatePath, [
           ['Create', ` Template File : ${relative(targetTemplatePath)}`],
           greenNormal,
-        ])
+        ]);
 
         // src/styles/name.ext
-        const targetStylePath = path.join(styleDir, name + styleExtension)
+        const targetStylePath = path.join(styleDir, name + styleExtension);
 
         const createStyleFile = touch(targetStylePath, [
           ['Create', ` Style File : ${relative(targetStylePath)}`],
           greenNormal,
-        ])
+        ]);
 
         // src/app/name/name.ext
-        const targetScriptPath = targetBasePath + scriptExtension
+        const targetScriptPath = targetBasePath + scriptExtension;
 
         const createScriptFile = touch(targetScriptPath, [
           ['Create', ` Script File : ${relative(targetScriptPath)}`],
           greenNormal,
-        ])
+        ]);
 
         // src/app/name/ to src/template/name.ext
-        const relativeToTemplate = path.relative(targetDir, targetTemplatePath)
+        const relativeToTemplate = path.relative(targetDir, targetTemplatePath);
 
         // src/app/name/ to src/style/name.ext
-        const relativeToStyle = path.relative(targetDir, targetStylePath)
+        const relativeToStyle = path.relative(targetDir, targetStylePath);
 
         // src/app/name/name.skip.ext
-        const templateLinkPath =
-          targetBasePath + skipExtension + '.html'
-        const styleLinkPath = targetBasePath + skipExtension + '.css'
+        const templateLinkPath = `${targetBasePath}${skipExtension}.html`;
+        const styleLinkPath = `${targetBasePath}${skipExtension}.css`;
 
         // src/app/name/name.ext.skip -> src/template/name
         const createTemplateLink = createTemplateFile.then(() => {
@@ -174,12 +180,12 @@ const cyanNormal = `${cyan}${normal}`
             [
               'Create',
               ` Template Link : ${relative(
-                templateLinkPath
+                templateLinkPath,
               )} -> ${relativeToTemplate}`,
             ],
             greenNormal,
-          ])
-        })
+          ]);
+        });
 
         // src/app/name/name.ext.skip -> src/styles/name
         const createStyleLink = createStyleFile.then(() => {
@@ -189,19 +195,25 @@ const cyanNormal = `${cyan}${normal}`
               ` Script Link : ${relative(styleLinkPath)} -> ${relativeToStyle}`,
             ],
             greenNormal,
-          ])
-        })
+          ]);
+        });
 
-        results = await Promise.allSettled([
+        const results = await Promise.allSettled([
           createScriptFile,
           createTemplateLink,
           createStyleLink,
-        ])
+        ]);
 
-        afterAllSettled(results, [[`\nCreating '${name}' Page Is Completed`], green])
-      })()
-    )
-  )
+        afterAllSettled(results, [
+          [`\nCreating '${name}' Page Is Completed`],
+          green,
+        ]);
+      })(),
+    ),
+  );
 
-  afterAllSettled(allResults, [['\nCreating All Requested Page Is Completed\n'], green])
-})()
+  afterAllSettled(allResults, [
+    ['\nCreating All Requested Page Is Completed\n'],
+    green,
+  ]);
+})();

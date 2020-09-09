@@ -1,10 +1,10 @@
-const postcssConfig = ctx => ({
+const postcssConfig = (ctx) => ({
   plugins: {
     'postcss-import': {},
     '@fullhuman/postcss-purgecss': ctx.env === 'production' && {
-      content: ['./src/templates/**/*.html']
-    }
-  }
-})
+      content: ['./src/templates/**/*.html'],
+    },
+  },
+});
 
-module.exports = postcssConfig
+module.exports = postcssConfig;

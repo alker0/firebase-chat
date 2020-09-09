@@ -4,7 +4,7 @@ export const sizeSuffixMap = {
   normal: '',
   large: '-large',
   xlarge: '-xlarge',
-} as const
+} as const;
 
 export const buttonSizeMap = {
   tiny: 'btn-tiny',
@@ -12,4 +12,4 @@ export const buttonSizeMap = {
   normal: 'btn',
   large: 'btn-large',
   xlarge: 'btn-xlarge',
-} as const
+} as const;

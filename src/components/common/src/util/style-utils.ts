@@ -1,16 +1,20 @@
-import { createRoot } from "solid-js";
-import { css } from "styled-jsx/css";
+import { css } from 'styled-jsx/css';
+import { createRoot } from 'solid-js';
 
-export const createDisposableStyle = (cssResolve: () => {className: string, styles: string}) =>
-  createRoot(dispose => ({
+export const createDisposableStyle = (
+  cssResolve: () => { className: string; styles: string },
+) =>
+  createRoot((dispose) => ({
     className: cssResolve().className,
-    dispose
-}))
+    dispose,
+  }));
 
-export type OnlyWrap = 'only wrap style'
+export type OnlyWrap = 'only wrap style';
 
-export const onlyWrap = createRoot(() => css.resolve`
-  * {
-    display: contents
-  }
-`).className as OnlyWrap
+export const onlyWrap = createRoot(
+  () => css.resolve`
+    * {
+      display: contents;
+    }
+  `,
+).className as OnlyWrap;

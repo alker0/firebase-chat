@@ -1,0 +1,6 @@
+{
+  "rules": {
+    "@typescript-eslint/no-redeclare": "off",
+    "import/export": "off"
+  }
+}

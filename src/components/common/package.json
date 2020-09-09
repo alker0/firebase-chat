@@ -24,11 +24,15 @@
     "solid-js": "0.19.x",
     "solid-styled-jsx": "0.19.x",
     "styled-jsx": "~3.3.0",
+    "clsx": "~1.1.1",
     "type-filtered-clsx": "0.x",
     "cirrus-ui": "^0.5.5",
     "firebaseui": "~4.6.1"
   },
   "peerDependenciesMeta": {
+    "clsx": {
+      "optional": true
+    },
     "cirrus-ui": {
       "optional": true
     },
