@@ -2,6 +2,8 @@
 
 const { promises: fs } = require('fs');
 const path = require('path');
+
+// eslint-disable-next-line import/no-self-import
 const Sqrl = require('squirrelly');
 
 const cwd = process.cwd();
@@ -21,11 +23,11 @@ const sqrlOption = Sqrl.getConfig({ cache: true });
 
 // Read Arguments
 
-//const includeItems = []
+// const includeItems = []
 
 const targets = [];
 
-var dist;
+let dist;
 
 while (args.length) {
   const arg = args.shift();
@@ -52,38 +54,41 @@ function alert(error) {
 
 function onlyFulFilledValue(results) {
   return results
-    .filter(result => result.status === 'fulfilled')
-    .map(result => result.value);
+    .filter((result) => result.status === 'fulfilled')
+    .map((result) => result.value);
 }
 
 async function allFiles(pathName, recursive) {
-  stats = await fs.stat(pathName);
+  const stats = await fs.stat(pathName);
 
   if (stats.isFile()) {
     return [pathName];
-  } else if (stats.isDirectory()) {
-    items = await fs.readdir(pathName, { withFileTypes: true });
-
-    entryFiles = items
-      .filter(item => recursive || item.isFile())
-      .map(item => allFiles(path.join(pathName, item.name), recursive));
-
-    targetFiles = await Promise.allSettled(entryFiles).then(onlyFulFilledValue);
-
-    return targetFiles.flat().map(fileName => fileName);
-  } else {
-    return [];
   }
+  if (stats.isDirectory()) {
+    const items = await fs.readdir(pathName, { withFileTypes: true });
+
+    const entryFiles = items
+      .filter((item) => recursive || item.isFile())
+      .map((item) => allFiles(path.join(pathName, item.name), recursive));
+
+    const targetFiles = await Promise.allSettled(entryFiles).then(
+      onlyFulFilledValue,
+    );
+
+    return targetFiles.flat().map((fileName) => fileName);
+  }
+
+  return [];
 }
 
 // Render Squirrelly File
 
 async function render(fileName) {
-  const option = Object.assign({}, sqrlOption, { fileName: fileName });
+  const option = { ...sqrlOption, fileName };
 
   await fs
     .writeFile(
-      path.join(dist, path.basename(fileName, sqrlExtension) + '.html'),
+      path.join(dist, `${path.basename(fileName, sqrlExtension)}.html`),
       await Sqrl.renderFile(fileName, option),
     )
     .then(() =>
@@ -97,38 +102,36 @@ function withExt(fileName) {
 
 // Add Squirrelly Helpers
 
-Sqrl.helpers.define('partial', function (content, blocks, config) {
+const partialHelperName = 'partial';
+Sqrl.helpers.define(partialHelperName, (content, blocks, config) => {
   // Disallow Blocks And Filters
   if (blocks && blocks.length > 0) {
     throw new Sqrl.SqrlError(
-      /*(native ? 'Native' : '') + */ "Helper '" +
-        name +
-        "' doesn't accept blocks",
+      `Helper '${partialHelperName}' doesn't accept blocks`,
     );
   }
 
   const targetPath = withExt(
     path.join(path.dirname(config.filename), ...content.params[0]),
   );
-  const targetConfig = Object.assign({}, config, { filename: targetPath });
+  const targetConfig = { ...config, filename: targetPath };
 
   const template = Sqrl.loadFile(targetPath, targetConfig);
   return template(content.params[1] || {}, config);
 });
 
-Sqrl.helpers.define('layout', function (content, blocks, config) {
-  var data = content.params[1] || {};
+Sqrl.helpers.define('layout', (content, blocks, config) => {
+  const data = content.params[1] || {};
   data.content = content.exec();
 
-  for (var i = 0; i < blocks.length; i++) {
-    var currentBlock = blocks[i];
-    data[currentBlock.name] = currentBlock.exec();
-  }
+  blocks.forEach((block) => {
+    data[block.name] = block.exec();
+  });
 
   const targetPath = withExt(
     path.join(path.dirname(config.filename), ...content.params[0]),
   );
-  const targetConfig = Object.assign({}, config, { filename: targetPath });
+  const targetConfig = { ...config, filename: targetPath };
 
   const template = Sqrl.loadFile(targetPath, targetConfig);
   return template(data, config);
@@ -137,25 +140,25 @@ Sqrl.helpers.define('layout', function (content, blocks, config) {
 // Check Out Dir
 
 const prepare = (async () => {
-  stats = await fs.stat(dist);
+  const stats = await fs.stat(dist);
 
   if (!stats.isDirectory()) throw new Error('Output must be directory');
 })();
 
-(async function () {
+(async () => {
   await prepare;
 
-  renderAll = Promise.allSettled(
-    targets.map(pathName => allFiles(pathName, false)),
+  const renderAll = Promise.allSettled(
+    targets.map((pathName) => allFiles(pathName, false)),
   )
     .then(onlyFulFilledValue)
-    .then(filesArray => filesArray.flat())
-    .then(files =>
-      files.filter(name => {
+    .then((filesArray) => filesArray.flat())
+    .then((files) =>
+      files.filter((name) => {
         return name.endsWith(sqrlExtension);
       }),
     )
-    .then(files => files.forEach(file => render(path.join(cwd, file))))
+    .then((files) => files.forEach((file) => render(path.join(cwd, file))))
     .catch(alert);
 
   await renderAll;

@@ -27,7 +27,7 @@ const greenNormal = `${green}${normal}`;
 const cyanNormal = `${cyan}${normal}`;
 
 // Check exist required targets
-(async function () {
+(async () => {
   await Promise.all(
     [
       { target: path.join(cwd, 'package.json'), msg: 'Not Project Root' },
@@ -49,56 +49,62 @@ const cyanNormal = `${cyan}${normal}`;
 
   if (args.count < 1) throw new Error('No Targets');
 
-  const successLog = function (messageInfo) {
-    [messages, formats] = messageInfo;
+  const successLog = (messageInfo) => {
+    const [messages, formats] = messageInfo;
     console.log(formats, ...messages);
   };
 
-  const alert = function (error) {
+  const alert = (error) => {
     console.error(red, error);
   };
 
-  const relative = function (to) {
+  const relative = (to) => {
     return path.relative(cwd, to);
   };
 
-  const catchExistItem = async function (err, path, typeCheck, itemTypeText) {
+  const catchExistItem = async (err, itemPath, typeCheck, itemTypeText) => {
     if (err.code === 'EEXIST') {
-      if (typeCheck(await fs.lstat(path))) {
+      if (typeCheck(await fs.lstat(itemPath))) {
         successLog([
-          ['Skip', ` Creating ${path} <= It is already exists`],
+          ['Skip', ` Creating ${itemPath} <= It is already exists`],
           cyanNormal,
         ]);
         return;
-      } else {
-        err.message = `Non ${itemTypeText} item is exist on '${path}'`;
       }
+
+      // eslint-disable-next-line no-param-reassign
+      err.message = `Non ${itemTypeText} item is exist on '${itemPath}'`;
     }
     throw err;
   };
 
-  const touch = async function (path, successMsgInfo) {
+  const touch = async (itemPath, successMsgInfo) => {
     try {
-      await fs.writeFile(path, '', { flag: 'wx' });
+      await fs.writeFile(itemPath, '', { flag: 'wx' });
       successLog(successMsgInfo);
     } catch (err) {
-      catchExistItem(err, path, stats => stats.isFile(), 'file');
+      catchExistItem(err, itemPath, (stats) => stats.isFile(), 'file');
     }
   };
 
-  const createSymlink = async function (target, path, successMsgInfo) {
+  const createSymlink = async (target, itemPath, successMsgInfo) => {
     try {
-      await fs.symlink(target, path);
+      await fs.symlink(target, itemPath);
       successLog(successMsgInfo);
     } catch (err) {
-      catchExistItem(err, path, stats => stats.isSymbolicLink(), 'symLink');
+      catchExistItem(
+        err,
+        itemPath,
+        (stats) => stats.isSymbolicLink(),
+        'symLink',
+      );
     }
   };
 
-  const afterAllSettled = function (results, successMsgInfo) {
-    const [successes, errors] = results.reduce(
+  const afterAllSettled = (results, successMsgInfo) => {
+    const [, errors] = results.reduce(
       (accum, result) => {
-        accum[result.status == 'fulfilled' ? 0 : 1].push(result);
+        accum[result.status === 'fulfilled' ? 0 : 1].push(result);
         return accum;
       },
       [[], []],
@@ -106,12 +112,12 @@ const cyanNormal = `${cyan}${normal}`;
     if (!errors.length) {
       successLog(successMsgInfo);
     } else {
-      errors.forEach(error => alert(error.reason));
+      errors.forEach((error) => alert(error.reason));
     }
   };
 
-  allResults = await Promise.allSettled(
-    args.map(name =>
+  const allResults = await Promise.allSettled(
+    args.map((name) =>
       (async () => {
         // src/app/name
         const targetDir = path.join(appDir, name);
@@ -123,7 +129,7 @@ const cyanNormal = `${cyan}${normal}`;
           catchExistItem(
             err,
             targetDir,
-            stats => stats.isDirectory(),
+            (stats) => stats.isDirectory(),
             'directory',
           );
         }
@@ -165,8 +171,8 @@ const cyanNormal = `${cyan}${normal}`;
         const relativeToStyle = path.relative(targetDir, targetStylePath);
 
         // src/app/name/name.skip.ext
-        const templateLinkPath = targetBasePath + skipExtension + '.html';
-        const styleLinkPath = targetBasePath + skipExtension + '.css';
+        const templateLinkPath = `${targetBasePath}${skipExtension}.html`;
+        const styleLinkPath = `${targetBasePath}${skipExtension}.css`;
 
         // src/app/name/name.ext.skip -> src/template/name
         const createTemplateLink = createTemplateFile.then(() => {
@@ -192,7 +198,7 @@ const cyanNormal = `${cyan}${normal}`;
           ]);
         });
 
-        results = await Promise.allSettled([
+        const results = await Promise.allSettled([
           createScriptFile,
           createTemplateLink,
           createStyleLink,

@@ -1,6 +1,9 @@
+/* eslint-disable import/no-dynamic-require */
 const postcss = require('postcss');
 const fsSync = require('fs');
+
 const { promises: fs } = fsSync;
+
 const path = require('path');
 
 const classNameDeclarerKey = require.resolve('postcss-ts-classnames');
@@ -39,13 +42,13 @@ while (args.length) {
 const plugins = [];
 const optionalPlugins = ['postcss-import-url', 'postcss-import'];
 
-for (const plugin of optionalPlugins) {
+optionalPlugins.forEach((plugin) => {
   try {
     plugins.push(require(plugin));
   } catch (err) {
     if (err.code !== 'MODULE_NOT_FOUND') throw err;
   }
-}
+});
 
 const green = '\x1b[32m%s\x1b[0m';
 const normal = '%s';
@@ -64,7 +67,7 @@ while (targets.length) {
   const previous = processors[processors.length - 1];
   const processor = (async () => {
     const css = await fs.readFile(target, { encoding: 'utf-8' });
-    return await previous.then(_ => {
+    return previous.then(() => {
       delete global[singletonKey];
       const classNameDeclarer = require(classNameDeclarerKey);
       const targetTypeOutput = getTypeOutput(target);
@@ -72,12 +75,12 @@ while (targets.length) {
         plugins.concat(classNameDeclarer({ dest: targetTypeOutput })),
       )
         .process(css, { from: target, to: styleOutput })
-        .then(_ => {
+        .then(() => {
           // console.log(`Exist singleton collector: ${new Boolean(global[singletonKey])}`)
           delete require.cache[classNameDeclarerKey];
           const relativeOutput = path.relative(cwd, targetTypeOutput);
           console.log(greenNormal, 'Scanned', ` : ${relativeOutput}`);
-          return new Promise(resolve =>
+          return new Promise((resolve) =>
             setTimeout(resolve, 250, relativeOutput),
           );
         })
@@ -88,15 +91,15 @@ while (targets.length) {
 }
 
 Promise.allSettled(processors)
-  .then(results =>
+  .then((results) =>
     results
       .slice(1)
       .filter(
-        result =>
+        (result) =>
           result.status === 'fulfilled' && fsSync.existsSync(result.value),
       )
-      .map(result => result.value)
-      .forEach(declaredPath =>
+      .map((result) => result.value)
+      .forEach((declaredPath) =>
         console.log(greenNormal, '🎉 Declared', ` : ${declaredPath}`),
       ),
   )

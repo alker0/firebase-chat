@@ -22,7 +22,7 @@ const normal = '%s';
 const redNormal = `${red}${normal}`;
 
 // Check exist required targets
-(async function () {
+(async () => {
   await Promise.all(
     [
       { target: path.join(cwd, 'package.json'), msg: 'Not Project Root' },
@@ -43,23 +43,23 @@ const redNormal = `${red}${normal}`;
 
   if (args.count < 1) throw new Error('No Targets');
 
-  const successLog = function (messageInfo) {
-    [messages, formats] = messageInfo;
+  const successLog = (messageInfo) => {
+    const [messages, formats] = messageInfo;
     console.log(formats, ...messages);
   };
 
-  const alert = function (error) {
+  const alert = (error) => {
     console.error(red, error);
   };
 
-  const relative = function (to) {
+  const relative = (to) => {
     return path.relative(cwd, to);
   };
 
-  const afterAllSettled = function (results, successMsgInfo) {
-    const [successes, errors] = results.reduce(
+  const afterAllSettled = (results, successMsgInfo) => {
+    const [, errors] = results.reduce(
       (accum, result) => {
-        accum[result.status == 'fulfilled' ? 0 : 1].push(result);
+        accum[result.status === 'fulfilled' ? 0 : 1].push(result);
         return accum;
       },
       [[], []],
@@ -67,12 +67,12 @@ const redNormal = `${red}${normal}`;
     if (!errors.length) {
       successLog(successMsgInfo);
     } else {
-      errors.forEach(error => alert(error.reason));
+      errors.forEach((error) => alert(error.reason));
     }
   };
 
   const allResults = await Promise.allSettled(
-    args.map(name =>
+    args.map((name) =>
       (async () => {
         // src/app/name
         const targetDir = path.join(appDir, name);

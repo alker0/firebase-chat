@@ -1,5 +1,6 @@
+import { Cirrus } from './cirrus-style';
+
 export type SizedFormItem = Extract<
-  ''
   | 'label-xsmall'
   | 'label-small'
   | 'label'
@@ -14,6 +15,6 @@ export type SizedFormItem = Extract<
   | 'btn-small'
   | 'btn'
   | 'btn-large'
-  | 'btn-xlarge'
-  , Cirrus
+  | 'btn-xlarge',
+  Cirrus
 >;

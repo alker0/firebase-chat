@@ -1,30 +1,30 @@
 const proxy = require('../scripts/firebase-proxy-core');
 
 const warnMark = '❗';
-const warnMsg = messages => {
+const warnMsg = (messages) => {
   return messages
-    .map(msg => {
+    .map((msg) => {
       return msg
         .split('\n')
-        .map(line => `${warnMark} ${line}`)
+        .map((line) => `${warnMark} ${line}`)
         .join('\n');
     })
     .join(' ');
 };
 
 const redCross = '\x1b[31m✘\x1b[0m';
-const errorMsg = messages => {
+const errorMsg = (messages) => {
   return messages
-    .map(msg => {
+    .map((msg) => {
       return msg
         .split('\n')
-        .map(line => `${redCross} ${line}`)
+        .map((line) => `${redCross} ${line}`)
         .join('\n');
     })
     .join(' ');
 };
 
-module.exports = function (snowpackConfig, pluginOption) {
+module.exports = function firebaseProxyPlugin(snowpackConfig, pluginOption) {
   return {
     name: 'firebase-proxy',
     async run({ isDev, log }) {
@@ -42,9 +42,9 @@ module.exports = function (snowpackConfig, pluginOption) {
       const proxyOption = {
         resourceEndPoint: 'localhost:8080',
         port: 8081,
-        logger: logger,
+        logger,
         protocols: ['esm-hmr'],
-        ...(pluginOption ? pluginOption : {}),
+        ...(pluginOption ?? {}),
       };
 
       proxy(proxyOption);

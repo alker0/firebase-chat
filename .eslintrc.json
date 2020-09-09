@@ -7,19 +7,50 @@
     "project": "./tsconfig.json",
     "useJSXTextNode": true
   },
-  "plugins": ["@typescript-eslint", "prettier"],
+  "plugins": ["@typescript-eslint", "import", "prettier"],
   "extends": [
-    "airbnb",
-    "plugin:@typescript-eslint/recommended",
+    "airbnb-typescript",
+    // "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended",
     "prettier/@typescript-eslint",
-    "plugin:prettier/recommended"
+    "prettier/react"
   ],
   "env": {
     "browser": true,
     "node": true,
-    "es6": true
+    "es6": true,
+    "commonjs": true
+  },
+  "globals": {
+    "JSX": "readonly",
+    "firebase": "readonly",
+    "firebaseui": "readonly"
   },
   "rules": {
-    "prettier/prettier": "error"
+    "no-console": "off",
+    "default-case": "off",
+    "global-require": "off",
+    "react/jsx-filename-extension": ["error", {"extensions": [".js", ".jsx", ".ts", ".tsx"]}],
+    "react/react-in-jsx-scope": "off",
+    "react/jsx-props-no-spreading": "off",
+    "react/destructuring-assignment": "off",
+    "react/prop-types": "off",
+    "react/no-children-prop": "off",
+    "react/no-unknown-property": ["error", {"ignore": ["class"]}],
+    "react/button-has-type": "off",
+    "jsx-a11y/anchor-is-valid": ["error", {
+      "aspects": ["invalidHref"]
+    }],
+    "jsx-a11y/anchor-has-content": "off",
+    "import/no-unresolved": "off",
+    "import/prefer-default-export": "off",
+    "import/no-extraneous-dependencies": "off",
+    "import/extensions": ["error", {
+      "js": "never",
+      "jsx": "never",
+      "ts": "never",
+      "tsx": "never",
+      "d.ts": "never"
+    }]
   }
 }

@@ -1,1 +1,1 @@
-export const DO_NOTHING: (...args: any[]) => void = () => { };
+export const DO_NOTHING: (...args: any[]) => void = () => {};

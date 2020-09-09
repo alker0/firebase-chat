@@ -1,11 +1,11 @@
-import { DO_NOTHING } from "@components/common/util/creater-utils";
-import { assignProps, Component } from "solid-js";
+import { DO_NOTHING } from '@components/common/util/creater-utils';
+import { assignProps, Component } from 'solid-js';
 
 const defaultFormProps = {
-  onSubmit: DO_NOTHING
+  onSubmit: DO_NOTHING,
 };
 
-type defaultConponentProps = JSX.FormHTMLAttributes<HTMLFormElement>;
+type DefaultComponentProps = JSX.FormHTMLAttributes<HTMLFormElement>;
 
 const nativeContainers = {
   Form: (propsArg: JSX.FormHTMLAttributes<HTMLFormElement>) => {
@@ -13,19 +13,23 @@ const nativeContainers = {
     return <form {...props} />;
   },
   Div: (props: JSX.HTMLAttributes<HTMLDivElement>) => <div {...props} />,
-  Flagment: (props: { children?: Element; }) => <>{props.children}</>
+  Flagment: (props: JSX.HTMLAttributes<HTMLElement>) => <>{props.children}</>,
 };
 
 const defaultContext: Required<FormContainer.Context> = {
-  createContainer: ({ Form }) => (props) => <Form {...props} />
+  createContainer: ({ Form }) => (props) => <Form {...props} />,
 };
 
 export const FormContainer = {
-  createComponent<T = defaultConponentProps>(contextArg?: FormContainer.Context<T>): Component<FormContainer.Props<T>> {
+  createComponent<T = DefaultComponentProps>(
+    contextArg?: FormContainer.Context<T>,
+  ): Component<FormContainer.Props<T>> {
     const context = assignProps({}, defaultContext, contextArg);
     const Container = context.createContainer(nativeContainers);
-    return (props) => <Container {...props.containerProps} children={props.children} />;
-  }
+    return (props) => (
+      <Container {...props.containerProps} children={props.children} />
+    );
+  },
 };
 
 export declare module FormContainer {

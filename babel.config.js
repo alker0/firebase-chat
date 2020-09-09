@@ -24,6 +24,8 @@ module.exports = {
     'macros',
     '@babel/proposal-class-properties',
     '@babel/proposal-object-rest-spread',
-    ...(process.env.NODE_ENV === 'production' ? ['transform-remove-console'] : [])
+    ...(process.env.NODE_ENV === 'production'
+      ? ['transform-remove-console']
+      : []),
   ],
 };

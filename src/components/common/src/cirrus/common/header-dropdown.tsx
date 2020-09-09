@@ -1,9 +1,9 @@
-import { ComponentCreater } from '../../../typings/component-creater';
 import { css } from 'styled-jsx/css';
 import { createSignal, For, assignProps } from 'solid-js';
 import clsx, { Clsx } from 'clsx';
 import { Portal } from 'solid-js/dom';
 import { Cirrus } from '@components/common/typings/cirrus-style';
+import { ComponentCreater } from '../../../typings/component-creater';
 
 type LinkButtonClass = 'LinkButtonClassName';
 
@@ -25,7 +25,7 @@ const createStyles = () => ({
       left: 0;
       z-index: 5;
     }
-  `.className
+  `.className,
 });
 
 const cn: Clsx<Cirrus | LinkButtonClass> = clsx;
@@ -34,12 +34,12 @@ const defaultContext: HeaderMenu.DefaultContext = {
   buttonText: 'Click Me',
 };
 
-const DO_NOTHING = () => { };
+const DO_NOTHING = () => {};
 
 const defaultProps: HeaderMenu.DefaultProps = {
   buttonPlaceWhenNarrow: document.querySelector('.header-brand') ?? undefined,
   menuItems: [],
-  onCleanup: DO_NOTHING
+  onCleanup: DO_NOTHING,
 };
 
 export const HeaderMenu: ComponentCreater<
@@ -49,8 +49,7 @@ export const HeaderMenu: ComponentCreater<
   createComponent: (context?) => {
     const fixedContext = assignProps({}, defaultContext, context ?? {});
 
-    return propsArg => {
-
+    return (propsArg) => {
       const props = assignProps({}, defaultProps, propsArg);
 
       const { linkButtonClass, overlayClass } = createStyles();
@@ -61,38 +60,69 @@ export const HeaderMenu: ComponentCreater<
       const toggleShown = () => setShown(!shown());
       const toggleHeaderNavShown = () => setHeaderNavShown(!headerNavShown());
 
-      return <>
-        <Portal mount={props.buttonPlaceWhenNarrow}>
-          <div class={cn('nav-item', 'nav-btn', headerNavShown() && 'active')} onClick={toggleHeaderNavShown}>
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-        </Portal>
-        <div class={cn('header-nav', headerNavShown() && 'active')}>
-          <div class={cn('nav-right', 'nav-menu', 'u-text-center')}>
-            <div class={cn('nav-item', 'has-sub', shown() && 'active')}>
-              <a class={cn('nav-dropdown-link', linkButtonClass)} onClick={toggleShown}>{fixedContext.buttonText}</a>
-              <div class={overlayClass} style={{ display: shown() ? 'block' : 'none' }} onClick={toggleShown}></div>
-              <ul class={cn('dropdown-menu', 'dropdown-animated', shown() && 'dropdown-shown')} role="menu">
-                <For each={props.menuItems}>
-                  {item => <li>{item()}</li>}
-                </For>
-              </ul>
+      return (
+        <>
+          <Portal mount={props.buttonPlaceWhenNarrow}>
+            <div
+              class={cn('nav-item', 'nav-btn', headerNavShown() && 'active')}
+              onClick={toggleHeaderNavShown}
+              onKeyDown={toggleHeaderNavShown}
+              role="button"
+              tabIndex={-1}
+            >
+              <span />
+              <span />
+              <span />
+            </div>
+          </Portal>
+          <div class={cn('header-nav', headerNavShown() && 'active')}>
+            <div class={cn('nav-right', 'nav-menu', 'u-text-center')}>
+              <div class={cn('nav-item', 'has-sub', shown() && 'active')}>
+                <a
+                  class={cn('nav-dropdown-link', linkButtonClass)}
+                  onClick={toggleShown}
+                  onKeyDown={toggleShown}
+                  role="button"
+                  tabIndex={-1}
+                >
+                  {fixedContext.buttonText}
+                </a>
+                {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
+                <div
+                  class={overlayClass}
+                  style={{ display: shown() ? 'block' : 'none' }}
+                  onClick={toggleShown}
+                  onKeyDown={toggleShown}
+                  role="button"
+                  tabIndex={-1}
+                />
+                <ul
+                  class={cn(
+                    'dropdown-menu',
+                    'dropdown-animated',
+                    shown() && 'dropdown-shown',
+                  )}
+                  role="menu"
+                >
+                  <For each={props.menuItems}>
+                    {(item) => <li>{item()}</li>}
+                  </For>
+                </ul>
+              </div>
             </div>
           </div>
-        </div>
-      </>;
+        </>
+      );
     };
-  }
+  },
 };
 
 export declare module HeaderMenu {
   export interface Context {
-    buttonText?: string,
+    buttonText?: string;
   }
 
-  export interface DefaultContext extends Required<Context> { }
+  export interface DefaultContext extends Required<Context> {}
 
   export interface Props {
     buttonPlaceWhenNarrow?: Node;
@@ -102,7 +132,7 @@ export declare module HeaderMenu {
 
   type FixedPropsType = Props & Required<Omit<Props, 'buttonPlaceWhenNarrow'>>;
 
-  export interface DefaultProps extends FixedPropsType { }
+  export interface DefaultProps extends FixedPropsType {}
 
   export type MenuItemsChildren = JSX.Element[];
 }

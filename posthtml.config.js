@@ -2,9 +2,7 @@ const extend = require('posthtml-extend');
 const expressoins = require('posthtml-expressions');
 const include = require('posthtml-include');
 
-const nodeEnv = process.env['NODE_ENV'] || 'development';
-
-const isProd = nodeEnv === 'production';
+const nodeEnv = process.env.NODE_ENV || 'development';
 
 console.error('posthtml.config.js', nodeEnv);
 
@@ -23,8 +21,8 @@ module.exports = {
         useAnalytics: true,
         firebaseAnalyticsPath: '/lib/firebase-init-analytics.js',
         useFirebaseUI: true,
-        firebaseUIVersion: '3.5.2'
-      }
+        firebaseUIVersion: '3.5.2',
+      },
     }),
   ],
 };

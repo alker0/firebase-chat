@@ -1,21 +1,18 @@
-import { ComponentCreater } from '../../typings/component-creater';
 import { afterEffects, assignProps } from 'solid-js';
+import { ComponentCreater } from '../../typings/component-creater';
 
 const defaultProps: FirebaseAuthUI.DefaultProps = {
   uiConfig: {
-    signInOptions: [
-      firebase.auth.EmailAuthProvider.PROVIDER_ID
-    ]
-  }
+    signInOptions: [firebase.auth.EmailAuthProvider.PROVIDER_ID],
+  },
 };
 
 export const FirebaseAuthUI: ComponentCreater<
   FirebaseAuthUI.Context,
   FirebaseAuthUI.Props
 > = {
-  createComponent: context => {
-
-    return propsArg => {
+  createComponent: (context) => {
+    return (propsArg) => {
       const props = assignProps({}, defaultProps, propsArg);
 
       let authRef: HTMLDivElement | undefined;
@@ -24,8 +21,9 @@ export const FirebaseAuthUI: ComponentCreater<
         context.ui.start(authRef!, props.uiConfig);
       });
 
-      return <div style="display: contents;" ref={authRef}>
-        <style jsx>{`
+      return (
+        <div style={{ display: 'contents' }} ref={authRef}>
+          <style jsx>{`
             div :global(label.mdl-textfield__label:not(.no-match)) {
               margin-left: unset;
               margin-top: unset;
@@ -37,10 +35,11 @@ export const FirebaseAuthUI: ComponentCreater<
             div :global(.is-focused) > :global(label.mdl-textfield__label) {
               padding-top: 0;
             }
-        `}</style>
-      </div>;
+          `}</style>
+        </div>
+      );
     };
-  }
+  },
 };
 
 export declare module FirebaseAuthUI {
@@ -52,5 +51,5 @@ export declare module FirebaseAuthUI {
     uiConfig?: firebaseui.auth.Config;
   }
 
-  export interface DefaultProps extends Required<Props> { }
+  export interface DefaultProps extends Required<Props> {}
 }

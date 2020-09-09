@@ -12,7 +12,7 @@ const firebaseConfig = require('firebase-tools/lib/config').load({
 const httpPrefix = 'http://';
 const websocketPrefix = 'ws://';
 
-function createProxyProvider({ resourceEndPoint, logger, wsProtocols = [] }) {
+function createProxyProvider({ resourceEndPoint, logger }) {
   return (_req, path) => {
     const resourceUrl = httpPrefix + resourceEndPoint + path;
     const passThrough = new stream.PassThrough();
@@ -46,8 +46,8 @@ function createProxyProvider({ resourceEndPoint, logger, wsProtocols = [] }) {
       http
         .request(resourceUrl)
         .on('error', reject)
-        .on('response', res => {
-          if (res.statusCode != 200) {
+        .on('response', (res) => {
+          if (res.statusCode !== 200) {
             resolve(null);
             logger.error(
               [`StatusCode: ${res.statusCode}`, `Path: ${resourceUrl}`].join(
@@ -71,8 +71,13 @@ const sigint = 'SIGINT';
 
 const localhost = 'localhost';
 
-module.exports = ({ resourceEndPoint, port, logger, protocols = [] }) => {
-  logger = logger || console;
+module.exports = ({
+  resourceEndPoint,
+  port,
+  logger: loggerArg,
+  protocols = [],
+}) => {
+  const logger = loggerArg || console;
 
   const proxyEndPoint = `${localhost}:${port}`;
 
@@ -93,7 +98,7 @@ module.exports = ({ resourceEndPoint, port, logger, protocols = [] }) => {
         .on('open', () => {
           logger.log('Websocket Open');
         })
-        .on('message', ev => {
+        .on('message', (ev) => {
           logger.log(Object.keys(ev));
         })
         .on('close', () => logger.log('Websocket Close'));
@@ -110,7 +115,6 @@ module.exports = ({ resourceEndPoint, port, logger, protocols = [] }) => {
       provider: createProxyProvider({
         resourceEndPoint,
         logger,
-        wsProtocols: protocols,
       }),
     }),
   );
