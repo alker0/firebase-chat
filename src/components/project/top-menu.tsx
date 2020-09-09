@@ -1,12 +1,15 @@
-import { DO_NOTHING } from '@components/common/util/creater-utils';
+import {
+  buttonize,
+  ClickHandle,
+  DO_NOTHING,
+} from '@components/common/util/creater-utils';
 import { Cirrus } from '@components/common/typings/cirrus-style';
 import clsx, { Clsx } from 'clsx';
 import { assignProps, Component } from 'solid-js';
 
 const cn: Clsx<Cirrus> = clsx;
 
-type OnDivClick = JSX.HTMLAttributes<HTMLDivElement>['onClick'];
-type OnDivKeyDown = JSX.HTMLAttributes<HTMLDivElement>['onKeyDown'];
+type OnDivClick = ClickHandle<HTMLDivElement>;
 type OnButtonClick = JSX.ButtonHTMLAttributes<HTMLButtonElement>['onClick'];
 
 const defaultContext: Required<TopMenu.Context> = {
@@ -39,10 +42,7 @@ export const TopMenu = {
               <div class={cn('btn-container')}>
                 <div
                   class={cn('btn', 'btn-xlarge', 'btn-animated')}
-                  onClick={context.onLeftButtonClick}
-                  onKeyDown={context.onLeftButtonClick}
-                  role="button"
-                  tabIndex={-1}
+                  {...buttonize(context.onLeftButtonClick)}
                 >
                   {context.leftButtonText}
                 </div>
@@ -52,10 +52,7 @@ export const TopMenu = {
               <div class={cn('btn-container')}>
                 <div
                   class={cn('btn', 'btn-xlarge', 'btn-animated')}
-                  onClick={context.onRightButtonClick}
-                  onKeyDown={context.onRightButtonClick}
-                  role="button"
-                  tabIndex={-1}
+                  {...buttonize(context.onRightButtonClick)}
                 >
                   {context.rightButtonText}
                 </div>
@@ -74,9 +71,9 @@ export declare module TopMenu {
     getSessionButtonText?: () => string;
     onSessionButtonClick?: OnButtonClick;
     leftButtonText?: string;
-    onLeftButtonClick?: OnDivClick & OnDivKeyDown;
+    onLeftButtonClick?: OnDivClick;
     rightButtonText?: string;
-    onRightButtonClick?: OnDivClick & OnDivKeyDown;
+    onRightButtonClick?: OnDivClick;
   }
   export interface Props {}
 }

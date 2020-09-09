@@ -4,6 +4,7 @@ import clsx, { Clsx } from 'clsx';
 import { Portal } from 'solid-js/dom';
 import { Cirrus } from '@components/common/typings/cirrus-style';
 import { ComponentCreater } from '../../../typings/component-creater';
+import { buttonize } from '../../util/creater-utils';
 
 type LinkButtonClass = 'LinkButtonClassName';
 
@@ -65,10 +66,7 @@ export const HeaderMenu: ComponentCreater<
           <Portal mount={props.buttonPlaceWhenNarrow}>
             <div
               class={cn('nav-item', 'nav-btn', headerNavShown() && 'active')}
-              onClick={toggleHeaderNavShown}
-              onKeyDown={toggleHeaderNavShown}
-              role="button"
-              tabIndex={-1}
+              {...buttonize(toggleHeaderNavShown)}
             >
               <span />
               <span />
@@ -80,10 +78,7 @@ export const HeaderMenu: ComponentCreater<
               <div class={cn('nav-item', 'has-sub', shown() && 'active')}>
                 <a
                   class={cn('nav-dropdown-link', linkButtonClass)}
-                  onClick={toggleShown}
-                  onKeyDown={toggleShown}
-                  role="button"
-                  tabIndex={-1}
+                  {...buttonize(toggleShown)}
                 >
                   {fixedContext.buttonText}
                 </a>
@@ -91,10 +86,7 @@ export const HeaderMenu: ComponentCreater<
                 <div
                   class={overlayClass}
                   style={{ display: shown() ? 'block' : 'none' }}
-                  onClick={toggleShown}
-                  onKeyDown={toggleShown}
-                  role="button"
-                  tabIndex={-1}
+                  {...buttonize(toggleShown)}
                 />
                 <ul
                   class={cn(
