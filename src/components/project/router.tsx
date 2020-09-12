@@ -4,6 +4,7 @@ import { Redirect as RedirectCreator } from '@components/common/base/atoms/redir
 import { Cirrus } from '@components/common/typings/cirrus-style';
 import { createSignal, untrack } from 'solid-js';
 import { sessionState } from '@lib/solid-firebase-auth';
+import { fullPath } from '@lib/routing-utils';
 import { createLazyAuthUI } from './lazy/firebase-auth-own-ui';
 import { TopMenu as TopMenuCreator } from './top-menu';
 
@@ -99,7 +100,7 @@ export const createRouter = () => {
           getComponent: () => <div>Chat Page</div>,
         },
         {
-          matcher: ({ pathInfo }) => pathInfo().startsWith(routingPaths.auth),
+          matcher: () => fullPath().startsWith(routingPaths.auth),
           getComponent: () =>
             untrack(() => !sessionState.isLoggedIn) ? (
               <AuthComponent
