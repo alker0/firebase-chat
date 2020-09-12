@@ -53,17 +53,13 @@
     "@snowpack/plugin-build-script": "^2.0.6",
     "@snowpack/plugin-postcss": "^1.0.3",
     "@snowpack/plugin-run-script": "^2.1.1",
-    "@types/bluebird": "^3",
-    "@types/debug": "^4",
     "@typescript-eslint/eslint-plugin": "^4.1.0",
     "@typescript-eslint/parser": "^4.1.0",
     "babel-plugin-macros": "^2.8.0",
     "babel-plugin-transform-remove-console": "^6.9.4",
     "babel-preset-solid": "^0.19.3",
-    "bluebird": "^3.7.2",
     "connect": "^3.7.0",
-    "debug": "^4.1.1",
-    "eslint": "^7.8.1",
+    "eslint": "^7.9.0",
     "eslint-config-airbnb-typescript": "^10.0.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-import": "^2.22.0",
@@ -96,7 +92,6 @@
     "stylelint-config-standard": "^20.0.0",
     "stylelint-prettier": "^1.1.2",
     "superstatic": "^7.0.0",
-    "supports-color": "^7.2.0",
     "type-filtered-clsx": "file:./src/lib/packages/type-filtered-clsx",
     "typescript": "^4.0.2",
     "websocket-driver": "^0.7.4"
@@ -166,10 +161,5 @@
     "solid-styled-jsx": "^0.19.3",
     "styled-jsx": "^3.3.0"
   },
-  "webDependencies": {},
-  "dependenciesMeta": {
-    "open": {
-      "unplugged": true
-    }
-  }
+  "webDependencies": {}
 }

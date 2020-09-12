@@ -7,6 +7,7 @@ import { sessionState } from '@lib/solid-firebase-auth';
 import { fullPath } from '@lib/routing-utils';
 import { createLazyAuthUI } from './lazy/firebase-auth-own-ui';
 import { TopMenu as TopMenuCreator } from './top-menu';
+import { createLazyEmailAuthFinish } from './lazy/email-auth-finish';
 
 const cn: Clsx<Cirrus> = clsx;
 
@@ -29,6 +30,7 @@ export const routingPaths = {
   home: '/',
   chat: '/chat',
   auth: '/auth',
+  emailFinish: '/email-auth-finish',
   searchRoom: '/search-room',
   createRoom: '/create-room',
 };
@@ -87,6 +89,8 @@ export const createRouter = () => {
 
   const AuthComponent = createLazyAuthUI();
 
+  const EmailAuthFinishComponent = createLazyEmailAuthFinish();
+
   return () => (
     <RouteComponent
       routeSignal={routeSignal}
@@ -111,6 +115,10 @@ export const createRouter = () => {
             ) : (
               <Redirect url={routingPaths.home} />
             ),
+        },
+        {
+          matcher: () => fullPath().startsWith(routingPaths.emailFinish),
+          getComponent: () => <EmailAuthFinishComponent />,
         },
         {
           matcher: routingPaths.searchRoom,

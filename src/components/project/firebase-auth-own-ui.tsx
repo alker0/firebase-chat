@@ -126,20 +126,39 @@ const createLoginMethods = (methodArg: {
       },
     ],
     whenValid: () => {
+      const actionCodeSettings = {
+        handleCodeInApp: true,
+        url: `${window.origin}/email-auth-finish`,
+      };
+
       firebase
         .auth()
-        .createUserWithEmailAndPassword(
-          getInputValue.email,
-          getInputValue.password,
-        )
+        .sendSignInLinkToEmail(getInputValue.email, actionCodeSettings)
         .then(() => {
-          console.log('Sign Up');
-          redirectToSuccessUrl();
+          document.cookie = `email-for-signin=${encodeURIComponent(
+            getInputValue.email,
+          )}; domain=.${document.domain}; max-age=180; sameSite=strict;`;
+          // window.localStorage.setItem('emailForSignIn', getInputValue.email);
         })
-        .catch((err) => {
-          setInputValue('errorMessage', err.message);
-          console.log(err.code);
+        .catch((error) => {
+          console.log(error);
+          console.log(error.code);
         });
+
+      // firebase
+      //   .auth()
+      //   .createUserWithEmailAndPassword(
+      //     getInputValue.email,
+      //     getInputValue.password,
+      //   )
+      //   .then(() => {
+      //     console.log('Sign Up');
+      //     redirectToSuccessUrl();
+      //   })
+      //   .catch((err) => {
+      //     setInputValue('errorMessage', err.message);
+      //     console.log(err.code);
+      //   });
     },
   });
 
