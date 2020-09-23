@@ -29,6 +29,7 @@
   "rules": {
     "no-console": "off",
     "default-case": "off",
+    "no-else-return": "off",
     "global-require": "off",
     "yoda": ["error", "never", {
       "onlyEquality": true

@@ -3,10 +3,8 @@ import { FormContainer } from '@components/common/base/form/form-container';
 import { BasicInputField } from '@components/common/cirrus/common/basic-input-field';
 import { LoginBasicBottom } from '@components/common/cirrus/domain/login-basic-bottom';
 import { Cirrus } from '@components/common/typings/cirrus-style';
-import {
-  inputRegex,
-  loginMethodCreater,
-} from '@components/common/util/input-field-utils';
+import { OnlyOptional } from '@components/common/typings/component-creater';
+import { inputRegex } from '@components/common/util/input-field-utils';
 import { sessionState } from '@lib/solid-firebase-auth';
 import clsx, { Clsx } from 'clsx';
 import {
@@ -14,34 +12,15 @@ import {
   Component,
   createEffect,
   createMemo,
-  createRoot,
-  createSignal,
   createState,
   SetStateFunction,
+  State,
   untrack,
 } from 'solid-js';
-import { css } from 'styled-jsx/css';
 
-type LinkMargin = 'This is Link Margin';
 type BottomPadding = 'This is Bottom Margin';
 
-const [linkMargin, bottomPadding] = createRoot(() => {
-  return [
-    css.resolve`
-      a,
-      button {
-        margin-bottom: 1rem;
-      }
-    `,
-    css.resolve`
-      div {
-        padding-right: 0;
-      }
-    `,
-  ].map((pair) => pair.className);
-}) as [LinkMargin, BottomPadding];
-
-const cn: Clsx<Cirrus | LinkMargin | BottomPadding> = clsx;
+const cn: Clsx<Cirrus | BottomPadding> = clsx;
 
 const defaultContainerProps: Required<ContainerProps> = {
   ofForm: {},
@@ -52,7 +31,7 @@ const defaultContainerProps: Required<ContainerProps> = {
 };
 
 const Container = FormContainer.createComponent({
-  createContainer: () => (propsArg: ContainerProps) => {
+  createContainer: () => (propsArg: ContainerProps = {}) => {
     const props = assignProps({}, defaultContainerProps, propsArg);
     return (
       <form {...(props.ofForm ?? {})}>
@@ -69,120 +48,28 @@ const InputField = BasicInputField.createComponent({
   fieldSize: 'small',
 });
 
-// button.animated.btn-info.outline
-const Bottom = LoginBasicBottom.createComponent();
-
-const SignUpMode = Symbol('SignUp');
-const SignInMode = Symbol('SignIn');
-
-type LoginMode = typeof SignUpMode | typeof SignInMode;
-
-const passwordLength = 8;
-
-interface InputValueState {
-  scheme: {
-    email: string;
-    password: string;
-    passConfirm: string;
-    errorMessage: string;
-  };
-  getter: InputValueState['scheme'];
-  setter: SetStateFunction<InputValueState['scheme']>;
+interface OuterBottomProps extends LoginBasicBottom.BottomWholeProps {
+  // eslint-disable-next-line react/no-unused-prop-types
+  bottomComponent: Component<LoginBasicBottom.BottomWholeProps>;
 }
+
+interface InnerBottomProps extends LoginBasicBottom.BottomWholePropsOpts {
+  // eslint-disable-next-line react/no-unused-prop-types
+  bottomComponent: Component<LoginBasicBottom.BottomWholeProps>;
+  // eslint-disable-next-line react/no-unused-prop-types
+  ofSubmit: JSX.InputHTMLAttributes<HTMLInputElement>;
+}
+
+// button.animated.btn-info.outline
+const Bottom = LoginBasicBottom.createComponent({
+  whole: (props: OuterBottomProps) => (
+    <props.bottomComponent submitButton={props.submitButton} />
+  ),
+});
 
 type OnSubmit = NonNullable<
   JSX.FormHTMLAttributes<HTMLFormElement>['onSubmit']
 >;
-
-const createLoginMethods = (methodArg: {
-  getInputValue: InputValueState['getter'];
-  setInputValue: InputValueState['setter'];
-  redirectToSuccessUrl: () => void;
-}): {
-  signUp: OnSubmit;
-  signIn: OnSubmit;
-} => {
-  const { getInputValue, setInputValue, redirectToSuccessUrl } = methodArg;
-  const commonValidations = [
-    {
-      condition: () => inputRegex.emailRegex.test(getInputValue.email),
-      errorMessage: () => 'Email is invalid format',
-    },
-    {
-      condition: () =>
-        inputRegex.passwordRegex(passwordLength).test(getInputValue.password),
-      errorMessage: () => 'Password is invalid format',
-    },
-  ];
-
-  const signUp = loginMethodCreater({
-    errorMessageHandler: (errorMessage) =>
-      setInputValue('errorMessage', errorMessage),
-    validations: [
-      ...commonValidations,
-      {
-        condition: () => getInputValue.password === getInputValue.passConfirm,
-        errorMessage: () => 'Password confirmation is not matching',
-      },
-    ],
-    whenValid: () => {
-      const actionCodeSettings = {
-        handleCodeInApp: true,
-        url: `${window.origin}/email-auth-finish`,
-      };
-
-      firebase
-        .auth()
-        .sendSignInLinkToEmail(getInputValue.email, actionCodeSettings)
-        .then(() => {
-          document.cookie = `email-for-signin=${encodeURIComponent(
-            getInputValue.email,
-          )}; domain=.${document.domain}; max-age=180; sameSite=strict;`;
-          // window.localStorage.setItem('emailForSignIn', getInputValue.email);
-        })
-        .catch((error) => {
-          console.log(error);
-          console.log(error.code);
-        });
-
-      // firebase
-      //   .auth()
-      //   .createUserWithEmailAndPassword(
-      //     getInputValue.email,
-      //     getInputValue.password,
-      //   )
-      //   .then(() => {
-      //     console.log('Sign Up');
-      //     redirectToSuccessUrl();
-      //   })
-      //   .catch((err) => {
-      //     setInputValue('errorMessage', err.message);
-      //     console.log(err.code);
-      //   });
-    },
-  });
-
-  const signIn = loginMethodCreater({
-    errorMessageHandler: (errorMessage) =>
-      setInputValue('errorMessage', errorMessage),
-    validations: commonValidations,
-    whenValid: () => {
-      firebase
-        .auth()
-        .signInWithEmailAndPassword(getInputValue.email, getInputValue.password)
-        .then(() => {
-          console.log('Sign In');
-          redirectToSuccessUrl();
-        })
-        .catch((err) => {
-          setInputValue('errorMessage', err.message);
-          console.log(err.code);
-        });
-    },
-  });
-
-  return { signUp, signIn };
-};
 
 interface ContainerProps {
   ofForm?: JSX.FormHTMLAttributes<HTMLFormElement>;
@@ -193,22 +80,43 @@ interface ContainerProps {
 }
 
 interface InputProps {
-  loginMode: () => LoginMode;
-  getInputValue: InputValueState['getter'];
-  setInputValue: InputValueState['setter'];
+  getInputValue: FirebaseAuthOwnUI.InputValueState['getter'];
+  setInputValue: FirebaseAuthOwnUI.InputValueState['setter'];
+  useFields: {
+    email: boolean;
+    password: boolean;
+    passConfirm: boolean;
+  };
 }
 
-interface BottomProps {
-  loginMode: () => LoginMode;
-  toggleLoginMode: () => void;
-}
+export const defaultContext: Required<FirebaseAuthOwnUI.Context> = {
+  passwordLength: 6,
+  bottomWrapper: (props) => props.bottomContents,
+};
+
+const defaultProps: Required<OnlyOptional<FirebaseAuthOwnUI.Props<unknown>>> = {
+  getInputValueAccessor: () =>
+    createState<FirebaseAuthOwnUI.InputValueState['scheme']>({
+      email: '',
+      password: '',
+      passConfirm: '',
+      infoMessage: '',
+      errorMessage: '',
+    }),
+  submitButtonProps: (disableWhenLoggedIn) => disableWhenLoggedIn,
+};
 
 export const FirebaseAuthOwnUI = {
-  createComponent: (): Component<FirebaseAuthOwnUI.Props> => {
+  createComponent: (contextArg: FirebaseAuthOwnUI.Context = {}) => {
+    const context = assignProps({}, defaultContext, contextArg);
+
     const FormComponent = Form.createComponent({
       container: Container,
       inputFields: (props: InputProps) => (
         <>
+          <div class={cn('u-text-center', 'text-info')}>
+            {props.getInputValue.infoMessage}
+          </div>
           <div class={cn('u-text-center', 'text-danger')}>
             {props.getInputValue.errorMessage}
           </div>
@@ -223,25 +131,28 @@ export const FirebaseAuthOwnUI = {
               onChange: (e) => props.setInputValue('email', e.target.value),
             }}
           />
-          <InputField
-            labelText="Password:"
-            ofInput={{
-              name: 'password',
-              type: 'password',
-              required: true,
-              pattern: inputRegex.password(passwordLength),
-              value: props.getInputValue.password,
-              onChange: (e) => props.setInputValue('password', e.target.value),
-            }}
-          />
-          {props.loginMode() === SignUpMode && (
+          {props.useFields.password && (
+            <InputField
+              labelText="Password:"
+              ofInput={{
+                name: 'password',
+                type: 'password',
+                required: true,
+                pattern: inputRegex.password(context.passwordLength),
+                value: props.getInputValue.password,
+                onChange: (e) =>
+                  props.setInputValue('password', e.target.value),
+              }}
+            />
+          )}
+          {props.useFields.passConfirm && (
             <InputField
               labelText="Confirm:"
               ofInput={{
                 name: 'password-confirm',
                 type: 'password',
                 required: true,
-                pattern: inputRegex.password(8),
+                pattern: inputRegex.password(context.passwordLength),
                 value: props.getInputValue.passConfirm,
                 onChange: (e) =>
                   props.setInputValue('passConfirm', e.target.value),
@@ -250,45 +161,24 @@ export const FirebaseAuthOwnUI = {
           )}
         </>
       ),
-      bottomContents: (props: BottomProps) => (
-        <Bottom
-          ofWrapper={{
-            class: cn('row', 'level', 'ignore-screen', bottomPadding),
-          }}
-          ofLink={{
-            class: cn('underline', 'level-item', 'offset-left', linkMargin),
-            href: '',
-            onClick: (e) => {
-              e.preventDefault();
-              props.toggleLoginMode();
-            },
-            children: props.loginMode() === SignUpMode ? 'Sign In' : 'Sign Up',
-          }}
-          ofSubmit={{
-            class: cn('animated', 'btn-primary', 'level-item', 'level-right'),
-            disabled: sessionState.isLoggedIn,
-          }}
+      bottomContents: (props: InnerBottomProps) => (
+        <context.bottomWrapper
+          bottomContents={() => (
+            <Bottom
+              ofWhole={{
+                bottomComponent: props.bottomComponent,
+              }}
+              ofSubmit={props.ofSubmit}
+            />
+          )}
         />
       ),
     });
 
-    return (props) => {
-      const [loginMode, setLoginMode] = createSignal<LoginMode>(SignUpMode);
+    function resultComponent<T>(propsArg: FirebaseAuthOwnUI.Props<T>) {
+      const props = assignProps({}, defaultProps, propsArg);
 
-      const [getInputValue, setInputValue] = createState<
-        InputValueState['scheme']
-      >({
-        email: '',
-        password: '',
-        passConfirm: '',
-        errorMessage: '',
-      });
-
-      const { signUp, signIn } = createLoginMethods({
-        getInputValue,
-        setInputValue,
-        redirectToSuccessUrl: () => props.redirectToSuccessUrl(),
-      });
+      const [getInputValue, setInputValue] = props.getInputValueAccessor();
 
       const onSubmit: () => OnSubmit = createMemo(() => {
         if (untrack(() => sessionState.isLoggedIn)) {
@@ -299,17 +189,19 @@ export const FirebaseAuthOwnUI = {
           };
         }
 
-        return loginMode() === SignUpMode ? signUp : signIn;
+        return props.submitAction({
+          inputMode: props.inputMode(),
+          passwordLength: context.passwordLength,
+          redirectToSuccessUrl: props.redirectToSuccessUrl,
+        });
       });
 
-      const toggleLoginMode = () =>
-        setLoginMode(
-          untrack(loginMode) === SignUpMode ? SignInMode : SignUpMode,
-        );
-
       createEffect(() => {
-        loginMode();
-        setInputValue(['password', 'passConfirm', 'errorMessage'], '');
+        props.clearSignal();
+        setInputValue(
+          ['password', 'passConfirm', 'infoMessage', 'errorMessage'],
+          '',
+        );
       });
 
       return (
@@ -332,23 +224,70 @@ export const FirebaseAuthOwnUI = {
             },
           }}
           ofInputFields={{
-            loginMode,
             getInputValue,
             setInputValue,
+            useFields: props.useFields,
           }}
           ofBottomContents={{
-            loginMode,
-            toggleLoginMode,
+            bottomComponent: props.wholeOfBottom,
+            ofSubmit: props.submitButtonProps({
+              disabled: sessionState.isLoggedIn,
+            }),
           }}
         />
       );
-    };
+    }
+
+    return resultComponent;
   },
 };
 
 export declare module FirebaseAuthOwnUI {
-  export interface Context {}
-  export interface Props {
-    redirectToSuccessUrl: () => void;
+  export interface Context {
+    passwordLength?: number;
+    bottomWrapper?: Component<{
+      bottomContents: JSX.FunctionElement;
+    }>;
   }
+  export interface Props<T> {
+    getInputValueAccessor?: () => InputValueAccessor;
+    redirectToSuccessUrl: () => void;
+    useFields: UseFieldsInfo;
+    inputMode: () => T;
+    clearSignal: () => unknown;
+    wholeOfBottom: Component<LoginBasicBottom.BottomWholeProps>;
+    submitButtonProps?: (disableWhenLoggedIn: {
+      disabled: boolean;
+    }) => JSX.InputHTMLAttributes<HTMLInputElement>;
+    submitAction: (arg: {
+      inputMode: T;
+      passwordLength: number;
+      redirectToSuccessUrl: () => void;
+    }) => OnSubmit;
+  }
+
+  export interface UseFieldsInfo {
+    email: boolean;
+    password: boolean;
+    passConfirm: boolean;
+  }
+
+  export interface InputValueState {
+    scheme: {
+      email: string;
+      password: string;
+      passConfirm: string;
+      infoMessage: string;
+      errorMessage: string;
+    };
+    getter: State<InputValueState>['scheme'];
+    setter: SetStateFunction<InputValueState['scheme']>;
+  }
+
+  export type InputValueScheme = InputValueState['scheme'];
+
+  export type InputValueAccessor = [
+    InputValueState['getter'],
+    InputValueState['setter'],
+  ];
 }

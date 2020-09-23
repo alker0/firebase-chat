@@ -13,3 +13,13 @@ export type DefaultComponents<T, U> = Required<
     [K in keyof T]: Component<U[K]>;
   }
 >;
+
+export type OnlyOptional<T extends object> = Pick<
+  T,
+  Exclude<
+    {
+      [K in keyof T]: T extends Record<K, T[K]> ? never : K;
+    }[keyof T],
+    undefined
+  >
+>;

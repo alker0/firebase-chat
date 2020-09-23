@@ -22,40 +22,59 @@ type OnSubmit = NonNullable<
 >;
 type CallableSubmit = JSX.EventHandler<HTMLFormElement, FocusEvent>;
 
-export const loginMethodCreater = (methodArg: {
+export interface LoginValidationInfo {
+  condition: boolean;
+  errorMessage: () => string;
+}
+
+export interface LoginMethodRunner<T> {
+  (freezed: T): {
+    validations: LoginValidationInfo[];
+    whenValid: CallableSubmit;
+  };
+}
+
+export const loginMethodCreater = <T>(methodArg: {
   errorMessageHandler: (errorMessage: string) => void;
-  validations: { condition: () => boolean; errorMessage: () => string }[];
-  whenValid: CallableSubmit;
+  freezeValue?: () => T;
+  methodRunner: LoginMethodRunner<T>;
 }): OnSubmit => (e) => {
   e.preventDefault();
+  const freezedValue = methodArg.freezeValue?.();
   batch(() => {
     methodArg.errorMessageHandler('');
 
+    const { validations, whenValid } = methodArg.methodRunner(freezedValue!);
+
     const {
       lastErrorMessage: resultErrorMessage,
-      lastHasError: hasError,
-    } = methodArg.validations.reduce(
+      anyError: hasAnyError,
+    } = validations.reduce(
       (
-        { sep, lastErrorMessage: accumErrorMessage, lastHasError },
+        { sep, lastErrorMessage: prevErrorMessage, anyError: errorInPrev },
         { condition, errorMessage },
       ) => {
-        if (condition()) {
-          return { sep, lastErrorMessage: accumErrorMessage, lastHasError };
+        if (condition) {
+          return {
+            sep,
+            lastErrorMessage: prevErrorMessage,
+            anyError: errorInPrev,
+          };
         }
 
         return {
           sep: '\n',
-          lastErrorMessage: `${accumErrorMessage}${sep}${errorMessage()}`,
-          lastHasError: true,
+          lastErrorMessage: `${prevErrorMessage}${sep}${errorMessage()}`,
+          anyError: true,
         };
       },
-      { sep: '', lastErrorMessage: '', lastHasError: false },
+      { sep: '', lastErrorMessage: '', anyError: false },
     );
 
-    if (hasError) {
+    if (hasAnyError) {
       methodArg.errorMessageHandler(resultErrorMessage);
     } else {
-      methodArg.whenValid(e);
+      whenValid(e);
     }
   });
 };

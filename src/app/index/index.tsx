@@ -23,9 +23,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
   // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
 
-  firebase.auth().onAuthStateChanged(sessionStateChangedHandler);
+  const auth = firebase.auth();
 
-  firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);
+  auth.onAuthStateChanged(sessionStateChangedHandler);
+
+  auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
 
   createRoot(() =>
     createEffect(() => console.log('Is Logged In =>', sessionState.isLoggedIn)),
@@ -50,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
     </ul>
   );
 
-  const Router = createRouter();
+  const Router = createRouter({ auth });
 
   const mainTarget = document.getElementById('main-contents');
 
