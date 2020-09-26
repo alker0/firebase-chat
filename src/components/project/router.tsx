@@ -2,10 +2,11 @@ import clsx, { Clsx } from 'clsx';
 import { PathMatchRouter } from '@components/common/case/path-match-router';
 import { Redirect as RedirectCreator } from '@components/common/base/atoms/redirect';
 import { Cirrus } from '@components/common/typings/cirrus-style';
-import { createRoot, createSignal, untrack } from 'solid-js';
+import { inputRegex } from '@components/common/util/input-field-utils';
+import { styleUtils } from '@components/common/util/style-utils';
+import { createSignal, untrack } from 'solid-js';
 import { sessionState } from '@lib/solid-firebase-auth';
 import { fullPath } from '@lib/routing-utils';
-import { css } from 'styled-jsx/css';
 import { createLazyAuthUI } from './lazy/firebase-auth-own-ui';
 import { TopMenu as TopMenuCreator } from './top-menu';
 import { createLazyCompleteVerifyEmail } from './lazy/complete-verify-email';
@@ -72,14 +73,8 @@ const Redirect = RedirectCreator.createComponent({
 //   }
 // }
 
-const bottomPadding: unique symbol = createRoot(() => {
-  return css.resolve`
-    div {
-      padding-left: 0;
-      padding-right: 0;
-    }
-  `.className;
-}) as any;
+const bottomPadding: unique symbol = styleUtils.noSidePadding()
+  .className as any;
 
 const cn: Clsx<Cirrus | typeof bottomPadding> = clsx;
 
@@ -105,7 +100,7 @@ export const createRouter = (context: RouterContext) => {
   });
 
   const AuthComponent = createLazyAuthUI({
-    passwordLength: 8,
+    passwordRegex: inputRegex.passwordRegex(8),
     bottomWrapper: (props) => (
       <div class={cn(bottomPadding)}>
         <props.bottomContents />

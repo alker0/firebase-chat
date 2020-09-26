@@ -19,11 +19,14 @@ export const createDisposableStyle = <T extends string>(
     dispose,
   }));
 
-export const createMultiDisposableStyle = <T extends string[]>(
-  cssResolves: () => { [K in keyof T]: { className: T[K]; styles: string } },
+export const createMultiDisposableStyle = <
+  T extends string,
+  U extends T[] = T[]
+>(
+  cssResolves: () => CSSResolveResult[],
 ) =>
   createRoot((dispose) => ({
-    classNames: cssResolves().map((resolved) => resolved.className) as T,
+    classNames: cssResolves().map((resolved) => resolved.className) as U,
     dispose,
   }));
 

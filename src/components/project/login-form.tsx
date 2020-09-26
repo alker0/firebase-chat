@@ -7,13 +7,20 @@ import {
   ClickHandle,
   DO_NOTHING,
 } from '@components/common/util/component-utils';
-import { createMultiDisposableStyle } from '@components/common/util/style-utils';
+import {
+  createMultiDisposableStyle,
+  styleUtils,
+} from '@components/common/util/style-utils';
 import { Cirrus } from '@components/common/typings/cirrus-style';
-import { OnlyOptional } from '@components/common/typings/component-creater';
+import {
+  ComponentMemo,
+  OnlyOptional,
+} from '@components/common/typings/component-utils';
 import clsx, { Clsx } from 'clsx';
 import {
   assignProps,
   Component,
+  createEffect,
   createMemo,
   createSignal,
   createState,
@@ -22,15 +29,7 @@ import { css } from 'styled-jsx/css';
 import { FirebaseAuthOwnUI } from './firebase-auth-own-ui';
 import { FirebaseAuth } from './typings/firebase-sdk';
 
-const {
-  classNames: [bottomPaddingText, toggleLinkStyleText, deviderStyleText],
-} = createMultiDisposableStyle(() => [
-  css.resolve`
-    div {
-      padding-left: 0;
-      padding-right: 0;
-    }
-  `,
+const { classNames } = createMultiDisposableStyle<Cirrus>(() => [
   css.resolve`
     a {
       font-size: 0.9rem;
@@ -40,19 +39,18 @@ const {
   `,
   css.resolve`
     div {
-      margin-bottom: 1rem;
+      width: 1rem;
+      margin-bottom: 1.2rem;
       cursor: default;
     }
   `,
 ]);
 
-const bottomPadding: unique symbol = bottomPaddingText as any;
-const linkStyle: unique symbol = toggleLinkStyleText as any;
-const deviderStyle: unique symbol = deviderStyleText as any;
+const bottomPadding = styleUtils.noSidePadding().className as Cirrus;
 
-const cn: Clsx<
-  Cirrus | typeof bottomPadding | typeof linkStyle | typeof deviderStyle
-> = clsx;
+const [linkStyle, deviderStyle] = classNames;
+
+const cn: Clsx<Cirrus> = clsx;
 
 const SignUpModeText = 'SignUp';
 const SignInWithPasswordModeText = 'SignInWithPassword';
@@ -95,7 +93,7 @@ const getLoginModeFromText = (modeText: string | null): LoginMode => {
 const getSignUpOrSignInTogglerButton = (
   getLoginMode: () => LoginMode,
   setLoginMode: (loginMode: LoginMode) => void,
-): JSX.FunctionElement => {
+): ComponentMemo => {
   // content-fluid
   const createButton = (
     buttonText: string,
@@ -122,30 +120,32 @@ const getSignUpOrSignInTogglerButton = (
     true,
   );
 
-  return createMemo(() => componentMemo()());
+  return {
+    get Memo() {
+      return componentMemo();
+    },
+  };
 };
 
 const getAnchorArea = (
   getLoginMode: () => LoginMode,
   setLoginMode: (mode: LoginMode) => void,
-): JSX.FunctionElement => {
+): ComponentMemo => {
   const viewNothing = () => null;
   const whenSignInWithPassword = () => (
     <div class={cn('row', 'ignore-screen', 'level')}>
-      <div class={cn('col', 'ignore-screen', 'level-item')}>
+      <div class={cn('col-5', 'ignore-screen', 'level-item', 'offset-left')}>
         <a
-          class={cn('u-text-right', toggleLinkClass)}
+          class={cn('offset-left', toggleLinkClass)}
           {...buttonize(() => setLoginMode(ResetPasswordMode))}
         >
           Forgot Password ?
         </a>
       </div>
-      <div class={cn('col-1', 'ignore-screen', 'level-item', deviderStyle)}>
-        |
-      </div>
-      <div class={cn('col', 'ignore-screen', 'level-item')}>
+      <div class={cn('ignore-screen', 'level-item', deviderStyle)}>|</div>
+      <div class={cn('col-5', 'ignore-screen', 'level-item', 'offset-right')}>
         <a
-          class={cn('u-text-left', toggleLinkClass)}
+          class={cn('offset-right', toggleLinkClass)}
           {...buttonize(() => setLoginMode(SignInWithVerifyEmailMode))}
         >
           Sign In With Email Link
@@ -154,9 +154,9 @@ const getAnchorArea = (
     </div>
   );
   const whenSignInWithEmailVerify = () => (
-    <div class={cn('row', 'ignore-screen', 'u-center', 'level')}>
+    <div class={cn('row', 'ignore-screen', 'level')}>
       <a
-        class={cn('col', toggleLinkClass)}
+        class={cn('col', 'u-text-center', toggleLinkClass)}
         {...buttonize(() => setLoginMode(SignInWithPasswordMode))}
       >
         Sign In With Password
@@ -164,9 +164,9 @@ const getAnchorArea = (
     </div>
   );
   const whenResetPassword = () => (
-    <div class={cn('row', 'ignore-screen', 'u-center', 'level')}>
+    <div class={cn('row', 'ignore-screen', 'level')}>
       <a
-        class={cn('col', toggleLinkClass)}
+        class={cn('col', 'u-text-center', toggleLinkClass)}
         {...buttonize(() => setLoginMode(SignInWithPasswordMode))}
       >
         Cancel
@@ -189,7 +189,11 @@ const getAnchorArea = (
     }
   });
 
-  return createMemo(() => componentMemo()());
+  return {
+    get Memo() {
+      return componentMemo();
+    },
+  };
 };
 
 const getUseFields = (getLoginMode: () => LoginMode) => {
@@ -206,7 +210,7 @@ const getUseFields = (getLoginMode: () => LoginMode) => {
   const withPassword: UseFields = {
     email: true,
     password: true,
-    passConfirm: true,
+    passConfirm: false,
   };
 
   return createMemo(() => {
@@ -234,7 +238,7 @@ const getSubmitAction = (
   emailCookieAge: number = 180,
 ): AuthComponentProps['submitAction'] => ({
   inputMode,
-  passwordLength,
+  passwordRegex,
   redirectToSuccessUrl,
 }) => {
   const errorMessageHandler = (errorMessage: string) =>
@@ -278,6 +282,11 @@ const getSubmitAction = (
             auth
               .sendSignInLinkToEmail(email, actionCodeSettings)
               .then(() => {
+                setInputValue(
+                  'infoMessage',
+                  'Check your inbox for completing login',
+                );
+
                 document.cookie = `${cookieKeyOfEmail}=${encodeURIComponent(
                   email,
                 )}; domain=.${
@@ -300,9 +309,7 @@ const getSubmitAction = (
           validations: [
             emailValidation(email),
             {
-              condition: inputRegex
-                .passwordRegex(passwordLength)
-                .test(password),
+              condition: passwordRegex.test(password),
               errorMessage: () => 'Password is invalid format',
             },
           ],
@@ -366,7 +373,6 @@ export const LoginForm = {
     const context = assignProps({}, defaultContext, contextArg);
 
     return () => {
-      // TODO dafault value
       const [getInputValue, setInputValue] = createState<
         FirebaseAuthOwnUI.InputValueScheme
       >({
@@ -386,6 +392,11 @@ export const LoginForm = {
       const [loginMode, setLoginMode] = createSignal<LoginMode>(
         defaultLoginMode,
       );
+
+      createEffect(() => {
+        loginMode();
+        setInputValue('infoMessage', '');
+      });
 
       const useFields = getUseFields(loginMode);
 
@@ -424,9 +435,9 @@ export const LoginForm = {
                 <props.submitButton />
               </div>
               <div class={cn('row', bottomPadding)}>
-                <SignUpOrSignInToggler />
+                <SignUpOrSignInToggler.Memo />
               </div>
-              <AnchorArea />
+              <AnchorArea.Memo />
             </>
           )}
           submitButtonProps={(disableWhenLoggedIn) => ({

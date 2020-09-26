@@ -1,8 +1,6 @@
+import { styleUtils } from '@components/common/util/style-utils';
 import { Cirrus } from '@components/common/typings/cirrus-style';
-import {
-  inputRegex,
-  loginMethodCreater,
-} from '@components/common/util/input-field-utils';
+import { loginMethodCreater } from '@components/common/util/input-field-utils';
 import clsx, { Clsx } from 'clsx';
 import { Component, createSignal, createState } from 'solid-js';
 import { FirebaseAuthOwnUI } from './firebase-auth-own-ui';
@@ -11,6 +9,8 @@ import { FirebaseAuth } from './typings/firebase-sdk';
 const [clearSignal] = createSignal();
 
 const cn: Clsx<Cirrus> = clsx;
+
+const noSidePadding = styleUtils.noSidePadding().className as Cirrus;
 
 type AuthComponentProps = FirebaseAuthOwnUI.Props<unknown>;
 
@@ -23,7 +23,7 @@ const getSubmitAction = (
   setInputValue: InputValueSetter,
   actionCode: string,
   emailPromise: Promise<string>,
-): AuthComponentProps['submitAction'] => ({ passwordLength }) => {
+): AuthComponentProps['submitAction'] => ({ passwordRegex }) => {
   return loginMethodCreater({
     errorMessageHandler: (errorMessage) =>
       setInputValue('errorMessage', errorMessage),
@@ -34,7 +34,7 @@ const getSubmitAction = (
     methodRunner: ({ password, passConfirm }) => ({
       validations: [
         {
-          condition: inputRegex.passwordRegex(passwordLength).test(password),
+          condition: passwordRegex.test(password),
           errorMessage: () => 'Password is invalid format',
         },
         {
@@ -78,7 +78,7 @@ export const CompleteVerifyEmail = {
         email: '',
         password: '',
         passConfirm: '',
-        infoMessage: '',
+        infoMessage: 'Please input new password',
         errorMessage: '',
       });
 
@@ -88,8 +88,6 @@ export const CompleteVerifyEmail = {
           context.redirectToFailedUrl();
           return '';
         });
-
-      emailPromise.then((email) => setInputValue('email', email));
 
       const submitAction = getSubmitAction(
         context.auth,
@@ -105,10 +103,14 @@ export const CompleteVerifyEmail = {
           clearSignal={clearSignal}
           inputMode={() => null}
           wholeOfBottom={(props) => (
-            <div class={cn('row', 'input-control')}>
+            <div class={cn('row', 'input-control', noSidePadding)}>
               <props.submitButton />
             </div>
           )}
+          submitButtonProps={(disableWhenLoggedIn) => ({
+            ...disableWhenLoggedIn,
+            class: cn('animated', 'btn-primary'),
+          })}
           redirectToSuccessUrl={context.redirectToSuccessUrl}
           useFields={{
             email: false,

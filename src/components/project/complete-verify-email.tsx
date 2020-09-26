@@ -1,16 +1,25 @@
+import { styleUtils } from '@components/common/util/style-utils';
 import { Cirrus } from '@components/common/typings/cirrus-style';
 import {
   inputRegex,
   loginMethodCreater,
 } from '@components/common/util/input-field-utils';
 import clsx, { Clsx } from 'clsx';
-import { Component, createResource, createSignal, createState } from 'solid-js';
+import {
+  Component,
+  createMemo,
+  createResource,
+  createSignal,
+  createState,
+} from 'solid-js';
 import { FirebaseAuthOwnUI } from './firebase-auth-own-ui';
 import { FirebaseAuth } from './typings/firebase-sdk';
 
 const [clearSignal] = createSignal();
 
 const cn: Clsx<Cirrus> = clsx;
+
+const noSidePadding = styleUtils.noSidePadding().className as Cirrus;
 
 type AuthComponentProps = FirebaseAuthOwnUI.Props<unknown>;
 
@@ -30,12 +39,22 @@ const deleteEmailFromCookie = (cookieKeyOfEmail: string) => {
   document.cookie = `${cookieKeyOfEmail}=; max-age=-1; sameSite=strict;`;
 };
 
+const getSignInMethods = async (auth: FirebaseAuth, emailValue: string) => {
+  if (emailValue.length) {
+    return auth.fetchSignInMethodsForEmail(emailValue);
+  } else {
+    return [];
+  }
+};
+
 const getSubmitAction = (
   auth: FirebaseAuth,
   getInputValue: InputValueGetter,
   setInputValue: InputValueSetter,
   cookieKeyOfEmail: string,
-): AuthComponentProps['submitAction'] => ({ passwordLength }) => {
+  getNeedPassword: () => boolean | undefined,
+  redirectToSuccessUrl: () => void,
+): AuthComponentProps['submitAction'] => ({ passwordRegex }) => {
   return loginMethodCreater({
     errorMessageHandler: (errorMessage) =>
       setInputValue('errorMessage', errorMessage),
@@ -43,19 +62,20 @@ const getSubmitAction = (
       email: getInputValue.email,
       password: getInputValue.password,
       passConfirm: getInputValue.passConfirm,
+      needPassword: getNeedPassword(),
     }),
-    methodRunner: ({ email, password, passConfirm }) => ({
+    methodRunner: ({ email, password, passConfirm, needPassword }) => ({
       validations: [
         {
           condition: inputRegex.emailRegex.test(email),
           errorMessage: () => 'Email is invalid format',
         },
         {
-          condition: inputRegex.passwordRegex(passwordLength).test(password),
+          condition: !needPassword || passwordRegex.test(password),
           errorMessage: () => 'Password is invalid format',
         },
         {
-          condition: password === passConfirm,
+          condition: !needPassword || password === passConfirm,
           errorMessage: () => 'Password confirmation is not matching',
         },
       ],
@@ -70,7 +90,11 @@ const getSubmitAction = (
             if (!firstResult.user.email)
               throw new Error("User's Email Not Found");
 
-            firstResult.user.updatePassword(password);
+            if (needPassword) {
+              firstResult.user.updatePassword(password);
+            }
+
+            redirectToSuccessUrl();
 
             // firebase
             //   .auth()
@@ -101,14 +125,6 @@ const getSubmitAction = (
 
 const defaultCookieKeyOfEmail = 'email-for-signin';
 
-type UseFieldsInfo = FirebaseAuthOwnUI.UseFieldsInfo;
-
-const defaultUseFields: UseFieldsInfo = {
-  email: true,
-  password: true,
-  passConfirm: true,
-};
-
 export const CompleteVerifyEmail = {
   createComponent: (
     context: CompleteVerifyEmail.Context,
@@ -122,39 +138,47 @@ export const CompleteVerifyEmail = {
 
       const cookieEmailValue = getEmailValueFromCookie(cookieKeyOfEmail);
 
-      const [useFields, loadUseFields] = createResource<UseFieldsInfo>();
+      const [needPassword, loadNeedPassword] = createResource(true);
 
-      loadUseFields(async () => {
-        const signInMethods = await context.auth.fetchSignInMethodsForEmail(
-          cookieEmailValue,
-        );
+      const useFields = createMemo(() => ({
+        email: true,
+        password: Boolean(needPassword()),
+        passConfirm: Boolean(needPassword()),
+      }));
 
-        const alreadyEmailVerified = signInMethods.includes(
-          firebase.auth.EmailAuthProvider.EMAIL_LINK_SIGN_IN_METHOD,
-        );
+      loadNeedPassword(async () => {
+        try {
+          console.log(`Email Of Cookie: ${cookieEmailValue || '[Empty]'}`);
 
-        if (alreadyEmailVerified && cookieKeyOfEmail.length) {
-          await context.auth.signInWithEmailLink(cookieKeyOfEmail);
-          deleteEmailFromCookie(cookieKeyOfEmail);
+          const signInMethods = await getSignInMethods(
+            context.auth,
+            cookieEmailValue,
+          );
+
+          const alreadyEmailVerified = signInMethods.includes(
+            firebase.auth.EmailAuthProvider.EMAIL_LINK_SIGN_IN_METHOD,
+          );
+
+          if (alreadyEmailVerified && cookieEmailValue.length) {
+            await context.auth.signInWithEmailLink(cookieEmailValue);
+            deleteEmailFromCookie(cookieKeyOfEmail);
+            context.redirectToSuccessUrl();
+          }
+
+          return !alreadyEmailVerified;
+        } catch (error) {
+          console.log(error);
+          return true;
         }
-
-        const needPassword = !alreadyEmailVerified;
-
-        return {
-          email: true,
-          password: needPassword,
-          passConfirm: needPassword,
-        };
       });
 
-      // TODO dafault value
       const [getInputValue, setInputValue] = createState<
         FirebaseAuthOwnUI.InputValueScheme
       >({
         email: cookieEmailValue,
         password: '',
         passConfirm: '',
-        infoMessage: '',
+        infoMessage: 'Please input for complete login',
         errorMessage: '',
       });
 
@@ -163,6 +187,8 @@ export const CompleteVerifyEmail = {
         getInputValue,
         setInputValue,
         cookieKeyOfEmail,
+        needPassword,
+        context.redirectToSuccessUrl,
       );
 
       return (
@@ -171,12 +197,16 @@ export const CompleteVerifyEmail = {
           clearSignal={clearSignal}
           inputMode={() => null}
           wholeOfBottom={(props) => (
-            <div class={cn('row', 'input-control')}>
+            <div class={cn('row', 'input-control', noSidePadding)}>
               <props.submitButton />
             </div>
           )}
+          submitButtonProps={(disableWhenLoggedIn) => ({
+            ...disableWhenLoggedIn,
+            class: cn('animated', 'btn-primary'),
+          })}
           redirectToSuccessUrl={context.redirectToSuccessUrl}
-          useFields={useFields() ?? defaultUseFields}
+          useFields={useFields()}
           submitAction={submitAction}
         />
       );

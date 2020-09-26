@@ -3,7 +3,7 @@ import { FormContainer } from '@components/common/base/form/form-container';
 import { BasicInputField } from '@components/common/cirrus/common/basic-input-field';
 import { LoginBasicBottom } from '@components/common/cirrus/domain/login-basic-bottom';
 import { Cirrus } from '@components/common/typings/cirrus-style';
-import { OnlyOptional } from '@components/common/typings/component-creater';
+import { OnlyOptional } from '@components/common/typings/component-utils';
 import { inputRegex } from '@components/common/util/input-field-utils';
 import { sessionState } from '@lib/solid-firebase-auth';
 import clsx, { Clsx } from 'clsx';
@@ -90,7 +90,7 @@ interface InputProps {
 }
 
 export const defaultContext: Required<FirebaseAuthOwnUI.Context> = {
-  passwordLength: 6,
+  passwordRegex: inputRegex.passwordRegex(6),
   bottomWrapper: (props) => props.bottomContents,
 };
 
@@ -138,7 +138,7 @@ export const FirebaseAuthOwnUI = {
                 name: 'password',
                 type: 'password',
                 required: true,
-                pattern: inputRegex.password(context.passwordLength),
+                pattern: context.passwordRegex.source,
                 value: props.getInputValue.password,
                 onChange: (e) =>
                   props.setInputValue('password', e.target.value),
@@ -152,7 +152,7 @@ export const FirebaseAuthOwnUI = {
                 name: 'password-confirm',
                 type: 'password',
                 required: true,
-                pattern: inputRegex.password(context.passwordLength),
+                pattern: context.passwordRegex.source,
                 value: props.getInputValue.passConfirm,
                 onChange: (e) =>
                   props.setInputValue('passConfirm', e.target.value),
@@ -191,17 +191,14 @@ export const FirebaseAuthOwnUI = {
 
         return props.submitAction({
           inputMode: props.inputMode(),
-          passwordLength: context.passwordLength,
+          passwordRegex: context.passwordRegex,
           redirectToSuccessUrl: props.redirectToSuccessUrl,
         });
       });
 
       createEffect(() => {
         props.clearSignal();
-        setInputValue(
-          ['password', 'passConfirm', 'infoMessage', 'errorMessage'],
-          '',
-        );
+        setInputValue(['password', 'passConfirm', 'errorMessage'], '');
       });
 
       return (
@@ -244,7 +241,7 @@ export const FirebaseAuthOwnUI = {
 
 export declare module FirebaseAuthOwnUI {
   export interface Context {
-    passwordLength?: number;
+    passwordRegex?: RegExp;
     bottomWrapper?: Component<{
       bottomContents: JSX.FunctionElement;
     }>;
@@ -261,7 +258,7 @@ export declare module FirebaseAuthOwnUI {
     }) => JSX.InputHTMLAttributes<HTMLInputElement>;
     submitAction: (arg: {
       inputMode: T;
-      passwordLength: number;
+      passwordRegex: RegExp;
       redirectToSuccessUrl: () => void;
     }) => OnSubmit;
   }
