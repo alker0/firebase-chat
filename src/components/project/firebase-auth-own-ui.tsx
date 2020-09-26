@@ -4,7 +4,10 @@ import { BasicInputField } from '@components/common/cirrus/common/basic-input-fi
 import { LoginBasicBottom } from '@components/common/cirrus/domain/login-basic-bottom';
 import { Cirrus } from '@components/common/typings/cirrus-style';
 import { OnlyOptional } from '@components/common/typings/component-utils';
-import { inputRegex } from '@components/common/util/input-field-utils';
+import {
+  inputRegex,
+  inputRegexSource,
+} from '@components/common/util/input-field-utils';
 import { sessionState } from '@lib/solid-firebase-auth';
 import clsx, { Clsx } from 'clsx';
 import {
@@ -90,7 +93,7 @@ interface InputProps {
 }
 
 export const defaultContext: Required<FirebaseAuthOwnUI.Context> = {
-  passwordRegex: inputRegex.passwordRegex(6),
+  passwordRegex: inputRegex.password(6),
   bottomWrapper: (props) => props.bottomContents,
 };
 
@@ -126,7 +129,7 @@ export const FirebaseAuthOwnUI = {
               name: 'email',
               type: 'text',
               required: true,
-              pattern: inputRegex.email,
+              pattern: inputRegexSource.email,
               value: props.getInputValue.email,
               onChange: (e) => props.setInputValue('email', e.target.value),
             }}

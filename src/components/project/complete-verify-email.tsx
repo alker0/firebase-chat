@@ -67,7 +67,7 @@ const getSubmitAction = (
     methodRunner: ({ email, password, passConfirm, needPassword }) => ({
       validations: [
         {
-          condition: inputRegex.emailRegex.test(email),
+          condition: inputRegex.email.test(email),
           errorMessage: () => 'Email is invalid format',
         },
         {

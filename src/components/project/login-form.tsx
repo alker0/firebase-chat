@@ -261,7 +261,7 @@ const getSubmitAction = (
   });
 
   const emailValidation = (email: string) => ({
-    condition: inputRegex.emailRegex.test(email),
+    condition: inputRegex.email.test(email),
     errorMessage: () => 'Email is invalid format',
   });
 

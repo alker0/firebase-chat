@@ -99,7 +99,7 @@ export const createRouter = (context: RouterContext) => {
   });
 
   const AuthComponent = createLazyAuthUI({
-    passwordRegex: inputRegex.passwordRegex(8),
+    passwordRegex: inputRegex.password(8),
     bottomWrapper: (props) => (
       <div class={cn(bottomPadding)}>
         <props.bottomContents />
