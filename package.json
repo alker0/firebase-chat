@@ -57,7 +57,7 @@
     "@typescript-eslint/parser": "^4.2.0",
     "babel-plugin-macros": "^2.8.0",
     "babel-plugin-transform-remove-console": "^6.9.4",
-    "babel-preset-solid": "^0.19.3",
+    "babel-preset-solid": "^0.20.0",
     "connect": "^3.7.0",
     "eslint": "^7.9.0",
     "eslint-config-airbnb-typescript": "^10.0.0",
@@ -157,8 +157,8 @@
   "dependencies": {
     "clsx": "^1.1.1",
     "firebaseui": "^4.6.1",
-    "solid-js": "^0.19.3",
-    "solid-styled-jsx": "^0.19.3",
+    "solid-js": "^0.20.0",
+    "solid-styled-jsx": "^0.20.0",
     "styled-jsx": "^3.3.0"
   },
   "webDependencies": {}

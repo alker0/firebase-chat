@@ -1,4 +1,4 @@
-import { afterEffects, assignProps } from 'solid-js';
+import { createComputed, assignProps } from 'solid-js';
 import { ComponentCreater } from '../../typings/component-creater';
 
 const defaultProps: FirebaseAuthUI.DefaultProps = {
@@ -17,7 +17,7 @@ export const FirebaseAuthUI: ComponentCreater<
 
       let authRef: HTMLDivElement | undefined;
 
-      afterEffects(() => {
+      createComputed(() => {
         context.ui.start(authRef!, props.uiConfig);
       });
 

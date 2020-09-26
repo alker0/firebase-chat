@@ -10,7 +10,7 @@ import clsx, { Clsx } from 'clsx';
 import {
   assignProps,
   Component,
-  createEffect,
+  createComputed,
   createMemo,
   createState,
   SetStateFunction,
@@ -196,7 +196,7 @@ export const FirebaseAuthOwnUI = {
         });
       });
 
-      createEffect(() => {
+      createComputed(() => {
         props.clearSignal();
         setInputValue(['password', 'passConfirm', 'errorMessage'], '');
       });

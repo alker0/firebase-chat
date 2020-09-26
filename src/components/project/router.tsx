@@ -73,8 +73,7 @@ const Redirect = RedirectCreator.createComponent({
 //   }
 // }
 
-const bottomPadding: unique symbol = styleUtils.noSidePadding()
-  .className as any;
+const bottomPadding = styleUtils.noSidePadding().className as Cirrus;
 
 const cn: Clsx<Cirrus | typeof bottomPadding> = clsx;
 

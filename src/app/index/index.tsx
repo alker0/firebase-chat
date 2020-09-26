@@ -10,7 +10,7 @@ import {
   routingPaths,
   movePageFromPath,
 } from '@components/project/router';
-import { createEffect, createRoot } from 'solid-js';
+import { createComputed, createRoot } from 'solid-js';
 
 const dropDownTarget = document.getElementById('header-menu');
 
@@ -30,7 +30,9 @@ document.addEventListener('DOMContentLoaded', () => {
   auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
 
   createRoot(() =>
-    createEffect(() => console.log('Is Logged In =>', sessionState.isLoggedIn)),
+    createComputed(() =>
+      console.log('Is Logged In =>', sessionState.isLoggedIn),
+    ),
   );
 
   const Links = () => (

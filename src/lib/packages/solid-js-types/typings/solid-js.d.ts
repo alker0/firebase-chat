@@ -21,6 +21,7 @@ declare module 'solid-js' {
     : 'invalid'];
 
   export const assignProps: <T extends any[]>(...args: T) => Aggregate<T>;
+  export declare function createComputed<T>(fn: (v?: T) => T, value?: T): void;
 }
 
 declare global {

@@ -20,7 +20,7 @@ import clsx, { Clsx } from 'clsx';
 import {
   assignProps,
   Component,
-  createEffect,
+  createComputed,
   createMemo,
   createSignal,
   createState,
@@ -393,7 +393,7 @@ export const LoginForm = {
         defaultLoginMode,
       );
 
-      createEffect(() => {
+      createComputed(() => {
         loginMode();
         setInputValue('infoMessage', '');
       });
