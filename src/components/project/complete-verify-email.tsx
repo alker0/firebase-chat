@@ -95,26 +95,8 @@ const getSubmitAction = (
             }
 
             redirectToSuccessUrl();
-
-            // firebase
-            //   .auth()
-            //   .createUserWithEmailAndPassword(
-            //     firstResult.user.email,
-            //     getInputValue.password,
-            //   )
-            //   .then((secondResult) => console.log(secondResult))
-            //   .catch((error) => {
-            //     console.log(error.code);
-            //     if (error.code === 'auth/') {
-            //       firstResult.user!.updatePassword(getInputValue.password);
-            //       return;
-            //     }
-            //     throw error;
-            //   });
           })
           .catch((error) => {
-            // Some error occurred, you can inspect the code: error.code
-            // Common errors could be invalid email and invalid or expired OTPs.
             console.log(error.code);
             setInputValue('errorMessage', error.message);
           });

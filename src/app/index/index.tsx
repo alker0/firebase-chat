@@ -19,7 +19,6 @@ if (dropDownTarget) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  // firebase.auth().onAuthStateChanged(user => { });
   // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
   // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
 
