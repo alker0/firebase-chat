@@ -12,6 +12,7 @@ const defaultContext: Required<BasicInputField.Context> = {
 };
 
 const defaultProps: Required<BasicInputField.Props> = {
+  inputId: '',
   ofWrapper: {},
   ofLabel: {},
   ofInput: {},
@@ -42,15 +43,19 @@ export const BasicInputField = {
           {...props.ofWrapper}
           class={clsx(wrapperStyle, props.ofWrapper.class)}
         >
-          <div
+          <label
             children={props.labelText}
             {...props.ofLabel}
             class={clsx(labelStyle, sizedLabel, props.ofLabel.class)}
+            htmlFor={
+              props.ofInput.id ?? context.baseInputProps.id ?? props.inputId
+            }
           />
           <input
             {...context.baseInputProps}
             {...props.ofInput}
             class={clsx(sizedInput, props.ofInput.class)}
+            id={props.ofInput.id ?? context.baseInputProps.id ?? props.inputId}
           />
         </div>
       );
@@ -67,8 +72,9 @@ export declare module BasicInputField {
   }
 
   export interface Props {
+    inputId?: string;
     ofWrapper?: JSX.HTMLAttributes<HTMLDivElement>;
-    ofLabel?: JSX.HTMLAttributes<HTMLDivElement>;
+    ofLabel?: JSX.LabelHTMLAttributes<HTMLLabelElement>;
     labelText?: string;
     ofInput?: JSX.InputHTMLAttributes<HTMLInputElement>;
   }

@@ -11,6 +11,7 @@ import {
   movePageFromPath,
 } from '@components/project/router';
 import { createComputed, createRoot } from 'solid-js';
+import { buttonize } from '@components/common/util/component-utils';
 
 const dropDownTarget = document.getElementById('header-menu');
 
@@ -33,6 +34,24 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log('Is Logged In =>', sessionState.isLoggedIn),
     ),
   );
+
+  const brandTarget = document.getElementById('header-brand-container');
+
+  if (brandTarget) {
+    render(
+      () => (
+        <a
+          id="header-brand"
+          {...buttonize(() => movePageFromPath(routingPaths.home), {
+            role: 'link',
+          })}
+        >
+          <h5 class="title">Talker</h5>
+        </a>
+      ),
+      brandTarget,
+    );
+  }
 
   const Links = () => (
     <ul>

@@ -1,17 +1,16 @@
 import { HeaderMenu } from '@components/cirrus/common/header-dropdown';
 import { createMemo } from 'solid-js';
 import { sessionState } from '@lib/solid-firebase-auth';
+import { buttonize, DO_NOTHING } from '@components/common/util/component-utils';
 
-/* eslint-disable jsx-a11y/anchor-is-valid */
 const createMenuItems = () =>
   createMemo(() => [
-    () => <a>First Item</a>,
-    () => <a>Second Item</a>,
-    () => <a>Third Item</a>,
-    () => <a>Fourth Item</a>,
+    () => <a {...buttonize(DO_NOTHING)}>First Item</a>,
+    () => <a {...buttonize(DO_NOTHING)}>Second Item</a>,
+    () => <a {...buttonize(DO_NOTHING)}>Third Item</a>,
+    () => <a {...buttonize(DO_NOTHING)}>Fourth Item</a>,
     () => <div>{sessionState.isLoggedIn}</div>,
   ]);
-/* eslint-enable jsx-a11y/anchor-is-valid */
 
 const Component = HeaderMenu.createComponent();
 

@@ -127,6 +127,7 @@ export const FirebaseAuthOwnUI = {
             labelText="Email:"
             ofInput={{
               name: 'email',
+              id: 'input-email',
               type: 'text',
               required: true,
               pattern: inputRegexSource.email,
@@ -139,6 +140,7 @@ export const FirebaseAuthOwnUI = {
               labelText="Password:"
               ofInput={{
                 name: 'password',
+                id: 'input-password',
                 type: 'password',
                 required: true,
                 pattern: context.passwordRegex.source,
@@ -153,6 +155,7 @@ export const FirebaseAuthOwnUI = {
               labelText="Confirm:"
               ofInput={{
                 name: 'password-confirm',
+                id: 'input-password-confirm',
                 type: 'password',
                 required: true,
                 pattern: context.passwordRegex.source,
