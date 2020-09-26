@@ -1631,9 +1631,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@firebase/firestore@npm:1.17.0":
-  version: 1.17.0
-  resolution: "@firebase/firestore@npm:1.17.0"
+"@firebase/firestore@npm:1.17.1":
+  version: 1.17.1
+  resolution: "@firebase/firestore@npm:1.17.1"
   dependencies:
     "@firebase/component": 0.1.19
     "@firebase/firestore-types": 1.13.0
@@ -1647,7 +1647,7 @@ __metadata:
   peerDependencies:
     "@firebase/app": 0.x
     "@firebase/app-types": 0.x
-  checksum: f70cdab8538007df045ae92e63604798bedf4008a3adf1144acbfd6a960c933d2d865f206626c109a27c4c9f75967db4afff44c15c6ee9c28076a9c0b86476e2
+  checksum: edd8404487ea629cdf3a177503195a7c63df54bc0312666c9917d1921131c985f3ca00da6cf5db48ab080d38c16fc5f6306005e4de50ece0c11a588913b61472
   languageName: node
   linkType: hard
 
@@ -5705,16 +5705,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-prettier@npm:^6.11.0":
-  version: 6.11.0
-  resolution: "eslint-config-prettier@npm:6.11.0"
+"eslint-config-prettier@npm:^6.12.0":
+  version: 6.12.0
+  resolution: "eslint-config-prettier@npm:6.12.0"
   dependencies:
     get-stdin: ^6.0.0
   peerDependencies:
     eslint: ">=3.14.1"
   bin:
     eslint-config-prettier-check: bin/cli.js
-  checksum: 59efd906c78d47753a673c205ef515fdab19cd6ea0fd992c9cb2366804861746238244526ab565ccc7448569f5472ce7646a77d0c9998787192e4ebae95df71d
+  checksum: 9371c0a8d05df36f3698247e703118a8eb95fa887aabc4b1e189c21e248ab9c49c3b8e5621f42826b89bbfd05aa52493ffddf0c41219db9b6e4df20e46e21da0
   languageName: node
   linkType: hard
 
@@ -5794,9 +5794,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-react@npm:^7.20.6":
-  version: 7.20.6
-  resolution: "eslint-plugin-react@npm:7.20.6"
+"eslint-plugin-react@npm:^7.21.2":
+  version: 7.21.2
+  resolution: "eslint-plugin-react@npm:7.21.2"
   dependencies:
     array-includes: ^3.1.1
     array.prototype.flatmap: ^1.2.3
@@ -5811,7 +5811,7 @@ __metadata:
     string.prototype.matchall: ^4.0.2
   peerDependencies:
     eslint: ^3 || ^4 || ^5 || ^6 || ^7
-  checksum: e962f31c322f9b1a41187ef20c0c59cb0ca4185959d8a5345132512cc041d760d25fc6576e5763b86fcc01cb8918328400b793b184035384650b22e02c6f2c24
+  checksum: 48ec4da08a53b5d73ce66132a73a9553b7c4300c23ecbb3e14f4c9df8bbaca2b5bff559adecd7014e217ce7eb445f99ba4a6683ce6c958ee78769b992bd183f4
   languageName: node
   linkType: hard
 
@@ -6481,18 +6481,18 @@ __metadata:
     connect: ^3.7.0
     eslint: ^7.9.0
     eslint-config-airbnb-typescript: ^10.0.0
-    eslint-config-prettier: ^6.11.0
+    eslint-config-prettier: ^6.12.0
     eslint-plugin-import: ^2.22.0
     eslint-plugin-jsx-a11y: ^6.3.1
     eslint-plugin-prettier: ^3.1.4
-    eslint-plugin-react: ^7.20.6
-    firebase: ^7.21.0
-    firebase-tools: ^8.11.0
+    eslint-plugin-react: ^7.21.2
+    firebase: ^7.21.1
+    firebase-tools: ^8.11.2
     firebaseui: ^4.6.1
     jest: ^26.4.2
     jest-github-actions-reporter: ^1.0.2
     npm-run-all: ^4.1.5
-    postcss: ^8.0.8
+    postcss: ^8.0.9
     postcss-cli: ^8.0.0
     postcss-import: ^12.0.1
     postcss-import-url: ^5.1.0
@@ -6511,20 +6511,20 @@ __metadata:
     solid-styled-jsx: ^0.19.3
     source-map-support: ^0.5.19
     styled-jsx: ^3.3.0
-    stylelint: ^13.7.1
+    stylelint: ^13.7.2
     stylelint-config-prettier: ^8.0.2
     stylelint-config-standard: ^20.0.0
     stylelint-prettier: ^1.1.2
-    superstatic: ^7.0.0
+    superstatic: ^7.0.1
     type-filtered-clsx: "file:./src/lib/packages/type-filtered-clsx"
     typescript: ^4.0.3
     websocket-driver: ^0.7.4
   languageName: unknown
   linkType: soft
 
-"firebase-tools@npm:^8.11.0":
-  version: 8.11.0
-  resolution: "firebase-tools@npm:8.11.0"
+"firebase-tools@npm:^8.11.2":
+  version: 8.11.2
+  resolution: "firebase-tools@npm:8.11.2"
   dependencies:
     "@google-cloud/pubsub": ^1.7.0
     JSONStream: ^1.2.1
@@ -6580,20 +6580,20 @@ __metadata:
     ws: ^7.2.3
   bin:
     firebase: ./lib/bin/firebase.js
-  checksum: 0d5ad40a3b3f7cc520dec6c3cf432cc52f1d0732b602a06a1d7f7dfdcd4bdb546f7f99579a0d128f9f3d492129ffe55497941fe07c760550d22acdc2bc8a2611
+  checksum: 6b914610394b3ed22c9445cb033d2f409ef299462118d153a0f8202393ea2ce71585802292e8786fd31cbd5d47fd63b0f44a45d18e2a05b4f22fb9f39bbe9aa7
   languageName: node
   linkType: hard
 
-"firebase@npm:^7.21.0":
-  version: 7.21.0
-  resolution: "firebase@npm:7.21.0"
+"firebase@npm:^7.21.1":
+  version: 7.21.1
+  resolution: "firebase@npm:7.21.1"
   dependencies:
     "@firebase/analytics": 0.5.0
     "@firebase/app": 0.6.11
     "@firebase/app-types": 0.6.1
     "@firebase/auth": 0.14.9
     "@firebase/database": 0.6.13
-    "@firebase/firestore": 1.17.0
+    "@firebase/firestore": 1.17.1
     "@firebase/functions": 0.4.51
     "@firebase/installations": 0.4.17
     "@firebase/messaging": 0.7.1
@@ -6602,7 +6602,7 @@ __metadata:
     "@firebase/remote-config": 0.1.28
     "@firebase/storage": 0.3.43
     "@firebase/util": 0.3.2
-  checksum: 5951ae256ea0bd8cac4b753a62d06bc62555c2b87c0b6b597fe05cd00eaa5773d42d79707cd97daf947b04209e3d466dd0ae863d251571a25cef129a7f0c93b1
+  checksum: 92e59bf27f3016732e2b8ec9d0526724dd9c032274ad26ec5780c18592150fe2a2836a2bf8c33fd56d6217859e8e514122ccb3f9a911d50a418fd7424d47637f
   languageName: node
   linkType: hard
 
@@ -11330,15 +11330,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.0.8":
-  version: 8.0.8
-  resolution: "postcss@npm:8.0.8"
+"postcss@npm:^8.0.9":
+  version: 8.0.9
+  resolution: "postcss@npm:8.0.9"
   dependencies:
     colorette: ^1.2.1
     line-column: ^1.0.2
     nanoid: ^3.1.12
     source-map: ^0.6.1
-  checksum: 0c8f61a75ea7b9d8ef37c3173e0b5ac5dfc59205ae128a8246c10c5e799af8a01cf05ca3367e5a33bb52675ea8b8f4218d2eebe1f893c8229a503df5ec2abaea
+  checksum: 9af2fed45b399e49a7cfd405404c75b82b54c701980d43510ddb8fb39387f59e8519e1fb4ecd557c2278f658a71ffc2f0e8df89d7342ffc68d11dbca22b8140f
   languageName: node
   linkType: hard
 
@@ -13361,9 +13361,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"stylelint@npm:^13.7.1":
-  version: 13.7.1
-  resolution: "stylelint@npm:13.7.1"
+"stylelint@npm:^13.7.2":
+  version: 13.7.2
+  resolution: "stylelint@npm:13.7.2"
   dependencies:
     "@stylelint/postcss-css-in-js": ^0.37.2
     "@stylelint/postcss-markdown": ^0.36.1
@@ -13415,7 +13415,7 @@ __metadata:
     write-file-atomic: ^3.0.3
   bin:
     stylelint: bin/stylelint.js
-  checksum: 09111dd7a84ec640c68f73e33e3791a7129706a384bbb581bac575b336bf290debd89b25a452d6b4fc85ed8abe97acf750e5807ddf8d970e09cbe2f7714b8427
+  checksum: 9c9de5ba60ca8e0ccae7a4b44698724fde4dd6aca897389e0e39d7749dad7e083bc52f1fa03f4bcbc438cba758ce759db8415735c8e30cf5d4db5ccf7c510aff
   languageName: node
   linkType: hard
 
@@ -13485,6 +13485,50 @@ __metadata:
   bin:
     superstatic: bin/server
   checksum: 9179c7c2ff0517b644d506344f73a10828a5bd28f88d89a769ece08e6d2504b4d9a1a0d33b70a0a43964f359bd45d0873cc129741f1405ca1454f0ea0bbcb406
+  languageName: node
+  linkType: hard
+
+"superstatic@npm:^7.0.1":
+  version: 7.0.1
+  resolution: "superstatic@npm:7.0.1"
+  dependencies:
+    as-array: ^2.0.0
+    async: ^1.5.2
+    basic-auth-connect: ^1.0.0
+    chalk: ^1.1.3
+    char-spinner: ^1.0.1
+    compare-semver: ^1.0.0
+    compression: ^1.7.0
+    connect: ^3.6.2
+    connect-query: ^1.0.0
+    destroy: ^1.0.4
+    fast-url-parser: ^1.1.3
+    fs-extra: ^0.30.0
+    glob: ^7.1.2
+    glob-slasher: ^1.0.1
+    home-dir: ^1.0.0
+    is-url: ^1.2.2
+    join-path: ^1.1.1
+    lodash: ^4.17.19
+    mime-types: ^2.1.16
+    minimatch: ^3.0.4
+    morgan: ^1.8.2
+    nash: ^3.0.0
+    on-finished: ^2.2.0
+    on-headers: ^1.0.0
+    path-to-regexp: ^1.7.0
+    re2: ^1.15.0
+    router: ^1.3.1
+    rsvp: ^3.6.2
+    string-length: ^1.0.0
+    try-require: ^1.0.0
+    update-notifier: ^4.1.0
+  dependenciesMeta:
+    re2:
+      optional: true
+  bin:
+    superstatic: bin/server
+  checksum: e0a17ffa51d2736b97887b83c8f42d696437a26cdab4df551fdcf9ba291de2ca0a17f02c553c93a3ccff35db7112e96de34d1e4ced6dd4a7e5b4712a8404359d
   languageName: node
   linkType: hard
 
