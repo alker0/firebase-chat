@@ -7,14 +7,18 @@ export type ClickHandle<T extends HTMLElement> = JSX.EventHandler<
 
 export const buttonize: <T extends HTMLElement>(
   clickFn: ClickHandle<T>,
+  otherProps?: {
+    role?: string;
+    tabIndex?: number;
+  },
 ) => Pick<
   JSX.HTMLAttributes<T>,
   'onClick' | 'onKeyDown' | 'role' | 'tabIndex'
-> = (clickHandle) => ({
+> = (clickHandle, { role, tabIndex } = { role: 'button', tabIndex: 0 }) => ({
   onClick: clickHandle,
   onKeyDown: (event) => {
     if (event.keyCode === 13) clickHandle(event);
   },
-  role: 'button',
-  tabIndex: -1,
+  role: role ?? 'button',
+  tabIndex: tabIndex ?? 0,
 });

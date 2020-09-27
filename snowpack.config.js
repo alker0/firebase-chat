@@ -20,7 +20,6 @@ module.exports = {
       '@snowpack/plugin-build-script',
       { cmd: 'postcss', input: ['.pcss'], output: ['.css'] },
     ],
-    ['./plugins/snowpack-firebase-proxy.js'],
     [
       './plugins/snowpack-posthtml.js',
       { inputDir: './src/templates', config: require('./posthtml.config') },

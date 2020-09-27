@@ -1,9 +1,9 @@
-import { afterEffects, Component } from 'solid-js';
+import { Component, createComputed } from 'solid-js';
 
 export const Redirect = {
   createComponent(context: Redirect.Context): Component<Redirect.Props> {
     return (props) => {
-      afterEffects(() => {
+      createComputed(() => {
         context.redirector(
           typeof props.url === 'string' ? props.url : props.url(),
         );

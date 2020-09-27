@@ -4,6 +4,6 @@
   "license": "MIT",
   "main": "",
   "peerDependencies": {
-    "solid-js": "0.19.x"
+    "solid-js": "0.20.x"
   }
 }

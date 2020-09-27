@@ -18,17 +18,16 @@
 
     <include src="partials/firebase-sdk.html"></include>
 
-    <div id="header" class="header header-fixed unselectable header-animated">
+    <div id="header" class="header header-fixed unselectable header-animated" role="banner">
       <div class="header-brand">
-        <div class="nav-item no-hover">
-          <a><h5 class="title">Talker</h5></a>
+        <div id="header-brand-container" class="nav-item no-hover">
         </div>
       </div>
       <div id="header-menu" class="display-contents">
       </div>
     </div>
 
-    <div id="main-contents"></div>
+    <div id="main-contents" role="main"></div>
 
     <div id="firebase-auth-container"></div>
 

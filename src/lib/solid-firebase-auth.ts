@@ -16,5 +16,12 @@ export const [sessionState, setSessionState] = createState({
 });
 
 export const sessionStateChangedHandler = (user: UserState) => {
-  setSessionState('currentUser', user);
+  if (user && !user.emailVerified) {
+    user
+      .delete()
+      .then(() => console.log('User is deleted'))
+      .catch(console.log);
+  } else {
+    setSessionState('currentUser', user);
+  }
 };

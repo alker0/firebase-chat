@@ -10,7 +10,8 @@ import {
   routingPaths,
   movePageFromPath,
 } from '@components/project/router';
-import { createEffect, createRoot } from 'solid-js';
+import { createComputed, createRoot } from 'solid-js';
+import { buttonize } from '@components/common/util/component-utils';
 
 const dropDownTarget = document.getElementById('header-menu');
 
@@ -19,17 +20,49 @@ if (dropDownTarget) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  // firebase.auth().onAuthStateChanged(user => { });
   // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
   // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
 
-  firebase.auth().onAuthStateChanged(sessionStateChangedHandler);
+  const auth = firebase.auth();
 
-  firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);
+  auth.onAuthStateChanged(sessionStateChangedHandler);
+
+  auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
 
   createRoot(() =>
-    createEffect(() => console.log('Is Logged In =>', sessionState.isLoggedIn)),
+    createComputed(() =>
+      console.log('Is Logged In =>', sessionState.isLoggedIn),
+    ),
   );
+
+  const brandTarget = document.getElementById('header-brand-container');
+
+  if (brandTarget) {
+    render(
+      () => (
+        <a
+          id="header-brand"
+          {...buttonize(() => movePageFromPath(routingPaths.home), {
+            role: 'link',
+          })}
+        >
+          <h5 class="title">
+            Talker
+            <span role="img" aria-label="balloon">
+              💬
+              <style jsx>{`
+                span[aria-label='balloon'] {
+                  padding-left: 3px;
+                  vertical-align: 30%;
+                }
+              `}</style>
+            </span>
+          </h5>
+        </a>
+      ),
+      brandTarget,
+    );
+  }
 
   const Links = () => (
     <ul>
@@ -50,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
     </ul>
   );
 
-  const Router = createRouter();
+  const Router = createRouter({ auth });
 
   const mainTarget = document.getElementById('main-contents');
 

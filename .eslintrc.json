@@ -11,9 +11,9 @@
   "extends": [
     "airbnb-typescript",
     // "plugin:@typescript-eslint/recommended",
-    "plugin:prettier/recommended",
     "prettier/@typescript-eslint",
-    "prettier/react"
+    "prettier/react",
+    "plugin:prettier/recommended"
   ],
   "env": {
     "browser": true,
@@ -29,7 +29,11 @@
   "rules": {
     "no-console": "off",
     "default-case": "off",
+    "no-else-return": "off",
     "global-require": "off",
+    "yoda": ["error", "never", {
+      "onlyEquality": true
+    }],
     "react/jsx-filename-extension": ["error", {"extensions": [".js", ".jsx", ".ts", ".tsx"]}],
     "react/react-in-jsx-scope": "off",
     "react/jsx-props-no-spreading": "off",

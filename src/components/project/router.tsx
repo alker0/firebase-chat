@@ -2,12 +2,16 @@ import clsx, { Clsx } from 'clsx';
 import { PathMatchRouter } from '@components/common/case/path-match-router';
 import { Redirect as RedirectCreator } from '@components/common/base/atoms/redirect';
 import { Cirrus } from '@components/common/typings/cirrus-style';
+import { inputRegex } from '@components/common/util/input-field-utils';
+import { styleUtils } from '@components/common/util/style-utils';
 import { createSignal, untrack } from 'solid-js';
 import { sessionState } from '@lib/solid-firebase-auth';
+import { fullPath } from '@lib/routing-utils';
 import { createLazyAuthUI } from './lazy/firebase-auth-own-ui';
 import { TopMenu as TopMenuCreator } from './top-menu';
-
-const cn: Clsx<Cirrus> = clsx;
+import { createLazyCompleteVerifyEmail } from './lazy/complete-verify-email';
+import { createLazyLoginForm } from './lazy/login-form';
+import { FirebaseAuth } from './typings/firebase-sdk';
 
 const [routeSignal, sendRouteSignal] = createSignal('', true);
 
@@ -16,40 +20,33 @@ window.addEventListener('popstate', () => {
   sendRouteSignal(window.location.pathname);
 });
 
+export const thisOriginUrl = (path: string) =>
+  `${window.location.origin}${path}`;
+
 export const movePage = (url: string) => {
   window.history.pushState({}, '', url);
   window.dispatchEvent(new Event('popstate'));
 };
 
-export const movePageFromPath = (path: string) =>
-  movePage(`${window.location.origin}${path}`);
+export const movePageFromPath = (path: string) => movePage(thisOriginUrl(path));
 
 export const routingPaths = {
   home: '/',
   chat: '/chat',
-  auth: '/auth',
+  login: '/login',
+  completeVerifyEmail: '/complete-verify-email',
+  resetPassword: '/reset-password',
   searchRoom: '/search-room',
   createRoom: '/create-room',
 };
 
-const onSessionButtonClick = () => {
+const getSessionButtonHandler = (auth: FirebaseAuth) => () => {
   if (sessionState.isLoggedIn) {
-    firebase.auth().signOut();
+    auth.signOut();
   } else {
-    movePageFromPath(routingPaths.auth);
+    movePageFromPath(routingPaths.login);
   }
 };
-
-const TopMenu = TopMenuCreator.createComponent({
-  headerContents: () => <h1 class={cn('offset-center')}>Welcome To Talker</h1>,
-  getSessionButtonText: () =>
-    sessionState.isLoggedIn ? 'Sign Out' : 'Sign Up',
-  onSessionButtonClick,
-  leftButtonText: 'Search Room',
-  onLeftButtonClick: () => movePageFromPath(routingPaths.searchRoom),
-  rightButtonText: 'Create Room',
-  onRightButtonClick: () => movePageFromPath(routingPaths.createRoom),
-});
 
 const Redirect = RedirectCreator.createComponent({
   redirector: (path) => {
@@ -76,7 +73,11 @@ const Redirect = RedirectCreator.createComponent({
 //   }
 // }
 
-export const createRouter = () => {
+const bottomPadding = styleUtils.noSidePadding().className as Cirrus;
+
+const cn: Clsx<Cirrus | typeof bottomPadding> = clsx;
+
+export const createRouter = (context: RouterContext) => {
   const routerContext: PathMatchRouter.Context = {
     loadingElement: () => <div>Loading...</div>,
     unmatchElement: () => <div>Any Pages Not Found</div>,
@@ -84,7 +85,45 @@ export const createRouter = () => {
 
   const RouteComponent = PathMatchRouter.createComponent(routerContext);
 
-  const AuthComponent = createLazyAuthUI();
+  const TopMenu = TopMenuCreator.createComponent({
+    headerContents: () => (
+      <h1 class={cn('offset-center')}>Welcome To Talker</h1>
+    ),
+    getSessionButtonText: () =>
+      sessionState.isLoggedIn ? 'Sign Out' : 'Sign Up',
+    onSessionButtonClick: getSessionButtonHandler(context.auth),
+    leftButtonText: 'Search Room',
+    onLeftButtonClick: () => movePageFromPath(routingPaths.searchRoom),
+    rightButtonText: 'Create Room',
+    onRightButtonClick: () => movePageFromPath(routingPaths.createRoom),
+  });
+
+  const AuthComponent = createLazyAuthUI({
+    passwordRegex: inputRegex.password(8),
+    bottomWrapper: (props) => (
+      <div class={cn(bottomPadding)}>
+        <props.bottomContents />
+      </div>
+    ),
+  });
+
+  const redirectToHome = () => movePageFromPath(routingPaths.home);
+
+  const LoginFormComponent = createLazyLoginForm({
+    auth: context.auth,
+    authComponent: AuthComponent,
+    redirectToSuccessUrl: redirectToHome,
+    verifyEmailLinkUrl: thisOriginUrl(routingPaths.completeVerifyEmail),
+    resetEmailLinkUrl: thisOriginUrl(routingPaths.resetPassword),
+    emailCookieAge: 180,
+  });
+
+  const CompleteVerifyEmailComponent = createLazyCompleteVerifyEmail({
+    auth: context.auth,
+    authComponent: AuthComponent,
+    redirectToSuccessUrl: redirectToHome,
+    redirectToFailedUrl: redirectToHome,
+  });
 
   return () => (
     <RouteComponent
@@ -99,17 +138,18 @@ export const createRouter = () => {
           getComponent: () => <div>Chat Page</div>,
         },
         {
-          matcher: ({ pathInfo }) => pathInfo().startsWith(routingPaths.auth),
+          matcher: () => fullPath().startsWith(routingPaths.login),
           getComponent: () =>
             untrack(() => !sessionState.isLoggedIn) ? (
-              <AuthComponent
-                redirectToSuccessUrl={() => {
-                  movePageFromPath(routingPaths.home);
-                }}
-              />
+              <LoginFormComponent />
             ) : (
               <Redirect url={routingPaths.home} />
             ),
+        },
+        {
+          matcher: () =>
+            fullPath().startsWith(routingPaths.completeVerifyEmail),
+          getComponent: () => <CompleteVerifyEmailComponent />,
         },
         {
           matcher: routingPaths.searchRoom,
@@ -123,3 +163,7 @@ export const createRouter = () => {
     />
   );
 };
+
+export interface RouterContext {
+  auth: FirebaseAuth;
+}
