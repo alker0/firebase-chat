@@ -46,7 +46,18 @@ document.addEventListener('DOMContentLoaded', () => {
             role: 'link',
           })}
         >
-          <h5 class="title">Talker</h5>
+          <h5 class="title">
+            Talker
+            <span role="img" aria-label="balloon">
+              💬
+              <style jsx>{`
+                span[aria-label='balloon'] {
+                  padding-left: 3px;
+                  vertical-align: 30%;
+                }
+              `}</style>
+            </span>
+          </h5>
         </a>
       ),
       brandTarget,
