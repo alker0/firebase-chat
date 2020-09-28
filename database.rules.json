@@ -1,6 +1,84 @@
 {
   "rules": {
     ".read": false,
-    ".write": false
+    ".write": false,
+    ".validate": "newData.hasChild('next_room_id')",
+    "next_room_id": {
+      ".read": "auth.token.email_verified === true",
+      ".write": "auth.token.email_verified === true",
+      ".validate": "newData.isNumber() && data.exists() ? newData.val() === data.val() || (newData.val() === data.val() + 1 && newData.parent().hasChild('room_info/' + data.val())) : newData.val() === 1"
+    },
+    "room_info": {
+      "$room_id": {
+        ".write": "newData.child('public_info/owner_id').val() === auth.uid",
+        ".validate": "newData.hasChildren(['public_info', 'password']) && (data.exists() || ($room_id === '' + root.child('next_room_id').val() && newData.parent().child('next_room_id').val() === root.child('next_room_id').val() + 1))",
+        "public_info": {
+          ".read": "data.child('owner_id').val() === auth.uid || data.child('allowed_users').hasChild(auth.uid)",
+
+          ".validate": "newData.hasChildren(['owner_id', 'allowed_users', 'room_name', 'members_count'])",
+          "owner_id": {
+            ".validate": "newData.val() === auth.uid"
+          },
+          "allowed_users": {
+            "$user_id": {
+              ".validate": "newData.isBoolean()"
+            }
+          },
+          "room_name": {
+            ".validate": "newData.isString() && 0 < newData.val().length && newData.val().length < 20"
+          },
+          "members_count": {
+            ".validate": "newData.isNumber() && (data.exists() ? newData.val() < data.val() + 200 : newData.val() === 0)"
+          },
+          "$other": {
+            ".validate": false
+          }
+        },
+        "password": {
+          ".read": "data.parent().child('public_info/owner_id').val() === auth.uid",
+          ".write": "newData.parent().child('public_info/owner_id').val() === auth.uid",
+          ".validate": "newData.isString() && newData.val().length < 16"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+    "room_entrance": {
+      ".read": "auth !== null",
+      "$room_id": {
+        ".write": "newData.child('owner_id').val() === auth.uid",
+        ".validate": "newData.hasChildren(['owner_id', 'room_name', 'members_count', 'created_at']) && newData.parent().parent().child('room_info').hasChild($room_id)",
+        "owner_id": {
+          ".validate": "newData.val() === newData.parent().parent().parent().child('room_info').child($room_id).child('public_info/owner_id').val()"
+        },
+        "room_name": {
+          ".validate": "newData.val() === newData.parent().parent().parent().child('room_info').child($room_id).child('public_info/room_name').val()"
+        },
+        "members_count": {
+          ".validate": "newData.val() === newData.parent().parent().parent().child('room_info').child($room_id).child('public_info/members_count').val()"
+        },
+        "created_at": {
+          ".validate": "newData.val() < now && (!data.exists() || newData.val() === data.val())"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+    "entry_requests": {
+      "$room_id": {
+        ".read": "root.child('room_info').child($room_id).child('public_info/owner_id').val() === auth.uid",
+        "$user_id": {
+          ".write": "!data.exists() && root.child('room_info').hasChild($room_id) && $user_id === auth.uid",
+          ".validate": "newData.hasChild('password')",
+          "password": {
+            ".validate": "data.isString() && data.val() === root.child('room_info').child($room_id).child('password').val()"
+          },
+          "$other": { ".validate": false }
+        }
+      }
+    },
+    "$other": { ".validate": false }
   }
 }
