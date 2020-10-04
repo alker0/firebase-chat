@@ -1,5 +1,5 @@
 <extends src="layouts/html-born.html">
-  <block name="title">Greeting</block>
+  <block name="title">Talker</block>
 
   <block name="head">
 
