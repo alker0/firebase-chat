@@ -11,6 +11,25 @@ const args = process.argv.slice(2);
 const green = '\x1b[32m%s\x1b[0m';
 const red = '\x1b[31m%s\x1b[0m';
 
+const {
+  read,
+  write,
+  validate,
+  indexOn,
+  root,
+  data,
+  newData,
+  auth,
+  query,
+  now,
+  ruleValue,
+  joinTexts,
+  join,
+  bracket,
+  exp,
+  indexOnChild,
+} = require('./database-rules-build-core');
+
 const writer = async (sourceObj) => {
   const firebaseSettingPath = path.join((cwd, 'firebase.json'));
 
@@ -58,98 +77,130 @@ const writer = async (sourceObj) => {
 };
 
 (() => {
-  const read = '.read';
-  const write = '.write';
-  const validate = '.validate';
-  const join = (...texts) => texts.join(' ');
-  const emailVerified = 'auth.token.email_verified === true';
-  const publicOwnerId = "'public_info/owner_id'";
-  const roomId = '$room_id';
-  const roomInfo = "'room_info";
-  const publicInfo = (childPath) =>
-    `'public_info${childPath && `/${childPath}`}'`;
-  const parent = (depth = 1) => Array(depth).fill('parent()').join('.');
-  const child = (...paths) =>
-    paths.map((pathText) => `child(${pathText})`).join('.');
-  const bracket = (...texts) => `( ${texts.join(' ')} )`;
+  const roomId = ruleValue('$room_id', { isCaptured: true });
+  const ownerId = ruleValue('$owner_id', { isCaptured: true });
+  const ownRoomId = ruleValue('$own_room_id', { isCaptured: true });
+  const userId = ruleValue('$user_id', { isCaptured: true });
+
+  const createdAt = ruleValue('created_at', { isStringLiteral: true });
+  const rooms = ruleValue('rooms', { isStringLiteral: true });
+  const publicInfo = ruleValue('public_info', { isStringLiteral: true });
 
   writer({
     rules: {
       [read]: false,
       [write]: false,
-      [validate]: "newData.hasChild('next_room_id')",
-      next_room_id: {
-        [read]: emailVerified,
-        [write]: emailVerified,
-        [validate]: join(
-          'newData.isNumber()',
-          '&&',
-          'data.exists()',
-          '?',
-          bracket(
-            'newData.val() === data.val()',
-            '||',
-            bracket(
-              'newData.val() === data.val() + 1',
-              '&&',
-              "newData.parent().hasChild('room_info/' + data.val())",
-            ),
-          ),
-          ':',
-          'newData.val() === 1',
-        ),
-      },
-      room_info: {
-        $room_id: {
-          [write]: `newData.child(${publicOwnerId}).val() === auth.uid`,
-          [validate]: join(
-            "newData.hasChildren(['public_info', 'password'])",
+      rooms: {
+        $owner_id: {
+          [read]: join(
+            exp`${ownerId} === ${auth.uid}`,
             '&&',
-            bracket(
-              'data.exists()',
-              '||',
+            query.orderByChild(createdAt),
+          ),
+          [indexOn]: indexOnChild(createdAt),
+          $own_room_id: {
+            [read]: exp`${ownerId} === ${auth.uid}`,
+            [write]: join(
+              exp`${ownerId} === ${auth.uid}`,
+              '&&',
+              auth.token.emailVerified,
+              '&&',
               bracket(
-                "$room_id === '' + root.child('next_room_id').val()",
-                '&&',
-                "newData.parent().child('next_room_id').val() === root.child('next_room_id').val() + 1",
+                newData.exists(),
+                '||',
+                exp`!${newData
+                  .child('room_entrances')
+                  .hasChild(joinTexts`${ownerId}-${ownRoomId}`)}`,
               ),
             ),
-          ),
-          public_info: {
-            [read]: join(
-              "data.child('owner_id').val() === auth.uid",
-              '||',
-              "data.child('allowed_users').hasChild(auth.uid)",
+            [validate]: join(
+              ownRoomId.matches('^[1-3]$'),
+              '&&',
+              newData.hasChildren(['public_info', 'password']),
             ),
-            [validate]:
-              "newData.hasChildren(['owner_id', 'allowed_users', 'room_name', 'members_count'])",
-            owner_id: {
-              [validate]: 'newData.val() === auth.uid',
-            },
-            allowed_users: {
-              $user_id: {
-                [validate]: 'newData.isBoolean()',
+            public_info: {
+              // [read]: "data.child('allowed_users').hasChild(auth.uid)",
+              [read]: data.child('allowed_users').hasChild(auth.uid)(),
+              [validate]:
+                // "newData.hasChildren(['allowed_users', 'room_name', 'members_count'])",
+                newData.hasChildren([
+                  'room_name',
+                  'allowed_users',
+                  'allowed_users_count',
+                  'members_count',
+                ])(),
+              room_name: {
+                [validate]: join(
+                  newData.isString(),
+                  '&&',
+                  exp`0 < ${newData.val().length}`,
+                  '&&',
+                  exp`${newData.val().length} < 20`,
+                ),
+              },
+              allowed_users: {
+                $user_id: {
+                  [validate]: newData.isBoolean()(),
+                },
+              },
+              allowed_users_count: {
+                [validate]: join(
+                  newData.isNumber(),
+                  '&&',
+                  bracket(
+                    data.exists(),
+                    '?',
+                    bracket(
+                      exp`0 <= ${newData.val()}`,
+                      '&&',
+                      exp`${newData.val()} < 100000`,
+                    ),
+                    ':',
+                    exp`${newData.val()} === 0`,
+                  ),
+                ),
+              },
+              members_count: {
+                [validate]: join(
+                  newData.isNumber(),
+                  '&&',
+                  bracket(
+                    data.exists(),
+                    '?',
+                    bracket(
+                      exp`0 <= ${newData.val()}`,
+                      '&&',
+                      exp`${newData.val()} < 100000`,
+                      '&&',
+                      exp`${newData.val()} <= ${newData
+                        .parent()
+                        .child('allowed_users_count')
+                        .val()} + 1`,
+                    ),
+                    ':',
+                    exp`${newData.val()} === 0`,
+                  ),
+                ),
+              },
+              $other: {
+                [validate]: false,
               },
             },
-            room_name: {
+            password: {
               [validate]: join(
-                'newData.isString()',
+                newData.isString(),
                 '&&',
-                '0 < newData.val().length',
-                '&&',
-                'newData.val().length < 20',
+                exp`${newData.val().length} < 16`,
               ),
             },
-            members_count: {
+            created_at: {
               [validate]: join(
-                'newData.isNumber()',
+                exp`${newData.val()} < ${now}`,
                 '&&',
                 bracket(
-                  'data.exists()',
-                  '?',
-                  'newData.val() < data.val() + 200',
-                  ':',
-                  'newData.val() === 0',
+                  exp`!${data.exists()}`,
+                  '||',
+                  exp`${newData.val()} === ${data.val()}`,
                 ),
               ),
             },
@@ -157,61 +208,85 @@ const writer = async (sourceObj) => {
               [validate]: false,
             },
           },
-          password: {
-            [read]: `data.parent().child(${publicOwnerId}).val() === auth.uid`,
-            [write]: `newData.parent().child(${publicOwnerId}).val() === auth.uid`,
-            [validate]: join(
-              'newData.isString()',
-              '&&',
-              'newData.val().length < 16',
-            ),
-          },
-          $other: {
-            [validate]: false,
-          },
         },
       },
-      room_entrance: {
-        [read]: 'auth !== null',
+      room_entrances: {
+        [read]: auth.isNotNull,
         $room_id: {
-          [write]: "newData.child('owner_id').val() === auth.uid",
+          [write]: exp`${newData.child('owner_id').val()} === ${auth.uid}`,
           [validate]: join(
-            "newData.hasChildren(['owner_id', 'room_name', 'members_count', 'created_at'])",
+            exp`${roomId} === ${joinTexts`${auth.uid}-${newData
+              .child('own_room_id')
+              .val()}`}`,
+            // "$room_id === auth.uid + '-' + newData.child('own_room_id').val()",
             '&&',
-            `newData.${parent(2)}.child('room_info').hasChild($room_id)`,
+            newData.hasChildren([
+              'owner_id',
+              'room_name',
+              'members_count',
+              'created_at',
+            ]),
+            '&&',
+            newData
+              .parent(2)
+              .hasChild(
+                newData.child('owner_id').val(),
+                newData.child('own_room_id').val(),
+              ),
           ),
           owner_id: {
             [validate]: join(
-              `newData.val() === newData.${parent(3)}.${child(
-                roomInfo,
-                roomId,
-                publicOwnerId,
-              )}.val()`,
+              exp`${newData.val()} === ${auth.uid}`,
+              '&&',
+              newData.parent(3).hasChild(rooms, newData.val()),
+            ),
+          },
+          own_room_id: {
+            [validate]: join(
+              newData
+                .parent(3)
+                .hasChild(
+                  rooms,
+                  newData.parent().child('owner_id').val(),
+                  newData.val(),
+                ),
             ),
           },
           room_name: {
             [validate]: join(
-              `newData.val() === newData.${parent(3)}.${child(
-                roomInfo,
-                roomId,
-                publicInfo('room_name'),
-              )}.val()`,
+              exp`${newData.val()} === ${newData
+                .parent(3)
+                .child(
+                  rooms,
+                  newData.parent().child('owner_id').val(),
+                  newData.parent().child('own_room_id').val(),
+                  publicInfo,
+                  'room_name',
+                )
+                .val()}`,
             ),
           },
           members_count: {
             [validate]: join(
-              `newData.val() === newData.${parent(3)}.${child(
-                roomInfo,
-                roomId,
-                publicInfo('members_count'),
-              )}.val()`,
+              exp`${newData.val()} === ${newData
+                .parent(3)
+                .child(
+                  rooms,
+                  newData.parent().child('owner_id').val(),
+                  newData.parent().child('own_room_id').val(),
+                  publicInfo,
+                  'members_count',
+                )
+                .val()}`,
             ),
           },
           created_at: {
             [validate]: join(
-              'newData.val() < now',
+              exp`${newData.val()} < ${now}`,
               '&&',
-              bracket('!data.exists()', '||', 'newData.val() === data.val()'),
+              bracket(
+                exp`!${data.exists()} || ${newData.val()} === ${data.val()}`,
+              ),
             ),
           },
           $other: {
@@ -221,29 +296,27 @@ const writer = async (sourceObj) => {
       },
       entry_requests: {
         $room_id: {
-          [read]: `root.${child(
-            roomInfo,
-            '$room_id',
-            publicOwnerId,
-          )}.val() === auth.uid`,
+          [read]: join(
+            exp`${joinTexts`${auth.uid}-1`} <= ${roomId}`,
+            '&&',
+            exp`${roomId} <= ${joinTexts`${auth.uid}-3`}`,
+          ),
           $user_id: {
             [write]: join(
-              '!data.exists()',
+              exp`!${data.exists()}`,
               '&&',
-              "root.child('room_info').hasChild($room_id)",
+              root.child(rooms).hasChild(roomId),
               '&&',
-              '$user_id === auth.uid',
+              exp`${userId} === ${auth.uid}`,
             ),
-            [validate]: "newData.hasChild('password')",
+            [validate]: newData.hasChild('password')(),
             password: {
               [validate]: join(
-                'data.isString()',
+                data.isString(),
                 '&&',
-                `data.val() === root.${child(
-                  roomInfo,
-                  roomId,
-                  "'password'",
-                )}.val()`,
+                exp`${data.val()} === ${root
+                  .child(rooms, roomId, 'password')
+                  .val()}`,
               ),
             },
             $other: { [validate]: false },
