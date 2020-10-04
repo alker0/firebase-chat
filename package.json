@@ -37,6 +37,8 @@
     "build": "snowpack build",
     "test": "jest",
     "citest": "CI=true jest --reporters=default --reporters=jest-github-action-reporter",
+    "rdb:build:cwd": "node ./scripts/database-rules-build.js database.rules.json",
+    "rdb:build:emulator": "node ./scripts/database-rules-build.js ~/bind/firebase-emulator/database.rules.json",
     "page:add": "node ./scripts/add-page.js",
     "page:delete": "node ./scripts/delete-page.js"
   },
