@@ -15,7 +15,7 @@ module.exports = {
       locals: {
         env: nodeEnv,
         cirrusVersion: '@0.5.5',
-        firebaseVersion: '7.22.0',
+        firebaseVersion: '7.22.1',
         firebaseInitPath: '/lib/firebase-init-app.js',
         firebaseSdk: ['auth', 'database', 'storage'],
         useAnalytics: true,
