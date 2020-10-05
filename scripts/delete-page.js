@@ -41,7 +41,7 @@ const redNormal = `${red}${normal}`;
     }),
   );
 
-  if (args.count < 1) throw new Error('No Targets');
+  if (args.length < 1) throw new Error('No Targets');
 
   const successLog = (messageInfo) => {
     const [messages, formats] = messageInfo;

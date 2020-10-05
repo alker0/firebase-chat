@@ -17,7 +17,7 @@ const green = '\x1b[32m%s\x1b[0m';
 const normal = '%s';
 const greenNormal = `${green}${normal}`;
 
-if (args.Count < 2) throw new Error('Required Least 2 Arguments');
+if (args.length < 2) throw new Error('Required Least 2 Arguments');
 
 const sqrlOption = Sqrl.getConfig({ cache: true });
 
