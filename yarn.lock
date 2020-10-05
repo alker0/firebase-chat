@@ -2765,7 +2765,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/experimental-utils@npm:4.4.0":
+"@typescript-eslint/experimental-utils@npm:4.4.0, @typescript-eslint/experimental-utils@npm:^4.0.1":
   version: 4.4.0
   resolution: "@typescript-eslint/experimental-utils@npm:4.4.0"
   dependencies:
@@ -5802,6 +5802,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"eslint-plugin-jest@npm:^24.1.0":
+  version: 24.1.0
+  resolution: "eslint-plugin-jest@npm:24.1.0"
+  dependencies:
+    "@typescript-eslint/experimental-utils": ^4.0.1
+  peerDependencies:
+    eslint: ">=5"
+  checksum: 17aa55e6e51e54d170a8846f255e230a9ae17dedb4efa8ce948a4b0401889617d79f2d389e54af50c7bf2eb4e514f51ae3af754bd0f82bbde51378c4190d3b40
+  languageName: node
+  linkType: hard
+
 "eslint-plugin-jsx-a11y@npm:^6.3.1":
   version: 6.3.1
   resolution: "eslint-plugin-jsx-a11y@npm:6.3.1"
@@ -6535,6 +6546,7 @@ __metadata:
     eslint-config-airbnb-typescript: ^11.0.0
     eslint-config-prettier: ^6.12.0
     eslint-plugin-import: ^2.22.1
+    eslint-plugin-jest: ^24.1.0
     eslint-plugin-jsx-a11y: ^6.3.1
     eslint-plugin-prettier: ^3.1.4
     eslint-plugin-react: ^7.21.3
