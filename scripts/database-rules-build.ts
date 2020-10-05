@@ -1,15 +1,8 @@
-#!/usr/bin/env node
+#!/usr/local/bin/yarn ts-node-script
 
-const fs = require('fs').promises;
-const path = require('path');
-
-const cwd = process.cwd();
-
-const args = process.argv.slice(2);
-
-// Console format
-const green = '\x1b[32m%s\x1b[0m';
-const red = '\x1b[31m%s\x1b[0m';
+import fsSync = require('fs');
+import path = require('path');
+import buildUtils = require('./database-rules-build-core');
 
 const {
   read,
@@ -28,10 +21,20 @@ const {
   bracket,
   exp,
   indexOnChild,
-} = require('./database-rules-build-core');
+} = buildUtils;
 
-const writer = async (sourceObj) => {
-  const firebaseSettingPath = path.join((cwd, 'firebase.json'));
+const fs = fsSync.promises;
+
+const cwd = process.cwd();
+
+const args = process.argv.slice(2);
+
+// Console format
+const green = '\x1b[32m%s\x1b[0m';
+const red = '\x1b[31m%s\x1b[0m';
+
+const writer = async (sourceObj: unknown) => {
+  const firebaseSettingPath = path.join(cwd, 'firebase.json');
 
   try {
     await Promise.all(
@@ -121,14 +124,13 @@ const writer = async (sourceObj) => {
             public_info: {
               // [read]: "data.child('allowed_users').hasChild(auth.uid)",
               [read]: data.child('allowed_users').hasChild(auth.uid)(),
-              [validate]:
+              [validate]: newData.hasChildren([
                 // "newData.hasChildren(['allowed_users', 'room_name', 'members_count'])",
-                newData.hasChildren([
-                  'room_name',
-                  'allowed_users',
-                  'allowed_users_count',
-                  'members_count',
-                ])(),
+                'room_name',
+                'allowed_users',
+                'allowed_users_count',
+                'members_count',
+              ])(),
               room_name: {
                 [validate]: join(
                   newData.isString(),

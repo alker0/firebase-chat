@@ -1,0 +1,49 @@
+{
+  "compilerOptions": {
+    // Target latest browsers
+    // "target": "ES2020",
+    "target": "ES2019",
+    //"lib": ["ES2019"],
+
+    "module": "commonjs",
+
+    // `import React` instead of `import * as React`
+    "allowSyntheticDefaultImports": true,
+
+    "jsx": "preserve",
+
+    // Required: Map "/web_modules/*" imports back to their node_modules/ TS definition files.
+    "baseUrl": "./",
+    "paths": {
+      "*": [
+        "node_modules/@types/*",
+        "web_modules/.types/*",
+        "node_modules/*",
+        // "web_modules/*.js"
+      ],
+    },
+
+    "allowJs": true,
+    "checkJs": false,
+
+    // Skip npm module type check.
+    "skipLibCheck": true,
+
+    // Only for type checks.
+    "noEmit": true,
+
+    // Useful type checks.
+    "strictNullChecks": true,
+
+    // Disallow implicit any.
+    "noImplicitAny": true,
+  },
+
+  "include": [
+    "./**/*.ts",
+  ],
+
+  "exclude": [
+    "../node_modules"
+  ],
+}

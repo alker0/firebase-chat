@@ -11,13 +11,15 @@ const classNameDeclarerKey = require.resolve('postcss-ts-classnames');
 const cwd = process.cwd();
 const args = process.argv.slice(2);
 
-if (args.Count < 2) throw new Error('No declare targets');
+if (args.length < 2) throw new Error('No declare targets');
 
 // Read Arguments
 
 const targets = [];
 
+/** @type {string | undefined} */
 let typeOutput = path.join(cwd, 'src', 'typings');
+/** @type {string | undefined} */
 let styleOutput = path.join('/dev', 'null');
 
 while (args.length) {
