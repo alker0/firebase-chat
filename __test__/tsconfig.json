@@ -2,10 +2,9 @@
   "compilerOptions": {
     // Target latest browsers
     "target": "ES2019",
-    "lib": ["ES2019", "DOM", "DOM.Iterable"],
+    // "lib": ["ES2019"],
 
-    // Required: Use module="ESNext" so that TS won't compile/disallow any ESM syntax.
-    "module": "ESNext",
+    "module": "CommonJS",
 
     // Required for some packages.
     "moduleResolution": "Node",
@@ -24,12 +23,10 @@
         "node_modules/*",
         // "web_modules/*.js"
       ],
-      "solid-js/*": ["solid-js/types/*"],
-      "@lib/*": ["src/lib/*"],
-      "@components/*": ["src/components/*"],
-      "@components/common/*": ["src/components/common/src/*", "src/components/common/*"],
-      "@components/cirrus/*": ["src/components/common/src/cirrus/*"]
     },
+
+    "allowJs": true,
+    "checkJs": false,
 
     // Skip npm module type check.
     "skipLibCheck": true,
@@ -45,16 +42,12 @@
   },
 
   "include": [
-    "./src/**/*",
-    "./plugins/**/*",
-    "./*.config.js",
-    "node_modules/solid-js/dist/types/rendering/jsx.d.ts",
-    "node_modules/@alker/solid-styled-tsx/typings/*",
-    "node_modules/@alker/solid-js-types/typings/*",
-    "node_modules/type-filtered-clsx/clsx.d.ts"
+    "./**/*.ts",
+    "./**/*.js"
   ],
 
   "exclude": [
-    "node_modules"
+    "../node_modules"
   ],
 }
+
