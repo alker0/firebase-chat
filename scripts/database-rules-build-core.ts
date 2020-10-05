@@ -10,8 +10,8 @@ export interface RuleValue {
   length: RuleValue;
   isCaptured: boolean;
   isNum: boolean;
+  isBool: boolean;
   isStringLiteral: boolean;
-  isBooleanLiteral: boolean;
   rawValue: string;
 
   matches: (regexText: string) => RuleValue;
@@ -27,14 +27,14 @@ export const ruleValue = (
   {
     isCaptured = false,
     isNum = false,
+    isBool = false,
     isStringLiteral = false,
-    isBooleanLiteral = false,
   } = {},
 ): RuleValue => {
   function getCurrentResult() {
     if (isStringLiteral) {
       return `'${currentValue}'`;
-    } else if (isBooleanLiteral) {
+    } else if (isBool) {
       return `${currentValue} === true`;
     } else {
       return currentValue;
@@ -46,8 +46,8 @@ export const ruleValue = (
   return Object.assign(getCurrentResult as FunctionWithLength, {
     isCaptured,
     isNum: typeof currentValue === 'number' || isNum,
+    isBool,
     isStringLiteral,
-    isBooleanLiteral,
     rawValue: currentValue,
 
     matches: (regexText: string) =>
@@ -69,7 +69,7 @@ const fixIfNum = (callRawValue = false) => (ruleValueArg: RuleValueArg) => {
       if (ruleValueArg.isNum) {
         return `''+${ruleValueArg()}`;
       } else if (callRawValue) {
-        return ruleValueArg;
+        return ruleValueArg.rawValue;
       } else {
         return ruleValueArg();
       }
@@ -236,7 +236,7 @@ export interface RuleRef {
   isString: () => RuleValue;
   isNumber: () => RuleValue;
   isBoolean: () => RuleValue;
-  val: (isNum?: boolean) => RuleValue;
+  val: (valOpts?: { isNum?: boolean; isBool?: boolean }) => RuleValue;
   hasChild: (...paths: RuleValueArgs) => RuleValue;
   hasChildren: (children: RuleValueArgs) => RuleValue;
 }
@@ -251,7 +251,7 @@ export const ruleRef = (currentRef = ''): RuleRef => ({
   isString: () => ruleValue(`${currentRef}.isString()`),
   isNumber: () => ruleValue(`${currentRef}.isNumber()`),
   isBoolean: () => ruleValue(`${currentRef}.isBoolean()`),
-  val: (isNum = false) => ruleValue(`${currentRef}.val()`, { isNum }),
+  val: (valOpts) => ruleValue(`${currentRef}.val()`, valOpts),
   hasChild: (...paths: RuleValueArgs) =>
     ruleValue(`${currentRef}.hasChild(${joinPaths(paths)})`),
   hasChildren: (children: RuleValueArgs) =>
@@ -269,7 +269,7 @@ export const auth = {
   token: {
     email: ruleValue('auth.token.email'),
     emailVerified: ruleValue('auth.token.email_verified', {
-      isBooleanLiteral: true,
+      isBool: true,
     }),
     phoneNumber: ruleValue('auth.token.phone_number'),
     name: ruleValue('auth.token.name'),

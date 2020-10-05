@@ -16,7 +16,6 @@ const {
   query,
   now,
   ruleValue,
-  joinTexts,
   join,
   bracket,
   exp,
@@ -80,14 +79,25 @@ const writer = async (sourceObj: unknown) => {
 };
 
 (() => {
-  const roomId = ruleValue('$room_id', { isCaptured: true });
-  const ownerId = ruleValue('$owner_id', { isCaptured: true });
-  const ownRoomId = ruleValue('$own_room_id', { isCaptured: true });
-  const userId = ruleValue('$user_id', { isCaptured: true });
+  const $roomId = ruleValue('$room_id', { isCaptured: true });
+  const $ownerId = ruleValue('$owner_id', { isCaptured: true });
+  const $ownRoomId = ruleValue('$own_room_id', { isCaptured: true });
+  const $userId = ruleValue('$user_id', { isCaptured: true });
 
   const createdAt = ruleValue('created_at', { isStringLiteral: true });
   const rooms = ruleValue('rooms', { isStringLiteral: true });
+  const roomEntrances = ruleValue('room_entrances', { isStringLiteral: true });
   const publicInfo = ruleValue('public_info', { isStringLiteral: true });
+  const password = ruleValue('password', { isStringLiteral: true });
+  const ownerId = ruleValue('owner_id', { isStringLiteral: true });
+  const ownRoomId = ruleValue('own_room_id', { isStringLiteral: true });
+  const roomId = ruleValue('room_id', { isStringLiteral: true });
+  const allowedUsers = ruleValue('allowed_users', { isStringLiteral: true });
+  const allowedUsersCount = ruleValue('allowed_users_count', {
+    isStringLiteral: true,
+  });
+  const toAllowedCountFrom = (refPoint: buildUtils.RuleRef) =>
+    refPoint.parent().child(allowedUsersCount).val();
 
   writer({
     rules: {
@@ -96,15 +106,15 @@ const writer = async (sourceObj: unknown) => {
       rooms: {
         $owner_id: {
           [read]: join(
-            exp`${ownerId} === ${auth.uid}`,
+            exp`${$ownerId} === ${auth.uid}`,
             '&&',
             query.orderByChild(createdAt),
           ),
           [indexOn]: indexOnChild(createdAt),
           $own_room_id: {
-            [read]: exp`${ownerId} === ${auth.uid}`,
+            [read]: exp`${$ownerId} === ${auth.uid}`,
             [write]: join(
-              exp`${ownerId} === ${auth.uid}`,
+              exp`${$ownerId} === ${auth.uid}`,
               '&&',
               auth.token.emailVerified,
               '&&',
@@ -112,37 +122,49 @@ const writer = async (sourceObj: unknown) => {
                 newData.exists(),
                 '||',
                 exp`!${newData
-                  .child('room_entrances')
-                  .hasChild(joinTexts`${ownerId}-${ownRoomId}`)}`,
+                  .parent(4)
+                  .child(roomEntrances)
+                  .hasChild(newData.child(publicInfo, roomId).val())}`,
               ),
             ),
             [validate]: join(
-              ownRoomId.matches('^[1-3]$'),
+              $ownRoomId.matches('^[1-3]$'),
               '&&',
-              newData.hasChildren(['public_info', 'password']),
+              newData.hasChildren([publicInfo, password]),
             ),
             public_info: {
-              // [read]: "data.child('allowed_users').hasChild(auth.uid)",
-              [read]: data.child('allowed_users').hasChild(auth.uid)(),
+              [read]: data.hasChild(allowedUsers, auth.uid)(),
               [validate]: newData.hasChildren([
-                // "newData.hasChildren(['allowed_users', 'room_name', 'members_count'])",
-                'room_name',
-                'allowed_users',
-                'allowed_users_count',
-                'members_count',
+                roomId,
+                allowedUsers,
+                allowedUsersCount,
               ])(),
-              room_name: {
-                [validate]: join(
-                  newData.isString(),
-                  '&&',
-                  exp`0 < ${newData.val().length}`,
-                  '&&',
-                  exp`${newData.val().length} < 20`,
-                ),
+              room_id: {
+                [validate]: newData
+                  .parent(4)
+                  .hasChild(roomEntrances, newData.val())(),
               },
               allowed_users: {
                 $user_id: {
-                  [validate]: newData.isBoolean()(),
+                  [validate]: join(
+                    newData.isBoolean(),
+                    '&&',
+                    bracket(
+                      exp`(${data.exists()} && ${data.val({
+                        isBool: true,
+                      })}) === ${newData.val()}`,
+                      '?',
+                      exp`${toAllowedCountFrom(
+                        newData,
+                      )} === ${toAllowedCountFrom(data)}`,
+                      ':',
+                      exp`${toAllowedCountFrom(
+                        newData,
+                      )} === (${toAllowedCountFrom(data)} + (${newData.val({
+                        isBool: true,
+                      })} ? 1 : -1))`,
+                    ),
+                  ),
                 },
               },
               allowed_users_count: {
@@ -156,28 +178,6 @@ const writer = async (sourceObj: unknown) => {
                       exp`0 <= ${newData.val()}`,
                       '&&',
                       exp`${newData.val()} < 100000`,
-                    ),
-                    ':',
-                    exp`${newData.val()} === 0`,
-                  ),
-                ),
-              },
-              members_count: {
-                [validate]: join(
-                  newData.isNumber(),
-                  '&&',
-                  bracket(
-                    data.exists(),
-                    '?',
-                    bracket(
-                      exp`0 <= ${newData.val()}`,
-                      '&&',
-                      exp`${newData.val()} < 100000`,
-                      '&&',
-                      exp`${newData.val()} <= ${newData
-                        .parent()
-                        .child('allowed_users_count')
-                        .val()} + 1`,
                     ),
                     ':',
                     exp`${newData.val()} === 0`,
@@ -215,26 +215,39 @@ const writer = async (sourceObj: unknown) => {
       room_entrances: {
         [read]: auth.isNotNull,
         $room_id: {
-          [write]: exp`${newData.child('owner_id').val()} === ${auth.uid}`,
+          [write]: join(
+            exp`${newData.child(ownerId).val()} === ${auth.uid}`,
+            '||',
+            bracket(
+              exp`${data.child(ownerId).val()} === ${auth.uid}`,
+              '&&',
+              exp`!${newData.exists()}`,
+              '&&',
+              exp`!${newData
+                .parent(2)
+                .hasChild(
+                  rooms,
+                  data.child(ownerId).val(),
+                  data.child(ownerId, ownRoomId).val(),
+                )}`,
+            ),
+          ),
           [validate]: join(
-            exp`${roomId} === ${joinTexts`${auth.uid}-${newData
-              .child('own_room_id')
-              .val()}`}`,
-            // "$room_id === auth.uid + '-' + newData.child('own_room_id').val()",
-            '&&',
             newData.hasChildren([
-              'owner_id',
+              ownerId,
               'room_name',
               'members_count',
-              'created_at',
+              createdAt,
             ]),
             '&&',
-            newData
+            exp`${$roomId} === ${newData
               .parent(2)
-              .hasChild(
-                newData.child('owner_id').val(),
-                newData.child('own_room_id').val(),
-              ),
+              .child(
+                newData.child(ownerId).val(),
+                newData.child(ownRoomId).val(),
+                roomId,
+              )
+              .val()}`,
           ),
           owner_id: {
             [validate]: join(
@@ -249,37 +262,46 @@ const writer = async (sourceObj: unknown) => {
                 .parent(3)
                 .hasChild(
                   rooms,
-                  newData.parent().child('owner_id').val(),
+                  newData.parent().child(ownerId).val(),
                   newData.val(),
                 ),
             ),
           },
           room_name: {
             [validate]: join(
-              exp`${newData.val()} === ${newData
-                .parent(3)
-                .child(
-                  rooms,
-                  newData.parent().child('owner_id').val(),
-                  newData.parent().child('own_room_id').val(),
-                  publicInfo,
-                  'room_name',
-                )
-                .val()}`,
+              newData.isString(),
+              '&&',
+              exp`0 < ${newData.val().length}`,
+              '&&',
+              exp`${newData.val().length} < 20`,
             ),
           },
           members_count: {
             [validate]: join(
-              exp`${newData.val()} === ${newData
-                .parent(3)
-                .child(
-                  rooms,
-                  newData.parent().child('owner_id').val(),
-                  newData.parent().child('own_room_id').val(),
-                  publicInfo,
-                  'members_count',
-                )
-                .val()}`,
+              newData.isNumber(),
+              '&&',
+              bracket(
+                data.exists(),
+                '?',
+                bracket(
+                  exp`0 <= ${newData.val()}`,
+                  '&&',
+                  exp`${newData.val()} < 100000`,
+                  '&&',
+                  exp`${newData.val()} <= ${newData
+                    .parent(3)
+                    .child(
+                      rooms,
+                      newData.parent().child(ownerId).val(),
+                      newData.parent().child(ownRoomId).val(),
+                      publicInfo,
+                      allowedUsersCount,
+                    )
+                    .val()} + 1`,
+                ),
+                ':',
+                exp`${newData.val()} === 0`,
+              ),
             ),
           },
           created_at: {
@@ -298,31 +320,45 @@ const writer = async (sourceObj: unknown) => {
       },
       entry_requests: {
         $room_id: {
-          [read]: join(
-            exp`${joinTexts`${auth.uid}-1`} <= ${roomId}`,
+          [read]: exp`${root
+            .child(roomEntrances, $roomId, ownerId)
+            .val()} === ${auth.uid}`,
+          [write]: join(
+            exp`${root.child(roomEntrances, $roomId, ownerId).val()} === ${
+              auth.uid
+            }`,
             '&&',
-            exp`${roomId} <= ${joinTexts`${auth.uid}-3`}`,
+            exp`!${newData.exists()}`,
           ),
           $user_id: {
             [write]: join(
               exp`!${data.exists()}`,
               '&&',
-              root.child(rooms).hasChild(roomId),
+              root.child(roomEntrances).hasChild($roomId),
               '&&',
-              exp`${userId} === ${auth.uid}`,
+              exp`${$userId} === ${auth.uid}`,
             ),
-            [validate]: newData.hasChild('password')(),
+            [validate]: newData.hasChild(password)(),
             password: {
               [validate]: join(
                 data.isString(),
                 '&&',
                 exp`${data.val()} === ${root
-                  .child(rooms, roomId, 'password')
+                  .child(rooms, $roomId, password)
                   .val()}`,
               ),
             },
             $other: { [validate]: false },
           },
+        },
+      },
+      delete_marks: {
+        [read]: false,
+        $room_id: {
+          [write]: exp`${root
+            .child(roomEntrances, $roomId, ownerId)
+            .val()} === ${auth.uid}`,
+          [validate]: exp`${newData.val()} === false`,
         },
       },
       $other: { [validate]: false },
