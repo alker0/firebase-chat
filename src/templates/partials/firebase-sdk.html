@@ -4,23 +4,29 @@
   <script src="/__/firebase/{{ firebaseVersion }}/firebase-{{ sdk }}.js"></script>
 </each>
 
-<switch expression="env">
+<switch expression="mode">
   <case n="'production'">
     <if condition="useAnalytics">
       <script src="/__/firebase/{{ firebaseVersion }}/firebase-analytics.js"></script>
-      <script src="{{ firebaseAnalyticsPath }}"></script>
+      <script>
+        firebase.analytics();
+      </script>
     </if>
     <script src="/__/firebase/init.js"></script>
   </case>
   <case n="'development'">
-    <script src="{{ firebaseInitPath }}"></script>
+    <script>
+      firebase.initializeApp({{ firebaseConfig }});
+    </script>
   </case>
   <case n="'test'">
-    <script src="{{ firebaseInitPath }}"></script>
+    <script>
+      firebase.initializeApp({{ firebaseConfig }});
+    </script>
   </case>
 </switch>
 
-<if condition="useFirebaseUI">
+<if condition="firebaseUIVersion">
   <script src="https://cdn.firebase.com/libs/firebaseui/{{ firebaseUIVersion }}/firebaseui.js"></script>
   <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/{{ firebaseUIVersion }}/firebaseui.css" />
 </if>
