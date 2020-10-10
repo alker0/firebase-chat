@@ -3,33 +3,42 @@ const expressoins = require('posthtml-expressions');
 const include = require('posthtml-include');
 const packagesInfo = require('./package.json');
 
-const nodeEnv = process.env.NODE_ENV || 'development';
-
-console.error('posthtml.config.js', nodeEnv);
-
 const devDeps = packagesInfo.devDependencies;
 
 const onlyVersion = (semVer) => semVer.replace(/[^\d.]/, '');
 
-const firebaseInitPath =
-  nodeEnv === 'production'
-    ? '/__/firebase/init.js'
-    : '/lib/firebase-init-app.js';
+const templatePathRootInfo = { root: 'src/templates' };
+
+const { NODE_ENV, SNOWPACK_PUBLIC_USE_FIREBASE_ANALYTICS } = process.env;
+
+const nodeEnv = NODE_ENV || 'development';
+
+const isProduction = nodeEnv === 'production';
+
+console.error('posthtml.config.js', nodeEnv);
+
+const firebaseInitPath = isProduction
+  ? '/__/firebase/init.js'
+  : '/lib/firebase-init-app.js';
+
+const firebaseUseSdks = ['auth', 'database', 'storage'];
+
+if (isProduction && SNOWPACK_PUBLIC_USE_FIREBASE_ANALYTICS) {
+  firebaseUseSdks.push('analytics');
+}
 
 module.exports = {
   input: 'src/templates/*.posthtml',
   plugins: [
-    extend({ root: 'src/templates' }),
-    include({ root: 'src/templates' }),
+    extend(templatePathRootInfo),
+    include(templatePathRootInfo),
     expressoins({
       locals: {
         mode: nodeEnv,
         cirrusVersion: '@0.5.5',
         firebaseVersion: onlyVersion(devDeps.firebase),
         firebaseInitPath,
-        firebaseSdk: ['auth', 'database', 'storage'],
-        useAnalytics: true,
-        firebaseUIVersion: '3.5.2',
+        firebaseUseSdks,
         firebaseConfig: {
           apiKey: 'AIzaSyCUDlFQJZdo3NOIAHSt8NmgF-gOHQ9ZkHg',
           authDomain: 'talker-v1.firebaseapp.com',

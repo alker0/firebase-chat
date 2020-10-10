@@ -20,6 +20,13 @@ if (dropDownTarget) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  if (
+    import.meta.env.MODE === 'production' &&
+    import.meta.env.SNOWPACK_PUBLIC_USE_FIREBASE_ANALYTICS
+  ) {
+    firebase.analytics();
+  }
+
   // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
   // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
 
@@ -100,16 +107,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   try {
-    const firebaseApp = firebase.app();
-    const features = (['database', 'storage'] as const).filter(
-      (feature) => typeof firebaseApp[feature] === 'function',
-    );
-    document.getElementById(
-      'load',
-    )!.innerHTML = `Firebase SDK loaded with ${features.join(', ')}`;
+    firebase.app();
+    document.getElementById('load')!.innerHTML = 'Firebase app is loaded.';
   } catch (e) {
     console.error(e);
     document.getElementById('load')!.innerHTML =
-      'Error loading the Firebase SDK, check the console.';
+      'Error Firebase App, check the console.';
   }
 });

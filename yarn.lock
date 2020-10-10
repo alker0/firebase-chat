@@ -2713,6 +2713,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/snowpack-env@npm:^2.3.0":
+  version: 2.3.0
+  resolution: "@types/snowpack-env@npm:2.3.0"
+  checksum: d9ce2f73a44b16d400aa3cb0472b3b9f3c6f43c629ddbc4efed0eb1d03c6a58dfaa0910272f8843348f610c47fb6922ad693c0cddeb9f09eeb32d0b0a6e19d59
+  languageName: node
+  linkType: hard
+
 "@types/stack-utils@npm:^2.0.0":
   version: 2.0.0
   resolution: "@types/stack-utils@npm:2.0.0"
@@ -6535,6 +6542,7 @@ __metadata:
     "@snowpack/plugin-postcss": ^1.0.5
     "@snowpack/plugin-run-script": ^2.1.4
     "@types/node": ^14.11.3
+    "@types/snowpack-env": ^2.3.0
     "@typescript-eslint/eslint-plugin": ^4.4.0
     "@typescript-eslint/parser": ^4.4.0
     babel-plugin-macros: ^2.8.0
