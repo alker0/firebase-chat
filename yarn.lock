@@ -5357,6 +5357,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dotenv@npm:^8.2.0":
+  version: 8.2.0
+  resolution: "dotenv@npm:8.2.0"
+  checksum: 16cb89cbd7b98b053899b8aba8c5044c8fb61a2db8a81fe70360b75035fce5fed53bd7a34d772be717d0880c0321122a4c09423f518025e1b52d96791521b1a7
+  languageName: node
+  linkType: hard
+
 "duplexer2@npm:~0.1.4":
   version: 0.1.4
   resolution: "duplexer2@npm:0.1.4"
@@ -6550,6 +6557,7 @@ __metadata:
     babel-preset-solid: ^0.20.2
     clsx: ^1.1.1
     connect: ^3.7.0
+    dotenv: ^8.2.0
     eslint: ^7.10.0
     eslint-config-airbnb-typescript: ^11.0.0
     eslint-config-prettier: ^6.12.0

@@ -68,7 +68,7 @@ const writer = async (sourceObj: unknown) => {
       return JSON.parse(firebaseSetting).database.rules;
     })();
 
-    const outputPath = path.join(cwd, outputFileName);
+    const outputPath = path.resolve(cwd, outputFileName);
 
     await fs.writeFile(outputPath, JSON.stringify(sourceObj), { encoding });
 
