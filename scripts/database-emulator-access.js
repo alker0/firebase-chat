@@ -25,7 +25,7 @@ while (args.length) {
   switch (arg) {
     case '-a':
     case '--admin':
-      headersArray.push('Authorization: Bearer owner;');
+      headersArray.push('Authorization: Bearer owner');
       break;
     case '-d':
     case '--post-data':
@@ -87,9 +87,9 @@ const headers = headersArray.reduce((resultHeaders, headersText) => {
     ...resultHeaders,
     ...Object.fromEntries(
       headersText
-        .replace(' ', '')
+        .replace(/;$/, '')
+        .replace(/\s*:\s*/, ':')
         .split(';')
-        .filter((headerText) => headerText.length)
         .map((headerText) => {
           return headerText.split(':');
         }),
