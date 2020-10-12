@@ -55,7 +55,7 @@ export const ruleValue = (
   });
 };
 
-type RuleValueArg = string | number | RuleValue;
+type RuleValueArg = string | number | boolean | RuleValue;
 type RuleValueArgs = RuleValueArg[];
 type Literals = readonly string[];
 
@@ -85,9 +85,13 @@ export const { joinArrayValues, joinPaths, joinTexts } = (() => {
   const isStringifiable = (target: RuleValueArg): target is string | number =>
     !IsRuleValue(target);
 
-  const getRuleValueStatus = (target: RuleValueArg): [string, boolean] => {
+  const getRuleValueStatus = (
+    target: RuleValueArg,
+  ): [string | boolean, boolean] => {
     if (isStringifiable(target)) {
       return [String(target), true];
+    } else if (typeof target === 'boolean') {
+      return [target, false];
     } else {
       return [target.rawValue, target.isStringLiteral];
     }
@@ -282,46 +286,147 @@ export const auth = {
   provider: ruleValue('auth.provider'),
 };
 
-export interface RuleOrdering {
-  (): string;
-  equalTo: () => RuleOrdering;
-  startAt: () => RuleOrdering;
-  endAt: () => RuleOrdering;
-  limitToFirst: () => RuleOrdering;
-  limitToLast: () => RuleOrdering;
-}
-
-export const ruleOrdering = (currentOrdering: string): RuleOrdering => {
-  function getCurrentResult() {
-    return currentOrdering;
-  }
-  return Object.assign(getCurrentResult, {
-    equalTo: () => ruleOrdering(`${currentOrdering}.equelTo()`),
-    startAt: () => ruleOrdering(`${currentOrdering}.startAt()`),
-    endAt: () => ruleOrdering(`${currentOrdering}.endAt()`),
-    limitToFirst: () => ruleOrdering(`${currentOrdering}.limitToFirst()`),
-    limitToLast: () => ruleOrdering(`${currentOrdering}.limitToLast()`),
-  });
-};
-
 export const query = {
-  orderByChild: (...paths: RuleValueArgs) =>
-    ruleOrdering(`query.orderByChild === ${joinPaths(paths)}`),
-  orderByKey: () => ruleOrdering(`query.orderByKey()`),
-  orderByValue: () => ruleOrdering(`query.orderByValue()`),
-  orderByPriority: () => ruleOrdering(`query.orderByPriority()`),
+  orderByChild: (firstPath: RuleValueArg | null, ...paths: RuleValueArgs) =>
+    ruleValue(
+      `query.orderByChild === ${
+        firstPath === null ? 'null' : joinPaths([firstPath, ...paths])
+      }`,
+    ),
+  orderByChildIsNull: 'query.orderByChild === null',
+  orderByKey: ruleValue('query.orderByKey', { isBool: true }),
+  orderByValue: ruleValue('query.orderByValue', { isBool: true }),
+  orderByPriority: ruleValue('query.orderByPriority', { isBool: true }),
+  equalTo: ruleValue(`query.equalTo`),
+  startAt: ruleValue('query.startAt'),
+  endAt: ruleValue('query.endAt'),
+  limitToFirst: ruleValue('query.limitToFirst', { isNum: true }),
+  limitToLast: ruleValue('query.limitToLast', { isNum: true }),
 };
 
 export const now = ruleValue('now', { isNum: true });
 
-export type RuleExpArg = RuleValueArg | RuleRef | RuleOrdering;
+export type RuleExpArg = RuleValueArg;
 export type RuleExpArgs = RuleExpArg[];
 
 export const extractText = (text: RuleExpArg) =>
   typeof text === 'function' ? text() : text;
 
-export const join = (...texts: RuleExpArgs) => texts.map(extractText).join(' ');
-export const bracket = (...texts: RuleExpArgs) => `(${join(...texts)})`;
+export function getRuleResultFromRuleNode(
+  ruleNode: RuleExpArg | (RuleExpArg | RuleExpArgs)[],
+  withBracket: boolean,
+): string {
+  switch (typeof ruleNode) {
+    case 'string':
+      return ruleNode;
+    case 'number':
+    case 'boolean':
+      return ruleNode.toString();
+    case 'function':
+      return ruleNode();
+  }
+  const ruleNodeValue = ruleNode
+    .map((ruleNodeElm) => getRuleResultFromRuleNode(ruleNodeElm, true))
+    .join(' ');
+  if (withBracket) {
+    return `(${ruleNodeValue})`;
+  } else {
+    return ruleNodeValue;
+  }
+}
+
+export type RuleKey = typeof read | typeof write | typeof validate;
+type IndexOnKey = typeof indexOn;
+type ChildRuleObjectKey<T extends {}> = Extract<
+  Exclude<keyof T, RuleKey | IndexOnKey>,
+  string
+>;
+
+type SourceRuleValue = boolean | string | RuleValue | string[];
+type SourceIndexOnValue = (string | RuleValue)[];
+
+type SourceRuleObject<T extends {}> = Record<
+  keyof T & RuleKey,
+  SourceRuleValue
+> &
+  Record<keyof T & IndexOnKey, SourceIndexOnValue> &
+  {
+    [K in ChildRuleObjectKey<T>]: K extends ChildRuleObjectKey<T>
+      ? T[K]
+      : never;
+  };
+
+type ResultRuleValue = string | boolean;
+type ResultIndexOnValue = string[];
+
+type ResultRuleObject<T extends Record<string, any>> = Record<
+  RuleKey,
+  ResultRuleValue
+> &
+  Record<IndexOnKey, ResultIndexOnValue> &
+  {
+    [K in ChildRuleObjectKey<T>]: K extends ChildRuleObjectKey<T>
+      ? ResultRuleObject<T[K]>
+      : never;
+  };
+
+function assertsSourceRuleObject<T>(
+  srcObj: unknown,
+): asserts srcObj is SourceRuleObject<T> {}
+
+function boolOrExtract<T extends {}>(
+  srcObj: T & SourceRuleObject<T>,
+  key: RuleKey,
+): boolean | string {
+  const srcValue = srcObj[key as Extract<keyof T, RuleKey>];
+  if (typeof srcValue === 'boolean') {
+    return srcValue as boolean;
+  } else {
+    return getRuleResultFromRuleNode(srcValue, false);
+  }
+}
+
+export function createRuleObject<T extends {}, U extends ResultRuleObject<T>>(
+  srcObj: T & SourceRuleObject<T>,
+): U {
+  assertsSourceRuleObject<T>(srcObj);
+  return Object.keys(srcObj).reduce((result, prop) => {
+    switch (prop) {
+      case read:
+      case write:
+      case validate:
+        /* eslint-disable no-param-reassign */
+        result[prop] = boolOrExtract<T>(srcObj, prop);
+        break;
+      case indexOn:
+        result[prop] = srcObj[prop as IndexOnKey & keyof T].map(
+          (srcElement) => {
+            switch (typeof srcElement) {
+              case 'string':
+                return srcElement;
+              default:
+                return srcElement();
+            }
+          },
+        );
+        break;
+      default:
+        result[
+          prop as ChildRuleObjectKey<SourceRuleObject<T>>
+        ] = createRuleObject(
+          srcObj[prop as keyof T] as any,
+        ) as U[ChildRuleObjectKey<SourceRuleObject<T>>];
+        break;
+    }
+    /* eslint-enable no-param-reassign */
+    return result;
+  }, {} as U);
+}
+
+export const join = (...texts: RuleExpArgs) =>
+  getRuleResultFromRuleNode(texts, false);
+export const bracket = (...texts: RuleExpArgs) =>
+  getRuleResultFromRuleNode(texts, true);
 export const exp = (literalArgs: Literals, ...jsArgs: RuleExpArgs) => {
   return literalArgs
     .map((literalArg, index) => {
@@ -333,4 +438,3 @@ export const exp = (literalArgs: Literals, ...jsArgs: RuleExpArgs) => {
 
 export const indexOnChild = (...children: RuleValueArgs) =>
   children.map(fixIfNum(true));
-export const zeroFill = () => {};

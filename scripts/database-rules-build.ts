@@ -1,10 +1,8 @@
 #!/usr/local/bin/yarn ts-node-script
 
-import fsSync = require('fs');
-import path = require('path');
-import buildUtils = require('./database-rules-build-core');
-
-const {
+import { promises as fs } from 'fs';
+import { join as pathJoin, resolve as pathResolve } from 'path';
+import {
   read,
   write,
   validate,
@@ -16,13 +14,12 @@ const {
   query,
   now,
   ruleValue,
-  join,
   bracket,
   exp,
   indexOnChild,
-} = buildUtils;
-
-const fs = fsSync.promises;
+  RuleRef,
+  createRuleObject,
+} from './database-rules-build-core';
 
 const cwd = process.cwd();
 
@@ -33,12 +30,12 @@ const green = '\x1b[32m%s\x1b[0m';
 const red = '\x1b[31m%s\x1b[0m';
 
 const writer = async (sourceObj: unknown) => {
-  const firebaseSettingPath = path.join(cwd, 'firebase.json');
+  const firebaseSettingPath = pathJoin(cwd, 'firebase.json');
 
   try {
     await Promise.all(
       [
-        { target: path.join(cwd, 'package.json'), msg: 'Not Project Root' },
+        { target: pathJoin(cwd, 'package.json'), msg: 'Not Project Root' },
         {
           target: firebaseSettingPath,
           msg: 'Not Found "firebase.json"',
@@ -68,7 +65,7 @@ const writer = async (sourceObj: unknown) => {
       return JSON.parse(firebaseSetting).database.rules;
     })();
 
-    const outputPath = path.resolve(cwd, outputFileName);
+    const outputPath = pathResolve(cwd, outputFileName);
 
     await fs.writeFile(outputPath, JSON.stringify(sourceObj), { encoding });
 
@@ -96,60 +93,60 @@ const writer = async (sourceObj: unknown) => {
   const allowedUsersCount = ruleValue('allowed_users_count', {
     isStringLiteral: true,
   });
-  const toAllowedCountFrom = (refPoint: buildUtils.RuleRef) =>
+  const toAllowedCountFrom = (refPoint: RuleRef) =>
     refPoint.parent().child(allowedUsersCount).val();
 
   writer({
-    rules: {
+    rules: createRuleObject({
       [read]: false,
       [write]: false,
       rooms: {
         $owner_id: {
-          [read]: join(
+          [read]: [
             exp`${$ownerId} === ${auth.uid}`,
             '&&',
             query.orderByChild(createdAt),
-          ),
+          ],
           [indexOn]: indexOnChild(createdAt),
           $own_room_id: {
             [read]: exp`${$ownerId} === ${auth.uid}`,
-            [write]: join(
+            [write]: [
               exp`${$ownerId} === ${auth.uid}`,
               '&&',
               auth.token.emailVerified,
               '&&',
-              bracket(
+              [
                 newData.exists(),
                 '||',
                 exp`!${newData
                   .parent(4)
                   .child(roomEntrances)
                   .hasChild(newData.child(publicInfo, roomId).val())}`,
-              ),
-            ),
-            [validate]: join(
+              ],
+            ],
+            [validate]: [
               $ownRoomId.matches('^[1-3]$'),
               '&&',
               newData.hasChildren([publicInfo, password]),
-            ),
+            ],
             public_info: {
-              [read]: data.hasChild(allowedUsers, auth.uid)(),
+              [read]: data.hasChild(allowedUsers, auth.uid),
               [validate]: newData.hasChildren([
                 roomId,
                 allowedUsers,
                 allowedUsersCount,
-              ])(),
+              ]),
               room_id: {
                 [validate]: newData
                   .parent(4)
-                  .hasChild(roomEntrances, newData.val())(),
+                  .hasChild(roomEntrances, newData.val()),
               },
               allowed_users: {
                 $user_id: {
-                  [validate]: join(
+                  [validate]: [
                     newData.isBoolean(),
                     '&&',
-                    bracket(
+                    [
                       exp`(${data.exists()} && ${data.val({
                         isBool: true,
                       })}) === ${newData.val()}`,
@@ -163,15 +160,15 @@ const writer = async (sourceObj: unknown) => {
                       )} === (${toAllowedCountFrom(data)} + (${newData.val({
                         isBool: true,
                       })} ? 1 : -1))`,
-                    ),
-                  ),
+                    ],
+                  ],
                 },
               },
               allowed_users_count: {
-                [validate]: join(
+                [validate]: [
                   newData.isNumber(),
                   '&&',
-                  bracket(
+                  [
                     data.exists(),
                     '?',
                     bracket(
@@ -181,30 +178,30 @@ const writer = async (sourceObj: unknown) => {
                     ),
                     ':',
                     exp`${newData.val()} === 0`,
-                  ),
-                ),
+                  ],
+                ],
               },
               $other: {
                 [validate]: false,
               },
             },
             password: {
-              [validate]: join(
+              [validate]: [
                 newData.isString(),
                 '&&',
                 exp`${newData.val().length} < 16`,
-              ),
+              ],
             },
             created_at: {
-              [validate]: join(
+              [validate]: [
                 exp`${newData.val()} < ${now}`,
                 '&&',
-                bracket(
+                [
                   exp`!${data.exists()}`,
                   '||',
                   exp`${newData.val()} === ${data.val()}`,
-                ),
-              ),
+                ],
+              ],
             },
             $other: {
               [validate]: false,
@@ -215,10 +212,10 @@ const writer = async (sourceObj: unknown) => {
       room_entrances: {
         [read]: auth.isNotNull,
         $room_id: {
-          [write]: join(
+          [write]: [
             exp`${newData.child(ownerId).val()} === ${auth.uid}`,
             '||',
-            bracket(
+            [
               exp`${data.child(ownerId).val()} === ${auth.uid}`,
               '&&',
               exp`!${newData.exists()}`,
@@ -230,9 +227,9 @@ const writer = async (sourceObj: unknown) => {
                   data.child(ownerId).val(),
                   data.child(ownerId, ownRoomId).val(),
                 )}`,
-            ),
-          ),
-          [validate]: join(
+            ],
+          ],
+          [validate]: [
             newData.hasChildren([
               ownerId,
               'room_name',
@@ -248,16 +245,16 @@ const writer = async (sourceObj: unknown) => {
                 roomId,
               )
               .val()}`,
-          ),
+          ],
           owner_id: {
-            [validate]: join(
+            [validate]: [
               exp`${newData.val()} === ${auth.uid}`,
               '&&',
               newData.parent(3).hasChild(rooms, newData.val()),
-            ),
+            ],
           },
           own_room_id: {
-            [validate]: join(
+            [validate]: [
               newData
                 .parent(3)
                 .hasChild(
@@ -265,25 +262,25 @@ const writer = async (sourceObj: unknown) => {
                   newData.parent().child(ownerId).val(),
                   newData.val(),
                 ),
-            ),
+            ],
           },
           room_name: {
-            [validate]: join(
+            [validate]: [
               newData.isString(),
               '&&',
               exp`0 < ${newData.val().length}`,
               '&&',
               exp`${newData.val().length} < 20`,
-            ),
+            ],
           },
           members_count: {
-            [validate]: join(
+            [validate]: [
               newData.isNumber(),
               '&&',
-              bracket(
+              [
                 data.exists(),
                 '?',
-                bracket(
+                [
                   exp`0 <= ${newData.val()}`,
                   '&&',
                   exp`${newData.val()} < 100000`,
@@ -298,20 +295,20 @@ const writer = async (sourceObj: unknown) => {
                       allowedUsersCount,
                     )
                     .val()} + 1`,
-                ),
+                ],
                 ':',
                 exp`${newData.val()} === 0`,
-              ),
-            ),
+              ],
+            ],
           },
           created_at: {
-            [validate]: join(
+            [validate]: [
               exp`${newData.val()} < ${now}`,
               '&&',
               bracket(
                 exp`!${data.exists()} || ${newData.val()} === ${data.val()}`,
               ),
-            ),
+            ],
           },
           $other: {
             [validate]: false,
@@ -323,30 +320,30 @@ const writer = async (sourceObj: unknown) => {
           [read]: exp`${root
             .child(roomEntrances, $roomId, ownerId)
             .val()} === ${auth.uid}`,
-          [write]: join(
+          [write]: [
             exp`${root.child(roomEntrances, $roomId, ownerId).val()} === ${
               auth.uid
             }`,
             '&&',
             exp`!${newData.exists()}`,
-          ),
+          ],
           $user_id: {
-            [write]: join(
+            [write]: [
               exp`!${data.exists()}`,
               '&&',
               root.child(roomEntrances).hasChild($roomId),
               '&&',
               exp`${$userId} === ${auth.uid}`,
-            ),
-            [validate]: newData.hasChild(password)(),
+            ],
+            [validate]: newData.hasChild(password),
             password: {
-              [validate]: join(
+              [validate]: [
                 data.isString(),
                 '&&',
                 exp`${data.val()} === ${root
                   .child(rooms, $roomId, password)
                   .val()}`,
-              ),
+              ],
             },
             $other: { [validate]: false },
           },
@@ -362,6 +359,6 @@ const writer = async (sourceObj: unknown) => {
         },
       },
       $other: { [validate]: false },
-    },
+    }),
   });
 })();
