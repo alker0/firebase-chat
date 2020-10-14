@@ -4,7 +4,7 @@
   "license": "MIT",
   "main": "",
   "peerDependencies": {
-    "solid-js": "~0.18.0",
+    "solid-js": "0.18.0 - 1",
     "solid-styled-jsx": "0.x",
     "styled-jsx": "3.x"
   }
