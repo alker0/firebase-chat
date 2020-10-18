@@ -39,23 +39,27 @@
     "citest": "CI=true jest --reporters=default --reporters=jest-github-action-reporter",
     "rdb:build": "ts-node -sT ./scripts/database-rules-build database.rules.json",
     "rdb:emulator:get:rule": "node ./scripts/database-emulator-access -a -p '/.settings/rules.json?ns=talker-v1'",
-    "rdb:emulator:put:rule": "ts-node -sT ./scripts/database-rules-build ~/bind/firebase-emulator/rules/talker-v1.rules.json",
+    "rdb:emulator:put:rule": "ts-node -sT ./scripts/database-rules-build $HOME/bind/firebase-emulator/rules/talker-v1.rules.json",
     "page:add": "node ./scripts/add-page.js",
     "page:delete": "node ./scripts/delete-page.js"
   },
   "devDependencies": {
     "@alker/solid-js-types": "file:./src/lib/packages/solid-js-types",
     "@alker/solid-styled-tsx": "file:./src/lib/packages/solid-styled-tsx",
-    "@babel/core": "^7.12.0",
+    "@babel/core": "^7.12.3",
     "@babel/plugin-proposal-class-properties": "^7.10.4",
     "@babel/plugin-proposal-object-rest-spread": "^7.11.0",
     "@babel/preset-env": "^7.12.0",
     "@babel/preset-typescript": "^7.12.0",
+    "@firebase/app": "^0.6.11",
+    "@firebase/component": "^0.1.19",
+    "@firebase/rules-unit-testing": "^1.0.8",
     "@fullhuman/postcss-purgecss": "^3.0.0",
     "@snowpack/plugin-babel": "^2.1.3",
     "@snowpack/plugin-build-script": "^2.0.9",
     "@snowpack/plugin-postcss": "^1.0.5",
     "@snowpack/plugin-run-script": "^2.1.5",
+    "@types/jest": "^26.0.14",
     "@types/node": "^14.11.8",
     "@types/snowpack-env": "^2.3.0",
     "@typescript-eslint/eslint-plugin": "^4.4.1",
@@ -73,10 +77,12 @@
     "eslint-plugin-jsx-a11y": "^6.3.1",
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-react": "^7.21.4",
-    "firebase": "^7.23.0",
+    "firebase": "^7.24.0",
+    "firebase-admin": "^9.2.0",
     "firebase-tools": "^8.12.1",
     "jest": "^26.5.3",
     "jest-github-actions-reporter": "^1.0.2",
+    "long": "^4.0.0",
     "npm-run-all": "^4.1.5",
     "postcss": "^8.1.1",
     "postcss-cli": "^8.1.0",
@@ -100,6 +106,8 @@
     "stylelint-config-standard": "^20.0.0",
     "stylelint-prettier": "^1.1.2",
     "superstatic": "^7.0.1",
+    "supports-color": "^7.2.0",
+    "ts-jest": "^26.4.1",
     "ts-node": "^9.0.0",
     "type-filtered-clsx": "file:./src/lib/packages/type-filtered-clsx",
     "typescript": "^4.0.3",
@@ -163,7 +171,11 @@
   },
   "dependencies:for-stop-warning": {
     "url": "@types/node",
-    "querystring": "@types/node"
+    "querystring": "@types/node",
+    "supports-color": "debug",
+    "long": "@protobufjs/inquire",
+    "@firebase/app": "@firebase/database",
+    "@firebase/component": "@firebase/rules-unit-testing"
   },
   "installConfig": {
     "pnp": true
@@ -175,5 +187,9 @@
     "solid-styled-jsx": "^0.20.3",
     "styled-jsx": "^3.3.0"
   },
-  "webDependencies": {}
+  "dependenciesMeta": {
+    "fsevents": {
+      "built": false
+    }
+  }
 }
