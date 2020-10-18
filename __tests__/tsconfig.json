@@ -6,23 +6,18 @@
 
     "module": "CommonJS",
 
-    // Required for some packages.
-    "moduleResolution": "Node",
-
     // `import React` instead of `import * as React`
+    // when type check
     "allowSyntheticDefaultImports": true,
+    // when compiling
+    "esModuleInterop": true,
 
     "jsx": "preserve",
 
     // Required: Map "/web_modules/*" imports back to their node_modules/ TS definition files.
     "baseUrl": "./",
     "paths": {
-      "*": [
-        "node_modules/@types/*",
-        "web_modules/.types/*",
-        "node_modules/*",
-        // "web_modules/*.js"
-      ],
+      "@scripts/*": ["../scripts/*"]
     },
 
     "allowJs": true,
@@ -42,8 +37,12 @@
   },
 
   "include": [
-    "./**/*.ts",
-    "./**/*.js"
+    "**/*.ts",
+    "**/*.d.ts",
+    "**/*.spec.ts",
+    "**/*.js",
+    "../scripts/**/*.ts",
+    "../scripts/**/*.js"
   ],
 
   "exclude": [
