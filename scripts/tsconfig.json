@@ -15,12 +15,6 @@
     // Required: Map "/web_modules/*" imports back to their node_modules/ TS definition files.
     "baseUrl": "./",
     "paths": {
-      "*": [
-        "node_modules/@types/*",
-        "web_modules/.types/*",
-        "node_modules/*",
-        // "web_modules/*.js"
-      ],
     },
 
     "allowJs": true,
@@ -40,8 +34,9 @@
   },
 
   "include": [
-    "./**/*.ts",
-    "./**/*.js",
+    "**/*.ts",
+    "**/*.d.ts",
+    "**/*.js",
   ],
 
   "exclude": [

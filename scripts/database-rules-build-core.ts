@@ -345,7 +345,7 @@ type ChildRuleObjectKey<T extends {}> = Extract<
 type SourceRuleValue = boolean | string | RuleValue | string[];
 type SourceIndexOnValue = (string | RuleValue)[];
 
-type SourceRuleObject<T extends {}> = Record<
+export type SourceRuleObject<T extends {}> = Record<
   keyof T & RuleKey,
   SourceRuleValue
 > &
@@ -359,7 +359,7 @@ type SourceRuleObject<T extends {}> = Record<
 type ResultRuleValue = string | boolean;
 type ResultIndexOnValue = string[];
 
-type ResultRuleObject<T extends Record<string, any>> = Record<
+export type ResultRuleObject<T extends Record<string, any>> = Record<
   RuleKey,
   ResultRuleValue
 > &

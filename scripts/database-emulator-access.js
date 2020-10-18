@@ -108,7 +108,7 @@ const req = http
       res
         .on('error', console.error)
         .on('close', () => {
-          console.log('\n\nemulator response is finished.');
+          console.error('\n\nemulator response is finished.');
         })
         .pipe(process.stdout),
   )

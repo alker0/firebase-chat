@@ -98,8 +98,6 @@ const writer = async (sourceObj: unknown) => {
 
   writer({
     rules: createRuleObject({
-      [read]: false,
-      [write]: false,
       rooms: {
         $owner_id: {
           [read]: [
@@ -131,11 +129,7 @@ const writer = async (sourceObj: unknown) => {
             ],
             public_info: {
               [read]: data.hasChild(allowedUsers, auth.uid),
-              [validate]: newData.hasChildren([
-                roomId,
-                allowedUsers,
-                allowedUsersCount,
-              ]),
+              [validate]: newData.hasChildren([roomId, allowedUsersCount]),
               room_id: {
                 [validate]: newData
                   .parent(4)
@@ -297,7 +291,7 @@ const writer = async (sourceObj: unknown) => {
                     .val()} + 1`,
                 ],
                 ':',
-                exp`${newData.val()} === 0`,
+                exp`${newData.val()} === 1`,
               ],
             ],
           },
