@@ -1,6 +1,6 @@
 import { readFileSync } from 'fs';
 import { join as pathJoin } from 'path';
-// import { fork, Serializable } from 'child_process';
+import { fork } from 'child_process';
 import {
   apps as firebaseApps,
   initializeTestApp,
@@ -9,8 +9,11 @@ import {
   // assertFails,
 } from '@firebase/rules-unit-testing';
 // import { ResultRuleObject } from '@scripts/database-rules-build-core';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { sampleRule1, wholeRules } from './rule-samples';
+// import { sampleRule1, wholeRules } from './rule-samples';
+import {
+  SampleRulesCreatorMessage,
+  SampleRulesKeys,
+} from './sample-rules-creator-type';
 
 const cwd = process.cwd();
 
@@ -52,13 +55,12 @@ async function logOnceVal(
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const currentRootStatusPrefix = 'current root status is:';
 
-// const stringifier = fork(pathJoin(__dirname, 'stringifier.ts')).on(
-//   'error',
-//   (error) => {
-//     console.error(error);
-//     stringifier.kill();
-//   },
-// );
+const sampleRulesCreator = fork(
+  pathJoin(__dirname, 'sample-rules-creator.js'),
+).on('error', (error) => {
+  console.error(error);
+  sampleRulesCreator.kill();
+});
 
 async function loadRules(targetRulesText: string) {
   await loadDatabaseRules({
@@ -72,31 +74,54 @@ async function loadRulesFromDatabaseJson() {
   await loadRules(rulesOfDatabaseJson);
 }
 
-const sampleRulesObjectMap = {
-  sample1: sampleRule1,
-  whole: wholeRules,
+const sampleRulesPromiseStore: Record<
+  SampleRulesKeys,
+  Promise<string> | null
+> = {
+  sample1: null,
+  whole: null,
 };
 
-type SampleRulesKey = keyof typeof sampleRulesObjectMap;
-
-interface RuleTextStore extends Partial<Record<SampleRulesKey, string>> {}
-
-const rulesTextStore: RuleTextStore = {};
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function getSampleRules(sampleRulesKey: SampleRulesKeys) {
+  const storePromise = sampleRulesPromiseStore[sampleRulesKey];
+  if (storePromise) {
+    return storePromise;
+  } else {
+    const creating = new Promise<string>((resolve) => {
+      sampleRulesCreator.on('message', (message) => {
+        if (typeof message === 'object') {
+          const { rulesKey, rulesText } = message as Partial<
+            SampleRulesCreatorMessage
+          >;
+          if (rulesKey && rulesText) {
+            resolve(rulesText);
+          }
+        }
+      });
+    });
+    sampleRulesPromiseStore[sampleRulesKey] = creating;
+    sampleRulesCreator.send(sampleRulesKey);
+    return creating;
+  }
+}
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-async function loadRulesFromSample(sampleRulesKey: SampleRulesKey) {
-  let sampleRulesText: string;
-  const textInStore = rulesTextStore[sampleRulesKey];
-
-  if (textInStore) {
-    sampleRulesText = textInStore;
-  } else {
-    const stringified = JSON.stringify(sampleRulesObjectMap[sampleRulesKey]);
-    rulesTextStore[sampleRulesKey] = stringified;
-    sampleRulesText = stringified;
+function* seriesPromiseGenerator() {
+  let currentResolve;
+  function updateCurrentResolve() {
+    return new Promise<undefined>((resolve) => {
+      currentResolve = resolve;
+    });
   }
+  let currentPromise = updateCurrentResolve();
+  let prevPromise = Promise.resolve(currentResolve);
 
-  await loadRules(sampleRulesText);
+  while (true) {
+    yield prevPromise;
+    prevPromise = currentPromise;
+    currentPromise = updateCurrentResolve();
+  }
 }
 
 const userUid = 'nice';
@@ -134,10 +159,12 @@ async function clearApps() {
 }
 
 async function cleanup() {
+  if (!sampleRulesCreator.kill()) {
+    console.error('killing sample rule creator is failed');
+  }
   await logOnceVal(adminRoot, 'last root status is:');
   await clearDb();
   await clearApps();
-  // stringifier.kill();
 }
 
 const roomId = '101';
@@ -169,10 +196,11 @@ describe('firebase-rdb-test', () => {
   // loadRules();
   afterAll(cleanup);
   describe('create room test', () => {
-    it('should be success', async () => {
+    it('should create valid-data', async () => {
       expect.assertions(2);
       await clearDb();
-      await loadRulesFromSample('sample1');
+      const sampleRules = await getSampleRules('sample1');
+      await loadRules(sampleRules);
       await expect(onceVal(adminRoot)).resolves.toBeNull();
       await expect(
         userDb.ref().update(validData, consoleError),
