@@ -42,6 +42,7 @@
     "**/*.spec.ts",
     "**/*.js",
     "../scripts/**/*.ts",
+    "../scripts/**/*.d.ts",
     "../scripts/**/*.js"
   ],
 
@@ -49,4 +50,3 @@
     "../node_modules"
   ],
 }
-
