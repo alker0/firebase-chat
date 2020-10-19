@@ -177,9 +177,6 @@
     "@firebase/app": "@firebase/database",
     "@firebase/component": "@firebase/rules-unit-testing"
   },
-  "installConfig": {
-    "pnp": true
-  },
   "dependencies": {
     "clsx": "^1.1.1",
     "firebaseui": "^4.7.0",
