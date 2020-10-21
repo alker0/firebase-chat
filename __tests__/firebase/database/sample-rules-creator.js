@@ -167,7 +167,7 @@ const sampleRulesCreatorMap = {
               },
               created_at: {
                 [validate]: [
-                  exp`${newData.val()} < ${now}`,
+                  exp`${newData.val()} <= ${now}`,
                   '&&',
                   [whenCreate, '||', exp`${newData.val()} === ${data.val()}`],
                 ],
@@ -282,7 +282,7 @@ const sampleRulesCreatorMap = {
             },
             created_at: {
               [validate]: [
-                exp`${newData.val()} < ${now}`,
+                exp`${newData.val()} <= ${now}`,
                 '&&',
                 bracket(
                   exp`!${data.exists()} || ${newData.val()} === ${data.val()}`,
