@@ -60,7 +60,7 @@
     "jest/no-hooks": [
       "error",
       {
-        "allow": ["afterAll"]
+        "allow": ["beforeAll", "afterAll"]
       }
     ],
     "jest/expect-expect": [

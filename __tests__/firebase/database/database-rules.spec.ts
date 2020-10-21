@@ -6,16 +6,19 @@ import {
   initializeTestApp,
   initializeAdminApp,
   loadDatabaseRules,
-  // assertFails,
+  assertFails,
 } from '@firebase/rules-unit-testing';
-// import { ResultRuleObject } from '@scripts/database-rules-build-core';
-// import { sampleRule1, wholeRules } from './rule-samples';
+
 import {
   SampleRulesCreatorMessage,
   SampleRulesKeys,
 } from './sample-rules-creator-type';
 
+import { getSampleDataCreator } from './sample-data-creator';
+
 const cwd = process.cwd();
+
+const DO_NOTHING = () => {};
 
 const projectId = 'talker-v1';
 const databaseName = 'talker-v1';
@@ -23,20 +26,28 @@ const rulesOfDatabaseJson = readFileSync(pathJoin(cwd, 'database.rules.json'), {
   encoding: 'utf-8',
 });
 
-const permDenied = 'PERMISSION_DENIED';
+const permDeniedCode = 'PERMISSION_DENIED';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const permDeniedMsg = 'PERMISSION_DENIED: Permission denied';
 
 interface ErrorWithCode extends Error {
   code: string;
 }
 
-function consoleError(error: Error | null) {
-  if (error) {
-    if ((error as ErrorWithCode).code === permDenied) {
-      console.log(permDenied);
-    } else {
-      console.error(error);
+function consoleError(
+  whenPermDenied: boolean = false,
+): (error: Error | null) => void {
+  function errorLog(error: Error | null) {
+    if (error) {
+      if ((error as ErrorWithCode).code === permDeniedCode) {
+        if (whenPermDenied) console.log(permDeniedCode);
+      } else {
+        console.error(error);
+      }
     }
   }
+  Object.defineProperty(errorLog, 'name', { value: 'consoleError' });
+  return errorLog;
 }
 
 async function onceVal(reference: firebase.database.Reference) {
@@ -49,11 +60,27 @@ async function logOnceVal(
   prefix?: string,
 ) {
   const val = await onceVal(reference);
-  console.log(...(prefix ? [prefix] : []).concat(val));
+  console.log(...(prefix ? [prefix, val] : [val]));
 }
+
+expect.extend({
+  async toBePermissionDenied(dbAccess) {
+    await assertFails(dbAccess);
+    return {
+      pass: true,
+      message() {
+        return `Unexpected ${permDeniedCode}`;
+      },
+    };
+  },
+});
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const currentRootStatusPrefix = 'current root status is:';
+
+type DatabaseJsonKey = 'database-json';
+
+type LoadRulesKeys = SampleRulesKeys | DatabaseJsonKey;
 
 const sampleRulesCreator = fork(
   pathJoin(__dirname, 'sample-rules-creator.js'),
@@ -61,18 +88,6 @@ const sampleRulesCreator = fork(
   console.error(error);
   sampleRulesCreator.kill();
 });
-
-async function loadRules(targetRulesText: string) {
-  await loadDatabaseRules({
-    databaseName,
-    rules: targetRulesText,
-  });
-}
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-async function loadRulesFromDatabaseJson() {
-  await loadRules(rulesOfDatabaseJson);
-}
 
 const sampleRulesPromiseStore: Record<
   SampleRulesKeys,
@@ -82,47 +97,88 @@ const sampleRulesPromiseStore: Record<
   whole: null,
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-async function getSampleRules(sampleRulesKey: SampleRulesKeys) {
-  const storePromise = sampleRulesPromiseStore[sampleRulesKey];
-  if (storePromise) {
-    return storePromise;
-  } else {
-    const creating = new Promise<string>((resolve) => {
-      sampleRulesCreator.on('message', (message) => {
-        if (typeof message === 'object') {
-          const { rulesKey, rulesText } = message as Partial<
-            SampleRulesCreatorMessage
-          >;
-          if (rulesKey && rulesText) {
-            resolve(rulesText);
-          }
-        }
-      });
+const loadRules = (() => {
+  let prevRulesKey: LoadRulesKeys;
+  return async (rulesKey: LoadRulesKeys) => {
+    let targetRulesText: string;
+    if (rulesKey === 'database-json') {
+      targetRulesText = rulesOfDatabaseJson;
+    } else {
+      const rulesText = sampleRulesPromiseStore[rulesKey];
+      if (!rulesText) {
+        console.error(`requested rules '${rulesKey}' has not been initialized`);
+        return;
+      }
+      targetRulesText = await rulesText;
+    }
+
+    if (rulesKey === prevRulesKey) return;
+    prevRulesKey = rulesKey;
+
+    await loadDatabaseRules({
+      databaseName,
+      rules: targetRulesText,
     });
-    sampleRulesPromiseStore[sampleRulesKey] = creating;
-    sampleRulesCreator.send(sampleRulesKey);
-    return creating;
+  };
+})();
+
+function useRules(targetRulesKey: LoadRulesKeys) {
+  function loader() {
+    return loadRules(targetRulesKey);
   }
+
+  if (targetRulesKey === 'database-json') return loader;
+
+  const storePromise = sampleRulesPromiseStore[targetRulesKey];
+  if (storePromise) return loader;
+
+  const creating = new Promise<string>((resolve) => {
+    sampleRulesCreator.on('message', (message) => {
+      if (typeof message === 'object') {
+        const { rulesKey, rulesText } = message as Partial<
+          SampleRulesCreatorMessage
+        >;
+        if (rulesKey && rulesText) {
+          resolve(rulesText);
+        }
+      }
+    });
+  });
+  sampleRulesPromiseStore[targetRulesKey] = creating;
+  sampleRulesCreator.send(targetRulesKey);
+
+  return loader;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-function* seriesPromiseGenerator() {
-  let currentResolve;
-  function updateCurrentResolve() {
-    return new Promise<undefined>((resolve) => {
-      currentResolve = resolve;
+async function* seriesPromiseGenerator() {
+  let prevPromise = Promise.resolve();
+  function createPromiseWithResolve() {
+    let resultResolve = DO_NOTHING;
+    const resultPromise = new Promise<undefined>((resolve) => {
+      resultResolve = resolve;
     });
+    return [resultResolve, resultPromise] as const;
   }
-  let currentPromise = updateCurrentResolve();
-  let prevPromise = Promise.resolve(currentResolve);
+
+  let [currentResolve, currentPromise] = createPromiseWithResolve();
 
   while (true) {
-    yield prevPromise;
+    // eslint-disable-next-line no-await-in-loop
+    await prevPromise;
+    yield currentResolve;
     prevPromise = currentPromise;
-    currentPromise = updateCurrentResolve();
+    [currentResolve, currentPromise] = createPromiseWithResolve();
   }
 }
+
+async function waitPrevTest(
+  prevTest: Promise<IteratorResult<() => void, void>>,
+) {
+  return (await prevTest).value as () => {};
+}
+
+const scheduler = seriesPromiseGenerator();
 
 const userUid = 'nice';
 const userAuth = {
@@ -132,11 +188,22 @@ const userAuth = {
     email_verified: true,
   },
 };
-
-const userApp = initializeTestApp({
+const userAppArg = {
   projectId,
   databaseName,
   auth: userAuth,
+};
+
+const userApp = initializeTestApp(userAppArg);
+
+const notEmailVerifiedUserApp = initializeTestApp({
+  ...userAppArg,
+  auth: {
+    ...userAppArg.auth,
+    token: {
+      email_verified: false,
+    },
+  },
 });
 
 const adminApp = initializeAdminApp({
@@ -145,9 +212,9 @@ const adminApp = initializeAdminApp({
 });
 
 const userDb = userApp.database();
+const notEmailVerifiedUserDb = notEmailVerifiedUserApp.database();
 const adminDb = adminApp.database();
 const adminRoot = adminDb.ref();
-
 const clearDb = adminRoot.remove.bind(adminRoot) as typeof adminRoot.remove;
 
 async function clearApps() {
@@ -160,51 +227,144 @@ async function clearApps() {
 
 async function cleanup() {
   if (!sampleRulesCreator.kill()) {
-    console.error('killing sample rule creator is failed');
+    console.error('terminating sample rule creator is failed');
   }
   await logOnceVal(adminRoot, 'last root status is:');
   await clearDb();
   await clearApps();
 }
 
-const roomId = '101';
-const ownRoomId = '1';
-const createdAt = 0;
+const createSampleData = getSampleDataCreator(userUid);
 
-const validData = {
-  [`rooms/${userUid}/${ownRoomId}`]: {
-    public_info: {
-      room_id: roomId,
-      // allowed_users: {},
-      allowed_users_count: 0,
+type DateOffsetUnit = 'milli' | 'second' | 'minute' | 'hour' | 'day' | 'week';
+function getDateWithOffset(
+  offsetInfo: Partial<Record<DateOffsetUnit, number>>,
+) {
+  const offsetMap: Record<
+    DateOffsetUnit,
+    (value: number | undefined) => number
+  > = {
+    milli: (value: number = 0) => value,
+    get second() {
+      return (value: number = 0) => value * 1000;
     },
-    password: 'nnn',
-    created_at: createdAt,
-  },
-  [`room_entrances/${roomId}`]: {
-    owner_id: userUid,
-    own_room_id: '1',
-    room_name: 'nice_room',
-    members_count: 1,
-    created_at: createdAt,
-  },
+    get minute() {
+      return (value: number = 0) => offsetMap.second(value * 60);
+    },
+    get hour() {
+      return (value: number = 0) => offsetMap.minute(value * 60);
+    },
+    get day() {
+      return (value: number = 0) => offsetMap.hour(value * 24);
+    },
+    get week() {
+      return (value: number = 0) => offsetMap.day(value * 7);
+    },
+  };
+  return (
+    new Date().getTime() +
+    Object.entries(offsetInfo).reduce(
+      (accum, [unitName, unitValue]) =>
+        accum + offsetMap[unitName as DateOffsetUnit](unitValue),
+      0,
+    )
+  );
+}
+
+const sampleData = {
+  vaildCreate: createSampleData(),
+  noPassword: createSampleData({
+    overrides: {
+      'rooms/password': null,
+    },
+  }),
+  roomCreatedAtFuture: createSampleData({
+    overrides: {
+      'rooms/created_at': getDateWithOffset({ day: 1 }),
+    },
+  }),
+  roomEntranceCreatedAtFuture: createSampleData({
+    overrides: {
+      'room_entrances/created_at': getDateWithOffset({ second: 1 }),
+    },
+  }),
 };
 
-console.log('validData is:', validData);
+async function setUpDb({
+  prevTest = scheduler.next(),
+  rulesKey = 'sample1',
+  shouldClear = true,
+}: {
+  prevTest?: Promise<IteratorResult<() => void, void>>;
+  rulesKey?: SampleRulesKeys;
+  shouldClear?: boolean;
+} = {}) {
+  const ruleLoader = useRules(rulesKey);
+  const endTest = await waitPrevTest(prevTest);
+  const settingUp = (async () => {
+    if (shouldClear) await clearDb();
+    await ruleLoader();
+  })();
+  return [endTest, settingUp] as const;
+}
 
 describe('firebase-rdb-test', () => {
-  // loadRules();
   afterAll(cleanup);
   describe('create room test', () => {
-    it('should create valid-data', async () => {
+    it('should create valid data', async () => {
+      expect.assertions(1);
+      const [endTest, settingUp] = await setUpDb();
+      try {
+        await settingUp;
+        await expect(
+          userDb.ref().update(sampleData.vaildCreate, consoleError()),
+        ).resolves.toBeUndefined();
+      } finally {
+        endTest();
+      }
+    });
+    it('should not create no password key room', async () => {
+      expect.assertions(1);
+      const [endTest, settingUp] = await setUpDb();
+      try {
+        await settingUp;
+        await expect(
+          userDb.ref().update(sampleData.noPassword, consoleError()),
+        ).toBePermissionDenied();
+      } finally {
+        endTest();
+      }
+    });
+    it("should not create not email verified user's room", async () => {
+      expect.assertions(1);
+      const [endTest, settingUp] = await setUpDb();
+      try {
+        await settingUp;
+        await expect(
+          notEmailVerifiedUserDb
+            .ref()
+            .update(sampleData.vaildCreate, consoleError()),
+        ).toBePermissionDenied();
+      } finally {
+        endTest();
+      }
+    });
+    it("should not create not matched 'created_at' data", async () => {
       expect.assertions(2);
-      await clearDb();
-      const sampleRules = await getSampleRules('sample1');
-      await loadRules(sampleRules);
-      await expect(onceVal(adminRoot)).resolves.toBeNull();
-      await expect(
-        userDb.ref().update(validData, consoleError),
-      ).resolves.toBeUndefined();
+      const [endTest, settingUp] = await setUpDb();
+      try {
+        await settingUp;
+        await expect(
+          userDb.ref().update(sampleData.roomCreatedAtFuture, consoleError()),
+        ).toBePermissionDenied();
+        await expect(
+          userDb
+            .ref()
+            .update(sampleData.roomEntranceCreatedAtFuture, consoleError()),
+        ).toBePermissionDenied();
+      } finally {
+        endTest();
+      }
     });
   });
 });
