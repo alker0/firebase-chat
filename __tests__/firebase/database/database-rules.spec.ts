@@ -14,7 +14,10 @@ import {
   SampleRulesKeys,
 } from './sample-rules-creator-type';
 
-import { getSampleDataCreator } from './sample-data-creator';
+import {
+  getDateWithOffset,
+  createSampleDataCreatorForTalker,
+} from './sample-data-creator';
 
 const cwd = process.cwd();
 
@@ -234,60 +237,26 @@ async function cleanup() {
   await clearApps();
 }
 
-const createSampleData = getSampleDataCreator(userUid);
-
-type DateOffsetUnit = 'milli' | 'second' | 'minute' | 'hour' | 'day' | 'week';
-function getDateWithOffset(
-  offsetInfo: Partial<Record<DateOffsetUnit, number>>,
-) {
-  const offsetMap: Record<
-    DateOffsetUnit,
-    (value: number | undefined) => number
-  > = {
-    milli: (value: number = 0) => value,
-    get second() {
-      return (value: number = 0) => value * 1000;
-    },
-    get minute() {
-      return (value: number = 0) => offsetMap.second(value * 60);
-    },
-    get hour() {
-      return (value: number = 0) => offsetMap.minute(value * 60);
-    },
-    get day() {
-      return (value: number = 0) => offsetMap.hour(value * 24);
-    },
-    get week() {
-      return (value: number = 0) => offsetMap.day(value * 7);
-    },
-  };
-  return (
-    new Date().getTime() +
-    Object.entries(offsetInfo).reduce(
-      (accum, [unitName, unitValue]) =>
-        accum + offsetMap[unitName as DateOffsetUnit](unitValue),
-      0,
-    )
-  );
-}
+const createSampleData = createSampleDataCreatorForTalker;
+const sample1 = createSampleData({ userUid });
 
 const sampleData = {
-  vaildCreate: createSampleData(),
-  noPassword: createSampleData({
-    overrides: {
-      'rooms/password': null,
-    },
-  }),
-  roomCreatedAtFuture: createSampleData({
-    overrides: {
-      'rooms/created_at': getDateWithOffset({ day: 1 }),
-    },
-  }),
-  roomEntranceCreatedAtFuture: createSampleData({
-    overrides: {
-      'room_entrances/created_at': getDateWithOffset({ second: 1 }),
-    },
-  }),
+  vaildCreate: sample1.sampleData,
+  noPassword: sample1.createFixed((rootKeyMap) => [
+    [[rootKeyMap['rooms-key/own_room_id'], 'password'], null],
+  ]),
+  roomCreatedAtFuture: sample1.createFixed((rootKeyMap) => [
+    [
+      [rootKeyMap['rooms-key/own_room_id'], 'created_at'],
+      getDateWithOffset({ day: 1 }),
+    ],
+  ]),
+  roomEntranceCreatedAtFuture: sample1.createFixed((rootKeyMap) => [
+    [
+      [rootKeyMap['room_entrances-key/room_id'], 'created_at'],
+      getDateWithOffset({ minute: 1 }),
+    ],
+  ]),
 };
 
 async function setUpDb({
@@ -349,7 +318,7 @@ describe('firebase-rdb-test', () => {
         endTest();
       }
     });
-    it("should not create not matched 'created_at' data", async () => {
+    it("should not create not future 'created_at' data", async () => {
       expect.assertions(2);
       const [endTest, settingUp] = await setUpDb();
       try {
