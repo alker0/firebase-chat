@@ -229,6 +229,9 @@
         "setupFiles": [
           "dotenv/config"
         ],
+        "setupFilesAfterEnv": [
+          "<rootDir>/__tests__/firebase/database/rules-custom-matchers.ts"
+        ],
         "testMatch": [
           "**/?(*.)+(spec|test).[jt]s?(x)"
         ],

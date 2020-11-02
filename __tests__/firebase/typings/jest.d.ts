@@ -4,9 +4,9 @@ declare namespace jest {
     toBePermissionDenied(): Promise<CustomeMatcherResult>;
   }
   interface Expect {
-    toBePermissionDenied(dbAccess: Promise<any>): Promise<any>;
+    toBePermissionDenied(dbAccess: Promise<unknown>): Promise<unknown>;
   }
   interface InverseAsymmetricMathcers {
-    toBePermissionDenied(dbAccess: Promise<any>): Promise<any>;
+    toBePermissionDenied(dbAccess: Promise<unknown>): Promise<unknown>;
   }
 }
