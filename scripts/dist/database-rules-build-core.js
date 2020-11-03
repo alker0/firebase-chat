@@ -151,6 +151,7 @@ _a = (() => {
     };
 })(), exports.joinArrayValues = _a.joinArrayValues, exports.joinPaths = _a.joinPaths, exports.joinTexts = _a.joinTexts;
 exports.ruleRef = (currentRef = '') => ({
+    raw: currentRef,
     parent: (depth = 1) => exports.ruleRef(`${currentRef}.${Array(depth).fill('parent()').join('.')}`),
     child: (...paths) => exports.ruleRef(`${currentRef}.child(${exports.joinPaths(paths)})`),
     exists: () => exports.ruleValue(`${currentRef}.exists()`),
@@ -186,9 +187,9 @@ exports.auth = {
 exports.query = {
     orderByChild: (firstPath, ...paths) => exports.ruleValue(`query.orderByChild === ${firstPath === null ? 'null' : exports.joinPaths([firstPath, ...paths])}`),
     orderByChildIsNull: 'query.orderByChild === null',
-    orderByKey: exports.ruleValue('query.orderByKey', { isBool: true }),
-    orderByValue: exports.ruleValue('query.orderByValue', { isBool: true }),
-    orderByPriority: exports.ruleValue('query.orderByPriority', { isBool: true }),
+    orderByKey: exports.ruleValue('query.orderByKey'),
+    orderByValue: exports.ruleValue('query.orderByValue'),
+    orderByPriority: exports.ruleValue('query.orderByPriority'),
     equalTo: exports.ruleValue(`query.equalTo`),
     startAt: exports.ruleValue('query.startAt'),
     endAt: exports.ruleValue('query.endAt'),

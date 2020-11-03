@@ -234,6 +234,7 @@ export const { joinArrayValues, joinPaths, joinTexts } = (() => {
 })();
 
 export interface RuleRef {
+  raw: string;
   parent: (depth?: number) => RuleRef;
   child: (...paths: RuleValueArgs) => RuleRef;
   exists: () => RuleValue;
@@ -246,6 +247,7 @@ export interface RuleRef {
 }
 
 export const ruleRef = (currentRef = ''): RuleRef => ({
+  raw: currentRef,
   parent: (depth = 1) =>
     ruleRef(`${currentRef}.${Array(depth).fill('parent()').join('.')}`),
   child: (...paths: RuleValueArgs) =>
@@ -294,9 +296,9 @@ export const query = {
       }`,
     ),
   orderByChildIsNull: 'query.orderByChild === null',
-  orderByKey: ruleValue('query.orderByKey', { isBool: true }),
-  orderByValue: ruleValue('query.orderByValue', { isBool: true }),
-  orderByPriority: ruleValue('query.orderByPriority', { isBool: true }),
+  orderByKey: ruleValue('query.orderByKey'),
+  orderByValue: ruleValue('query.orderByValue'),
+  orderByPriority: ruleValue('query.orderByPriority'),
   equalTo: ruleValue(`query.equalTo`),
   startAt: ruleValue('query.startAt'),
   endAt: ruleValue('query.endAt'),
