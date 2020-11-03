@@ -1,5 +1,9 @@
 // @ts-check
 
+// const { writeFile } = require('fs/promises');
+// const { join: pathJoin } = require('path');
+const { writeFile } = require('fs/promises');
+const { join } = require('path');
 const {
   read,
   write,
@@ -18,10 +22,12 @@ const {
   exp,
   indexOnChild,
   createRuleObject,
+  ruleRef,
 } = require('../../../scripts/dist/database-rules-build-core');
 
 /**
  * @typedef { import("@scripts/dist/database-rules-build-core").RuleRef } RuleRef
+ * @typedef { import("@scripts/dist/database-rules-build-core").RuleValue } RuleValue
  * @typedef { import("./sample-rules-creator-type").SampleRulesCreatorTypes } SampleRulesCreatorTypes
  *  */
 
@@ -29,6 +35,12 @@ const whenCreate = ruleValue(exp`!${data.exists()}`);
 const whenDelete = ruleValue(exp`!${newData.exists()}`);
 const whenNotCreate = data.exists();
 const whenNotDelete = newData.exists();
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const whenUpdate = ruleValue(exp`${data.exists()} && ${newData.exists()}`);
+
+const newDataIsObject = ruleValue(
+  exp`!(${newData.isBoolean()} || ${newData.isNumber()} || ${newData.isString()})`,
+);
 
 const $roomId = ruleValue('$room_id', { isCaptured: true });
 const $ownerId = ruleValue('$owner_id', { isCaptured: true });
@@ -43,14 +55,174 @@ const password = ruleValue('password', { isStringLiteral: true });
 const ownerId = ruleValue('owner_id', { isStringLiteral: true });
 const ownRoomId = ruleValue('own_room_id', { isStringLiteral: true });
 const roomId = ruleValue('room_id', { isStringLiteral: true });
-const allowedUsers = ruleValue('allowed_users', { isStringLiteral: true });
-const allowedUsersCount = ruleValue('allowed_users_count', {
+const roomMembersInfo = ruleValue('room_members_info', {
+  isStringLiteral: true,
+});
+const requesting = ruleValue('requesting', { isStringLiteral: true });
+const accepted = ruleValue('accepted', { isStringLiteral: true });
+const denied = ruleValue('denied', { isStringLiteral: true });
+const membersCount = ruleValue('members_count', {
   isStringLiteral: true,
 });
 
-/** @param refPoint { RuleRef } */
-const toAllowedCountFrom = (refPoint) =>
-  refPoint.parent().child(allowedUsersCount).val();
+const membersInfoChildMap = {
+  requesting,
+  accepted,
+  denied,
+};
+
+const newDataRoot = {
+  roomPublic: newData.parent(4),
+  roomPublicChild: newData.parent(5),
+  roomIdInEntrance: newData.parent(2),
+  membersCount: newData.parent(2),
+  entranceChild: newData.parent(3),
+  requesting: newData.parent(4),
+  accepted: newData.parent(4),
+  denied: newData.parent(4),
+};
+
+const roomOwnerInfoMap = {
+  roomIdInEntrance: {
+    oldData: {
+      ownerId: data.child(ownerId).val(),
+      ownRoomId: data.child(ownRoomId).val(),
+    },
+    newData: {
+      ownerId: newData.child(ownerId).val(),
+      ownRoomId: newData.child(ownRoomId).val(),
+    },
+  },
+};
+
+const roomIdMap = {
+  roomPublic: {
+    oldData: data.child(roomId).val(),
+    newData: newData.child(roomId).val(),
+  },
+  roomPublicChild: {
+    oldData: data.parent().child(roomId).val(),
+    newData: newData.parent().child(roomId).val(),
+  },
+  requesting: {
+    oldData: $roomId,
+    newData: $roomId,
+  },
+  accepted: {
+    oldData: $roomId,
+    newData: $roomId,
+  },
+  denied: {
+    oldData: $roomId,
+    newData: $roomId,
+  },
+};
+
+/** @typedef { keyof typeof newDataRoot } KeyOfNewDataRootRef  */
+/** @typedef { keyof typeof roomIdMap } KeyOfRoomIdMap */
+/** @typedef { keyof typeof roomOwnerInfoMap } KeyOfRoomOwnerInfoMap */
+/** @typedef { 'old' | 'new' } Timing */
+
+/**
+ * @param { Timing } targetTiming
+ * @param { Timing } keyTiming
+ * @param {KeyOfNewDataRootRef & KeyOfRoomIdMap} fromPath
+ * @param {RuleValue[]} restPath
+ * @returns {RuleRef}
+ * */
+function getEntranceRef(targetTiming, keyTiming, fromPath, ...restPath) {
+  return (targetTiming === 'old' ? root : newDataRoot[fromPath]).child(
+    roomEntrances,
+    roomIdMap[fromPath][keyTiming === 'old' ? 'oldData' : 'newData'],
+    ...restPath,
+  );
+}
+
+/**
+ * @param { Timing } targetTiming
+ * @param { Timing } keyTiming
+ * @param {KeyOfNewDataRootRef & KeyOfRoomOwnerInfoMap } fromPath
+ * @param {RuleValue[]} restPath
+ * @returns {RuleRef}
+ * */
+function getRoomPublicRef(targetTiming, keyTiming, fromPath, ...restPath) {
+  const roomOwnerInfo =
+    roomOwnerInfoMap[fromPath][keyTiming === 'old' ? 'oldData' : 'newData'];
+  return (targetTiming === 'old' ? root : newDataRoot[fromPath]).child(
+    rooms,
+    roomOwnerInfo.ownerId,
+    roomOwnerInfo.ownRoomId,
+    publicInfo,
+    ...restPath,
+  );
+}
+
+/**
+ * @param { Timing } targetTiming
+ * @param { Timing } keyTiming
+ * @param {KeyOfNewDataRootRef & KeyOfRoomIdMap} fromPath
+ * @returns {RuleRef}
+ * */
+function getMembersCountRef(targetTiming, keyTiming, fromPath) {
+  return getEntranceRef(targetTiming, keyTiming, fromPath, membersCount);
+}
+
+/**
+ * @param { Timing } targetTiming
+ * @param { Timing } keyTiming
+ * @param {KeyOfNewDataRootRef & KeyOfRoomIdMap} fromPath
+ * @returns {RuleValue}
+ * */
+function getOwnerIdOfEntrance(targetTiming, keyTiming, fromPath) {
+  return getEntranceRef(targetTiming, keyTiming, fromPath, ownerId).val();
+}
+
+/**
+ * @param { Timing } timing
+ * @param { 'requesting' | 'accepted' | 'denied' } toPath
+ * @returns {RuleRef}
+ * */
+function getOtherMembersInfo(timing, toPath) {
+  return (timing === 'old' ? data : newData)
+    .parent(2)
+    .child(membersInfoChildMap[toPath], $userId);
+}
+
+/**
+ * @param { string | RuleValue } condition
+ * @param { RuleRef } thenRef
+ * @param { RuleRef } elseRef
+ * @returns { RuleRef }
+ * */
+function conditionalFrom(condition, thenRef, elseRef) {
+  return ruleRef(
+    `(${typeof condition === 'string' ? condition : condition()} ? ${
+      thenRef.raw
+    } : ${elseRef.raw})`,
+  );
+}
+
+const dataOwnerIdFromRoomId = root.child(roomEntrances, $roomId, ownerId).val();
+
+/**
+ * @param { Timing } targetTiming
+ * @returns {RuleRef}
+ * */
+function getAcceptedFromMembersCount(targetTiming) {
+  return (targetTiming === 'old' ? root : newDataRoot.membersCount).child(
+    roomMembersInfo,
+    $roomId,
+    accepted,
+    auth.uid,
+  );
+}
+
+const deniedFromMembersCount = root.child(
+  roomMembersInfo,
+  $roomId,
+  denied,
+  auth.uid,
+);
 
 /**
  * @template {{}} T
@@ -82,95 +254,73 @@ const sampleRulesCreatorMap = {
             [indexOn]: indexOnChild(createdAt),
             $own_room_id: {
               [read]: exp`${$ownerId} === ${auth.uid}`,
-              [write]: [
-                exp`${$ownerId} === ${auth.uid}`,
+              [validate]: [
+                $ownRoomId.matches('^[0-2]$'),
                 '&&',
-                auth.token.emailVerified,
+                newData.hasChild(publicInfo),
                 '&&',
                 [
-                  whenNotDelete,
-                  // relation
+                  whenNotCreate,
                   '||',
-                  exp`!${newData
-                    .parent(4)
-                    .child(roomEntrances)
-                    .hasChild(newData.child(publicInfo, roomId).val())}`,
+                  exp`${$ownerId} === ${auth.uid}`,
+                  '&&',
+                  auth.token.emailVerified,
                 ],
               ],
-              [validate]: [
-                $ownRoomId.matches('^[1-3]$'),
-                '&&',
-                newData.hasChildren([publicInfo, password]),
-              ],
               public_info: {
-                [read]: data.hasChild(allowedUsers, auth.uid),
-                [validate]: newData.hasChildren([roomId, allowedUsersCount]),
+                [read]: data.hasChild(roomMembersInfo, auth.uid),
+                [write]: [
+                  whenNotDelete,
+                  '||',
+                  [
+                    exp`${$ownerId} === ${auth.uid}`,
+                    '&&',
+                    // relation
+                    exp`!${getEntranceRef(
+                      'new',
+                      'old',
+                      'roomPublic',
+                    ).exists()}`,
+                    '&&',
+                    exp`!${newDataRoot.roomPublic.hasChild(
+                      roomMembersInfo,
+                      data.child(roomId).val(),
+                    )}`,
+                  ],
+                ],
+                [validate]: [
+                  newData.hasChildren([roomId]),
+                  '&&',
+                  [
+                    whenNotCreate,
+                    '||',
+                    [
+                      exp`${auth.uid} === ${$ownerId}`,
+                      '&&',
+                      auth.token.emailVerified,
+                    ],
+                  ],
+                ],
                 room_id: {
                   [validate]: [
                     newData.isString(),
+                    '&&',
+                    [whenCreate, '||', exp`${newData.val()} === ${data.val()}`],
                     // relation
                     '&&',
-                    newData.parent(5).hasChild(roomEntrances, newData.val()),
-                  ],
-                },
-                allowed_users: {
-                  $user_id: {
-                    [validate]: [
-                      newData.isBoolean(),
-                      // relation
-                      '&&',
-                      [
-                        exp`(${whenNotCreate} && ${data.val({
-                          isBool: true,
-                        })}) === ${newData.val()}`,
-                        '?',
-                        exp`${toAllowedCountFrom(
-                          newData,
-                        )} === ${toAllowedCountFrom(data)}`,
-                        ':',
-                        exp`${toAllowedCountFrom(
-                          newData,
-                        )} === (${toAllowedCountFrom(data)} + (${newData.val({
-                          isBool: true,
-                        })} ? 1 : -1))`,
-                      ],
-                    ],
-                  },
-                },
-                allowed_users_count: {
-                  [validate]: [
-                    newData.isNumber(),
+                    getEntranceRef('new', 'new', 'roomPublicChild').exists(),
                     '&&',
-                    [
-                      whenNotCreate,
-                      '?',
-                      bracket(
-                        exp`0 <= ${newData.val()}`,
-                        '&&',
-                        exp`${newData.val()} < 100000`,
-                      ),
-                      ':',
-                      exp`${newData.val()} === 0`,
-                    ],
+                    exp`${newDataRoot.roomPublicChild.hasChild(
+                      roomMembersInfo,
+                      newData.val(),
+                      requesting,
+                      password,
+                    )}`,
                   ],
                 },
                 $other: {
                   [validate]: false,
                 },
-              },
-              password: {
-                [validate]: [
-                  newData.isString(),
-                  '&&',
-                  exp`${newData.val().length} < 16`,
-                ],
-              },
-              created_at: {
-                [validate]: [
-                  exp`${newData.val()} <= ${now}`,
-                  '&&',
-                  [whenCreate, '||', exp`${newData.val()} === ${data.val()}`],
-                ],
               },
               $other: {
                 [validate]: false,
@@ -182,24 +332,25 @@ const sampleRulesCreatorMap = {
           [read]: auth.isNotNull,
           $room_id: {
             [write]: [
-              exp`${newData.child(ownerId).val()} === ${auth.uid}`,
-              '||',
               [
-                exp`${data.child(ownerId).val()} === ${auth.uid}`,
-                '&&',
-                whenDelete,
-                // relation
-                '&&',
-                exp`!${newData
-                  .parent(2)
-                  .hasChild(
-                    rooms,
-                    data.child(ownerId).val(),
-                    data.child(ownerId, ownRoomId).val(),
-                  )}`,
+                whenCreate,
+                '||',
+                exp`${auth.uid} === ${data.child(ownerId).val()}`,
               ],
+              '&&',
+              exp`${newData.exists()} === ${newDataRoot.roomIdInEntrance.hasChild(
+                rooms,
+                conditionalFrom(exp`${newData.exists()}`, newData, data)
+                  .child(ownerId)
+                  .val(),
+                conditionalFrom(exp`${newData.exists()}`, newData, data)
+                  .child(ownRoomId)
+                  .val(),
+              )}`,
             ],
             [validate]: [
+              exp`${auth.uid} === ${newData.child(ownerId).val()}`,
+              '&&',
               newData.hasChildren([
                 ownerId,
                 ownRoomId,
@@ -209,23 +360,21 @@ const sampleRulesCreatorMap = {
               ]),
               // relation
               '&&',
-              exp`${$roomId} === ${newData
-                .parent(2)
-                .child(
-                  rooms,
-                  newData.child(ownerId).val(),
-                  newData.child(ownRoomId).val(),
-                  publicInfo,
-                  roomId,
-                )
-                .val()}`,
+              exp`${$roomId} === ${getRoomPublicRef(
+                'new',
+                'new',
+                'roomIdInEntrance',
+                roomId,
+              ).val()}`,
             ],
             owner_id: {
               [validate]: [
                 exp`${newData.val()} === ${auth.uid}`,
                 // relation
                 '&&',
-                newData.parent(3).hasChild(rooms, newData.val()),
+                newDataRoot.entranceChild.hasChild(rooms, newData.val()),
+                '&&',
+                [whenCreate, '||', exp`${newData.val()} === ${data.val()}`],
               ],
             },
             own_room_id: {
@@ -233,13 +382,13 @@ const sampleRulesCreatorMap = {
                 newData.isString(),
                 // relation
                 '&&',
-                newData
-                  .parent(3)
-                  .hasChild(
-                    rooms,
-                    newData.parent().child(ownerId).val(),
-                    newData.val(),
-                  ),
+                newDataRoot.entranceChild.hasChild(
+                  rooms,
+                  newData.parent().child(ownerId).val(),
+                  newData.val(),
+                ),
+                '&&',
+                [whenCreate, '||', exp`${newData.val()} === ${data.val()}`],
               ],
             },
             room_name: {
@@ -255,38 +404,81 @@ const sampleRulesCreatorMap = {
               [validate]: [
                 newData.isNumber(),
                 '&&',
+                exp`1 <= ${newData.val()}`,
+                '&&',
+                exp`${newData.val()} < 100000`,
+                '&&',
                 [
-                  data.exists(),
+                  whenCreate,
                   '?',
-                  [
-                    exp`0 <= ${newData.val()}`,
-                    '&&',
-                    exp`${newData.val()} < 100000`,
-                    // relation
-                    '&&',
-                    exp`${newData.val()} <= ${newData
-                      .parent(3)
-                      .child(
-                        rooms,
-                        newData.parent().child(ownerId).val(),
-                        newData.parent().child(ownRoomId).val(),
-                        publicInfo,
-                        allowedUsersCount,
-                      )
-                      .val()} + 1`,
-                  ],
+                  [exp`${newData.val()} === 1`],
                   ':',
-                  exp`${newData.val()} === 1`,
+                  [
+                    [
+                      exp`${auth.uid} === ${data
+                        .parent()
+                        .child(ownerId)
+                        .val()}`,
+                      '&&',
+                      exp`${newData.val()} === 1`,
+                    ],
+                    '||',
+                    [
+                      exp`${getAcceptedFromMembersCount('new').exists()}`,
+                      '&&',
+                      [
+                        [
+                          exp`${newData.val()} === ${data.val()}`,
+                          '&&',
+                          exp`(${getAcceptedFromMembersCount(
+                            'old',
+                          ).val()} === true)`,
+                          '===',
+                          exp`(${getAcceptedFromMembersCount(
+                            'new',
+                          ).val()} === true)`,
+                        ],
+                        '||',
+                        [
+                          exp`${newData.val()} === ${data.val()} + 1`,
+                          '&&',
+                          exp`!${deniedFromMembersCount.exists()}`,
+                          '&&',
+                          exp`${getAcceptedFromMembersCount(
+                            'old',
+                          ).val()} === false`,
+                          '&&',
+                          exp`${getAcceptedFromMembersCount(
+                            'new',
+                          ).val()} === true`,
+                        ],
+                        '||',
+                        [
+                          exp`${newData.val()} === ${data.val()} - 1`,
+                          '&&',
+                          exp`${getAcceptedFromMembersCount(
+                            'old',
+                          ).val()} === true`,
+                          '&&',
+                          exp`${getAcceptedFromMembersCount(
+                            'new',
+                          ).val()} !== true`,
+                        ],
+                      ],
+                    ],
+                  ],
                 ],
               ],
             },
             created_at: {
               [validate]: [
+                exp`${newData.isNumber()}`,
+                '&&',
+                exp`0 < ${newData.val()}`,
+                '&&',
                 exp`${newData.val()} <= ${now}`,
                 '&&',
-                bracket(
-                  exp`!${data.exists()} || ${newData.val()} === ${data.val()}`,
-                ),
+                [whenCreate, '||', exp`${newData.val()} === ${data.val()}`],
               ],
             },
             $other: {
@@ -294,53 +486,232 @@ const sampleRulesCreatorMap = {
             },
           },
         },
-        entry_requests: {
+        room_members_info: {
           $room_id: {
-            [read]: exp`${root
-              .child(roomEntrances, $roomId, ownerId)
-              .val()} === ${auth.uid}`,
-            [write]: [
-              exp`${root.child(roomEntrances, $roomId, ownerId).val()} === ${
-                auth.uid
-              }`,
-              '&&',
-              whenDelete,
-            ],
-            $user_id: {
-              [write]: [
-                whenCreate,
-                '&&',
-                root.child(roomEntrances).hasChild($roomId),
-                '&&',
-                exp`${$userId} === ${auth.uid}`,
+            requesting: {
+              [read]: [
+                exp`${auth.uid} === ${dataOwnerIdFromRoomId}`,
+                '||',
+                [
+                  exp`${data.child(password).val().length} === 0`,
+                  '&&',
+                  query.orderByKey,
+                  '&&',
+                  exp`${query.equalTo} === ${password}`,
+                ],
               ],
               [validate]: newData.hasChild(password),
               password: {
-                [validate]: [
-                  data.isString(),
-                  '&&',
-                  exp`${data.val()} === ${root
-                    .child(rooms, $roomId, password)
+                [write]: [
+                  exp`${auth.uid} === ${conditionalFrom(
+                    data.exists(),
+                    root,
+                    newDataRoot.requesting,
+                  )
+                    .child(roomEntrances, $roomId, ownerId)
                     .val()}`,
+                  '&&',
+                  exp`${newData.exists()} === ${getEntranceRef(
+                    'new',
+                    'new',
+                    'requesting',
+                  ).exists()}`,
+                ],
+                [validate]: [
+                  newData.isString(),
+                  '&&',
+                  exp`${newData.val().length} < 20`,
                 ],
               },
-              $other: { [validate]: false },
+              $user_id: {
+                [write]: [
+                  [
+                    whenDelete,
+                    '&&',
+                    [
+                      exp`${auth.uid} === ${dataOwnerIdFromRoomId}`,
+                      '||',
+                      exp`${auth.uid} === ${$userId}`,
+                    ],
+                  ],
+                  '||',
+                  [
+                    whenCreate,
+                    '&&',
+                    exp`${$userId} === ${auth.uid}`,
+                    '&&',
+                    getEntranceRef('old', 'new', 'requesting').exists(),
+                    '&&',
+                    exp`!${getOtherMembersInfo('old', 'accepted').exists()}`,
+                    '&&',
+                    exp`!${getOtherMembersInfo('old', 'denied').exists()}`,
+                  ],
+                ],
+                [validate]: [
+                  newData.hasChild(password),
+                  '&&',
+                  exp`${$userId} !== ${getOwnerIdOfEntrance(
+                    'new',
+                    'new',
+                    'requesting',
+                  )}`,
+                ],
+                password: {
+                  [validate]: [
+                    newData.isString(),
+                    '&&',
+                    exp`${newData.val()} === ${data
+                      .parent(2)
+                      .child(password)
+                      .val()}`,
+                  ],
+                },
+              },
             },
-          },
-        },
-        delete_marks: {
-          [read]: false,
-          $room_id: {
-            [write]: exp`${root
-              .child(roomEntrances, $roomId, ownerId)
-              .val()} === ${auth.uid}`,
-            [validate]: exp`${newData.val()} === false`,
+            accepted: {
+              $user_id: {
+                [write]: [
+                  whenDelete,
+                  '?',
+                  [
+                    [
+                      exp`${auth.uid} === ${dataOwnerIdFromRoomId}`,
+                      '&&',
+                      exp`!${newData.parent().exists()}`,
+                      // relation
+                      '&&',
+                      [
+                        exp`!${getEntranceRef(
+                          'new',
+                          'new',
+                          'accepted',
+                        ).exists()}`,
+                        '||',
+                        exp`${getMembersCountRef(
+                          'new',
+                          'new',
+                          'accepted',
+                        ).val()} === 1`,
+                      ],
+                    ],
+                    '||',
+                    [
+                      exp`${$userId} === ${auth.uid}`,
+                      // relation
+                      '&&',
+                      [
+                        exp`${data.val()} !== true`,
+                        '||',
+                        exp`${getMembersCountRef(
+                          'new',
+                          'new',
+                          'accepted',
+                        ).val()} === ${getMembersCountRef(
+                          'old',
+                          'old',
+                          'accepted',
+                        ).val()} - 1`,
+                      ],
+                    ],
+                  ],
+                  ':',
+                  [
+                    exp`${auth.uid} === ${dataOwnerIdFromRoomId}`,
+                    '||',
+                    exp`${$userId} === ${auth.uid}`,
+                  ],
+                ],
+                [validate]: [
+                  newData.isBoolean(),
+                  // relation
+                  '&&',
+                  [
+                    whenCreate,
+                    '?',
+                    [
+                      exp`${auth.uid} === ${getOwnerIdOfEntrance(
+                        'new',
+                        'new',
+                        'accepted',
+                      )}`,
+                      '&&',
+                      exp`${$userId} !== ${getOwnerIdOfEntrance(
+                        'new',
+                        'new',
+                        'accepted',
+                      )}`,
+                      '&&',
+                      exp`${getOtherMembersInfo('old', 'requesting').exists()}`,
+                      '&&',
+                      exp`!${getOtherMembersInfo(
+                        'new',
+                        'requesting',
+                      ).exists()}`,
+                      '&&',
+                      exp`${newData.val()} === false`,
+                    ],
+                    ':',
+                    [
+                      exp`${auth.uid} === ${$userId}`,
+                      '&&',
+                      [
+                        exp`!${getOtherMembersInfo('old', 'denied').exists()}`,
+                        '||',
+                        exp`${newData.val()} === false`,
+                      ],
+                      '&&',
+                      [
+                        [
+                          exp`${newData.val()} === ${data.val()}`,
+                          '&&',
+                          exp`${getMembersCountRef(
+                            'new',
+                            'new',
+                            'accepted',
+                          ).val()} === ${getMembersCountRef(
+                            'old',
+                            'old',
+                            'accepted',
+                          ).val()}`,
+                        ],
+                        '||',
+                        [
+                          exp`${getMembersCountRef(
+                            'new',
+                            'new',
+                            'accepted',
+                          ).val()} === ${getMembersCountRef(
+                            'old',
+                            'old',
+                            'accepted',
+                          ).val()} +`,
+                          bracket(exp`${newData.val()} === true ? 1 : -1`),
+                        ],
+                      ],
+                    ],
+                  ],
+                ],
+              },
+            },
+            denied: {
+              [write]: exp`${auth.uid} === ${dataOwnerIdFromRoomId}`,
+              $user_id: {
+                [validate]: newDataIsObject,
+                $user_id: {
+                  [validate]: [
+                    exp`${newData.val()} === false`,
+                    '&&',
+                    exp`${$userId} !== ${dataOwnerIdFromRoomId}`,
+                  ],
+                },
+              },
+            },
+            $other: { [validate]: false },
           },
         },
         $other: { [validate]: false },
       }),
     ),
-  // #whole
   whole: () =>
     createRulesObjectText(
       createRuleObject({
@@ -374,8 +745,8 @@ const sampleRulesCreatorMap = {
                 newData.hasChildren([publicInfo, password]),
               ],
               public_info: {
-                [read]: data.hasChild(allowedUsers, auth.uid),
-                [validate]: newData.hasChildren([roomId, allowedUsersCount]),
+                [read]: data.hasChild(roomMembersInfo, auth.uid),
+                [validate]: newData.hasChildren([roomId, $userId]),
                 room_id: {
                   [validate]: newData
                     .parent(4)
@@ -391,13 +762,9 @@ const sampleRulesCreatorMap = {
                           isBool: true,
                         })}) === ${newData.val()}`,
                         '?',
-                        exp`${toAllowedCountFrom(
-                          newData,
-                        )} === ${toAllowedCountFrom(data)}`,
+                        exp`${$roomId} === ${$roomId}`,
                         ':',
-                        exp`${toAllowedCountFrom(
-                          newData,
-                        )} === (${toAllowedCountFrom(data)} + (${newData.val({
+                        exp`${$roomId} === (${$roomId} + (${newData.val({
                           isBool: true,
                         })} ? 1 : -1))`,
                       ],
@@ -473,7 +840,7 @@ const sampleRulesCreatorMap = {
               newData.hasChildren([
                 ownerId,
                 'room_name',
-                'members_count',
+                membersCount,
                 createdAt,
               ]),
               '&&',
@@ -532,7 +899,7 @@ const sampleRulesCreatorMap = {
                         newData.parent().child(ownerId).val(),
                         newData.parent().child(ownRoomId).val(),
                         publicInfo,
-                        allowedUsersCount,
+                        $userId,
                       )
                       .val()} + 1`,
                   ],
@@ -560,28 +927,45 @@ const sampleRulesCreatorMap = {
             [read]: exp`${root
               .child(roomEntrances, $roomId, ownerId)
               .val()} === ${auth.uid}`,
-            [write]: [
-              exp`${root.child(roomEntrances, $roomId, ownerId).val()} === ${
-                auth.uid
-              }`,
-              '&&',
-              exp`!${newData.exists()}`,
-            ],
             $user_id: {
               [write]: [
-                exp`!${data.exists()}`,
-                '&&',
-                root.child(roomEntrances).hasChild($roomId),
-                '&&',
-                exp`${$userId} === ${auth.uid}`,
+                bracket(
+                  whenDelete,
+                  '&&',
+                  exp`${root
+                    .child(roomEntrances, $roomId, ownerId)
+                    .val()} === ${auth.uid}`,
+                ),
+                '||',
+                bracket(
+                  whenCreate,
+                  '&&',
+                  root.hasChild(roomEntrances, $roomId),
+                  '&&',
+                  exp`!${root.hasChild(
+                    rooms,
+                    root.child(roomEntrances, $roomId, ownerId).val(),
+                    root.child(roomEntrances, $roomId, ownRoomId).val(),
+                    publicInfo,
+                    roomMembersInfo,
+                    $userId,
+                  )}`,
+                  '&&',
+                  exp`${$userId} === ${auth.uid}`,
+                ),
               ],
               [validate]: newData.hasChild(password),
               password: {
                 [validate]: [
-                  data.isString(),
+                  newData.isString(),
                   '&&',
-                  exp`${data.val()} === ${root
-                    .child(rooms, $roomId, password)
+                  exp`${newData.val()} === ${root
+                    .child(
+                      rooms,
+                      root.child(roomEntrances, $roomId, ownerId).val(),
+                      root.child(roomEntrances, $roomId, ownRoomId).val(),
+                      password,
+                    )
                     .val()}`,
                 ],
               },
@@ -630,9 +1014,22 @@ process.on('message', (message) => {
     if (storeValue) {
       process.send?.(formatMessage(message, storeValue));
     } else {
-      const stringified = sampleRulesCreatorMap[message]();
-      sampleRulesStore[message] = stringified;
-      process.send?.(formatMessage(message, stringified));
+      try {
+        const stringified = sampleRulesCreatorMap[message]();
+        sampleRulesStore[message] = stringified;
+        writeFile(
+          join(process.cwd(), 'rules-creator-result.gitskip.json'),
+          stringified,
+          'utf-8',
+        );
+        process.send?.(formatMessage(message, stringified));
+      } catch (error) {
+        writeFile(
+          join(process.cwd(), 'rules-creator-error.gitskip.txt'),
+          error.message,
+          'utf-8',
+        );
+      }
     }
   }
 });

@@ -1,3 +1,5 @@
+import { SampleRulesCreatorMessage } from './rules-test-utils';
+
 export type SampleRulesKeys = 'sample1' | 'whole';
 
 export interface SampleRulesStore
@@ -10,15 +12,10 @@ export interface SampleRulesKeyCheck {
   (targetKey: unknown): targetKey is SampleRulesKeys;
 }
 
-export interface SampleRulesCreatorMessage {
-  rulesKey: SampleRulesKeys;
-  rulesText: string;
-}
-
 export type SampleRulesCreatorTypes = {
   SampleRulesKeys: SampleRulesKeys;
   SampleRulesStore: SampleRulesStore;
   SampleRulesCreatorMap: SampleRulesCreatorMap;
   SampleRulesKeyCheck: SampleRulesKeyCheck;
-  SampleRulesCreatorMessage: SampleRulesCreatorMessage;
+  SampleRulesCreatorMessage: SampleRulesCreatorMessage<SampleRulesKeys>;
 };
