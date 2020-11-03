@@ -4,6 +4,7 @@ import {
   inputRegex,
   loginMethodCreater,
 } from '@components/common/util/input-field-utils';
+import { firebaseSdk } from '@lib/firebase-sdk';
 import clsx, { Clsx } from 'clsx';
 import {
   Component,
@@ -138,7 +139,7 @@ export const CompleteVerifyEmail = {
           );
 
           const alreadyEmailVerified = signInMethods.includes(
-            firebase.auth.EmailAuthProvider.EMAIL_LINK_SIGN_IN_METHOD,
+            firebaseSdk.auth.EmailAuthProvider.EMAIL_LINK_SIGN_IN_METHOD,
           );
 
           if (alreadyEmailVerified && cookieEmailValue.length) {

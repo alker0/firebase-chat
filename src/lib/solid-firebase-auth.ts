@@ -1,7 +1,7 @@
-import { User } from 'firebase';
+import type FirebaseType from 'firebase';
 import { createState } from 'solid-js';
 
-export type UserState = User | null;
+export type UserState = FirebaseType.User | null;
 
 export interface SessionState {
   readonly isLoggedIn: boolean;

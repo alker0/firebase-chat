@@ -1,7 +1,6 @@
 <extends src="layouts/html-born.html">
-  <block name="title">Talker</block>
-
   <block name="head">
+    <title>Talker</title>
 
     <include src="partials/favicon.html" locals='{
       "iconPath": "/assets/favicon/favicon.ico"

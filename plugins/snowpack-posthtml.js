@@ -49,7 +49,11 @@ module.exports = function postHtmlPlugin(snowpackConfig, pluginOption) {
           const contents = fs.readFileSync(name, { encoding: 'utf-8' });
           const result = await processor
             .process(contents)
-            .then((_result) => _result.html);
+            .then((_result) => _result.html)
+            .catch((error) => {
+              console.error(`Error in ${name}`);
+              throw error;
+            });
           const outputPath = path.join(
             outputDir,
             `${path.basename(name, inputExt)}${outputExt}`,
