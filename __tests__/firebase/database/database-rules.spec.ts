@@ -1,339 +1,369 @@
-import { readFileSync } from 'fs';
-import { join as pathJoin } from 'path';
-import { fork } from 'child_process';
+/* eslint-disable jest/no-disabled-tests */
+
+import { sampleOfTalker } from './sample-data-creator';
 import {
-  apps as firebaseApps,
-  initializeTestApp,
-  initializeAdminApp,
-  loadDatabaseRules,
-  assertFails,
-} from '@firebase/rules-unit-testing';
-
+  getOnceVal,
+  discardOnceVal,
+  updateOnRoot,
+  assertAllSuccessLazy,
+  logNonPermDenied,
+} from './rules-test-utils';
 import {
-  SampleRulesCreatorMessage,
-  SampleRulesKeys,
-} from './sample-rules-creator-type';
+  adminDb,
+  anonymousDb,
+  anonymousUid,
+  anotherDb,
+  anotherUid,
+  cleanup,
+  dependsMap,
+  getOnlyRequestUid,
+  onlyPassDb,
+  sampleData,
+  setUpDb,
+  userContext,
+  userDb,
+} from './test-setup-talker';
 
-import {
-  getDateWithOffset,
-  createSampleDataCreatorForTalker,
-} from './sample-data-creator';
-
-const cwd = process.cwd();
-
-const DO_NOTHING = () => {};
-
-const projectId = 'talker-v1';
-const databaseName = 'talker-v1';
-const rulesOfDatabaseJson = readFileSync(pathJoin(cwd, 'database.rules.json'), {
-  encoding: 'utf-8',
-});
-
-const permDeniedCode = 'PERMISSION_DENIED';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const permDeniedMsg = 'PERMISSION_DENIED: Permission denied';
-
-interface ErrorWithCode extends Error {
-  code: string;
-}
-
-function consoleError(
-  whenPermDenied: boolean = false,
-): (error: Error | null) => void {
-  function errorLog(error: Error | null) {
-    if (error) {
-      if ((error as ErrorWithCode).code === permDeniedCode) {
-        if (whenPermDenied) console.log(permDeniedCode);
-      } else {
-        console.error(error);
-      }
-    }
-  }
-  Object.defineProperty(errorLog, 'name', { value: 'consoleError' });
-  return errorLog;
-}
-
-async function onceVal(reference: firebase.database.Reference) {
-  const snapshot = await reference.once('value', undefined, consoleError);
-  return snapshot.val();
-}
-
-async function logOnceVal(
-  reference: firebase.database.Reference,
-  prefix?: string,
-) {
-  const val = await onceVal(reference);
-  console.log(...(prefix ? [prefix, val] : [val]));
-}
-
-expect.extend({
-  async toBePermissionDenied(dbAccess) {
-    await assertFails(dbAccess);
-    return {
-      pass: true,
-      message() {
-        return `Unexpected ${permDeniedCode}`;
-      },
-    };
-  },
-});
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const currentRootStatusPrefix = 'current root status is:';
-
-type DatabaseJsonKey = 'database-json';
-
-type LoadRulesKeys = SampleRulesKeys | DatabaseJsonKey;
-
-const sampleRulesCreator = fork(
-  pathJoin(__dirname, 'sample-rules-creator.js'),
-).on('error', (error) => {
-  console.error(error);
-  sampleRulesCreator.kill();
-});
-
-const sampleRulesPromiseStore: Record<
-  SampleRulesKeys,
-  Promise<string> | null
-> = {
-  sample1: null,
-  whole: null,
-};
-
-const loadRules = (() => {
-  let prevRulesKey: LoadRulesKeys;
-  return async (rulesKey: LoadRulesKeys) => {
-    let targetRulesText: string;
-    if (rulesKey === 'database-json') {
-      targetRulesText = rulesOfDatabaseJson;
-    } else {
-      const rulesText = sampleRulesPromiseStore[rulesKey];
-      if (!rulesText) {
-        console.error(`requested rules '${rulesKey}' has not been initialized`);
-        return;
-      }
-      targetRulesText = await rulesText;
-    }
-
-    if (rulesKey === prevRulesKey) return;
-    prevRulesKey = rulesKey;
-
-    await loadDatabaseRules({
-      databaseName,
-      rules: targetRulesText,
-    });
-  };
-})();
-
-function useRules(targetRulesKey: LoadRulesKeys) {
-  function loader() {
-    return loadRules(targetRulesKey);
-  }
-
-  if (targetRulesKey === 'database-json') return loader;
-
-  const storePromise = sampleRulesPromiseStore[targetRulesKey];
-  if (storePromise) return loader;
-
-  const creating = new Promise<string>((resolve) => {
-    sampleRulesCreator.on('message', (message) => {
-      if (typeof message === 'object') {
-        const { rulesKey, rulesText } = message as Partial<
-          SampleRulesCreatorMessage
-        >;
-        if (rulesKey && rulesText) {
-          resolve(rulesText);
-        }
-      }
-    });
-  });
-  sampleRulesPromiseStore[targetRulesKey] = creating;
-  sampleRulesCreator.send(targetRulesKey);
-
-  return loader;
-}
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-async function* seriesPromiseGenerator() {
-  let prevPromise = Promise.resolve();
-  function createPromiseWithResolve() {
-    let resultResolve = DO_NOTHING;
-    const resultPromise = new Promise<undefined>((resolve) => {
-      resultResolve = resolve;
-    });
-    return [resultResolve, resultPromise] as const;
-  }
-
-  let [currentResolve, currentPromise] = createPromiseWithResolve();
-
-  while (true) {
-    // eslint-disable-next-line no-await-in-loop
-    await prevPromise;
-    yield currentResolve;
-    prevPromise = currentPromise;
-    [currentResolve, currentPromise] = createPromiseWithResolve();
-  }
-}
-
-async function waitPrevTest(
-  prevTest: Promise<IteratorResult<() => void, void>>,
-) {
-  return (await prevTest).value as () => {};
-}
-
-const scheduler = seriesPromiseGenerator();
-
-const userUid = 'nice';
-const userAuth = {
-  uid: userUid,
-  provider: 'password',
-  token: {
-    email_verified: true,
-  },
-};
-const userAppArg = {
-  projectId,
-  databaseName,
-  auth: userAuth,
-};
-
-const userApp = initializeTestApp(userAppArg);
-
-const notEmailVerifiedUserApp = initializeTestApp({
-  ...userAppArg,
-  auth: {
-    ...userAppArg.auth,
-    token: {
-      email_verified: false,
-    },
-  },
-});
-
-const adminApp = initializeAdminApp({
-  projectId,
-  databaseName,
-});
-
-const userDb = userApp.database();
-const notEmailVerifiedUserDb = notEmailVerifiedUserApp.database();
-const adminDb = adminApp.database();
-const adminRoot = adminDb.ref();
-const clearDb = adminRoot.remove.bind(adminRoot) as typeof adminRoot.remove;
-
-async function clearApps() {
-  await Promise.all(
-    firebaseApps()
-      .concat(adminApp)
-      .map((app) => app.delete()),
-  );
-}
-
-async function cleanup() {
-  if (!sampleRulesCreator.kill()) {
-    console.error('terminating sample rule creator is failed');
-  }
-  await logOnceVal(adminRoot, 'last root status is:');
-  await clearDb();
-  await clearApps();
-}
-
-const createSampleData = createSampleDataCreatorForTalker;
-const sample1 = createSampleData({ userUid });
-
-const sampleData = {
-  vaildCreate: sample1.sampleData,
-  noPassword: sample1.createFixed((rootKeyMap) => [
-    [[rootKeyMap['rooms-key/own_room_id'], 'password'], null],
-  ]),
-  roomCreatedAtFuture: sample1.createFixed((rootKeyMap) => [
-    [
-      [rootKeyMap['rooms-key/own_room_id'], 'created_at'],
-      getDateWithOffset({ day: 1 }),
-    ],
-  ]),
-  roomEntranceCreatedAtFuture: sample1.createFixed((rootKeyMap) => [
-    [
-      [rootKeyMap['room_entrances-key/room_id'], 'created_at'],
-      getDateWithOffset({ minute: 1 }),
-    ],
-  ]),
-};
-
-async function setUpDb({
-  prevTest = scheduler.next(),
-  rulesKey = 'sample1',
-  shouldClear = true,
-}: {
-  prevTest?: Promise<IteratorResult<() => void, void>>;
-  rulesKey?: SampleRulesKeys;
-  shouldClear?: boolean;
-} = {}) {
-  const ruleLoader = useRules(rulesKey);
-  const endTest = await waitPrevTest(prevTest);
-  const settingUp = (async () => {
-    if (shouldClear) await clearDb();
-    await ruleLoader();
-  })();
-  return [endTest, settingUp] as const;
-}
-
-describe('firebase-rdb-test', () => {
+describe('firebase-database-test', () => {
   afterAll(cleanup);
   describe('create room test', () => {
-    it('should create valid data', async () => {
-      expect.assertions(1);
-      const [endTest, settingUp] = await setUpDb();
+    let creatable = false;
+    afterAll(() => {
+      dependsMap.roomCreatable.send(creatable);
+    });
+    it('should create valid room', async () => {
+      expect.assertions(2);
+      const [settingUp, endTest] = await setUpDb();
       try {
         await settingUp;
-        await expect(
-          userDb.ref().update(sampleData.vaildCreate, consoleError()),
-        ).resolves.toBeUndefined();
+        console.log(sampleData.roomOfUser);
+        await assertAllSuccessLazy(
+          expect(
+            updateOnRoot(userDb, sampleData.roomOfUser, logNonPermDenied),
+          ).not.toBePermissionDenied(),
+          expect(
+            updateOnRoot(anotherDb, sampleData.roomOfAnother, logNonPermDenied),
+          ).not.toBePermissionDenied(),
+        );
+        creatable = true;
       } finally {
         endTest();
       }
     });
-    it('should not create no password key room', async () => {
+    it('should create empty password room', async () => {
       expect.assertions(1);
-      const [endTest, settingUp] = await setUpDb();
+      const [settingUp, endTest] = await setUpDb();
       try {
         await settingUp;
         await expect(
-          userDb.ref().update(sampleData.noPassword, consoleError()),
-        ).toBePermissionDenied();
+          updateOnRoot(userDb, sampleData.emptyPassword, logNonPermDenied),
+        ).not.toBePermissionDenied();
       } finally {
         endTest();
       }
     });
     it("should not create not email verified user's room", async () => {
-      expect.assertions(1);
-      const [endTest, settingUp] = await setUpDb();
-      try {
-        await settingUp;
-        await expect(
-          notEmailVerifiedUserDb
-            .ref()
-            .update(sampleData.vaildCreate, consoleError()),
-        ).toBePermissionDenied();
-      } finally {
-        endTest();
-      }
-    });
-    it("should not create not future 'created_at' data", async () => {
       expect.assertions(2);
-      const [endTest, settingUp] = await setUpDb();
+      const [settingUp, endTest] = await setUpDb();
+      try {
+        await settingUp;
+        await assertAllSuccessLazy(
+          expect(
+            updateOnRoot(
+              onlyPassDb,
+              sampleData.roomOfOnlyPass,
+              logNonPermDenied,
+            ),
+          ).toBePermissionDenied(),
+          expect(
+            updateOnRoot(
+              anonymousDb,
+              sampleData.roomOfAnonymous,
+              logNonPermDenied,
+            ),
+          ).toBePermissionDenied(),
+        );
+      } finally {
+        endTest();
+      }
+    });
+    it("should not create other user's room and entrance", async () => {
+      expect.assertions(1);
+      const [settingUp, endTest] = await setUpDb();
       try {
         await settingUp;
         await expect(
-          userDb.ref().update(sampleData.roomCreatedAtFuture, consoleError()),
-        ).toBePermissionDenied();
-        await expect(
-          userDb
-            .ref()
-            .update(sampleData.roomEntranceCreatedAtFuture, consoleError()),
+          updateOnRoot(userDb, sampleData.roomOfAnonymous, logNonPermDenied),
         ).toBePermissionDenied();
       } finally {
         endTest();
       }
     });
+    it('should not create room not has all necessary info', async () => {
+      expect.assertions(3);
+      const [settingUp, endTest] = await setUpDb();
+      try {
+        await settingUp;
+        await assertAllSuccessLazy(
+          expect(
+            updateOnRoot(
+              userDb,
+              sampleData.withOutEntranceOfUser,
+              logNonPermDenied,
+            ),
+          ).toBePermissionDenied(),
+          expect(
+            updateOnRoot(
+              anotherDb,
+              sampleData.withOutOwnRoomsInfoOfAnother,
+              logNonPermDenied,
+            ),
+          ).toBePermissionDenied(),
+          expect(
+            updateOnRoot(
+              anotherDb,
+              sampleData.withOutPasswordOfUser,
+              logNonPermDenied,
+            ),
+          ).toBePermissionDenied(),
+        );
+      } finally {
+        endTest();
+      }
+    });
+
+    it("should not create not future 'created_at' data", async () => {
+      expect.assertions(1);
+      const [settingUp, endTest] = await setUpDb();
+      try {
+        await settingUp;
+        await expect(
+          updateOnRoot(
+            userDb,
+            sampleData.roomCreatedAtFuture,
+            logNonPermDenied,
+          ),
+        ).toBePermissionDenied();
+      } finally {
+        endTest();
+      }
+    });
+  });
+  describe('entry request test', () => {
+    let endTest = () => {};
+    let requestable = false;
+    beforeAll(async () => {
+      const [settingUp, endTesting] = await setUpDb();
+      endTest = endTesting;
+      await settingUp;
+      await dependsMap.roomCreatable.promise;
+      await Promise.all([
+        updateOnRoot(userDb, sampleData.roomOfUser, logNonPermDenied),
+        updateOnRoot(anotherDb, sampleData.roomOfAnother, logNonPermDenied),
+      ]);
+    });
+    afterAll(() => {
+      dependsMap.requestable.send(requestable);
+      endTest();
+    });
+    const requestingPath = `room_members_info/${userContext.roomId}/requesting`;
+    const passwordPath = `${requestingPath}/password`;
+    const anonymousRequestingPath = `${requestingPath}/${anonymousUid}`;
+    it('should show anyone empty password', async () => {
+      expect.assertions(2);
+      const emptyPassword = '';
+      await userDb.ref(passwordPath).set(emptyPassword);
+      const reading = getOnceVal(
+        anonymousDb.ref(requestingPath).orderByKey().equalTo('password'),
+      ).then((requestingInfo) => requestingInfo.password);
+      await expect(reading).resolves.toBe(emptyPassword);
+      await expect(
+        anonymousDb.ref(anonymousRequestingPath).set({
+          password: await reading,
+        }),
+      ).not.toBePermissionDenied();
+      await adminDb.ref(anonymousRequestingPath).remove();
+    });
+    it('should not show non-member users present password', async () => {
+      expect.assertions(1);
+      await userDb.ref(passwordPath).set(sampleOfTalker.password);
+      await expect(
+        discardOnceVal(
+          anotherDb.ref(requestingPath).orderByKey().equalTo('password'),
+        ),
+      ).toBePermissionDenied();
+    });
+    it('should create matched password request', async () => {
+      expect.assertions(1);
+      const usedPassword = sampleOfTalker.password;
+      await userDb.ref(passwordPath).set(usedPassword);
+      await expect(
+        anonymousDb.ref(`${requestingPath}/${anonymousUid}`).set({
+          password: usedPassword,
+        }),
+      ).not.toBePermissionDenied();
+      requestable = true;
+    });
+    it('should not create unmatched password request', async () => {
+      expect.assertions(1);
+      const usedPassword = sampleOfTalker.password;
+      await userDb.ref(passwordPath).set(usedPassword);
+      await expect(
+        anotherDb.ref(`${requestingPath}/${anotherUid}`).set({
+          password: 'unmatched password',
+        }),
+      ).toBePermissionDenied();
+    });
+  });
+  describe('request acceptance test', () => {
+    beforeAll(() => dependsMap.requestable.promise);
+    const membersInfoPath = `room_members_info/${userContext.roomId}`;
+    const requestingPath = `${membersInfoPath}/requesting`;
+    const acceptedPath = `${membersInfoPath}/accepted`;
+    const passwordPath = `${requestingPath}/password`;
+    const anonymousRequestingPath = `${requestingPath}/${anonymousUid}`;
+    it('should accept a requesting user', async () => {
+      expect.assertions(1);
+      const [settingUp, endTest] = await setUpDb();
+      try {
+        await settingUp;
+        await updateOnRoot(userDb, sampleData.roomOfUser, logNonPermDenied);
+        const usedPassword = sampleOfTalker.password;
+        await userDb.ref(passwordPath).set(usedPassword);
+        await anonymousDb.ref(anonymousRequestingPath).set({
+          password: usedPassword,
+        });
+        const requestsForUser = await getOnceVal(userDb.ref(requestingPath));
+        const requestKey = getOnlyRequestUid(requestsForUser)[0];
+        const acceptanceData = {
+          [`${requestingPath}/${requestKey}`]: null,
+          [`${acceptedPath}/${requestKey}`]: false,
+        };
+        await expect(
+          updateOnRoot(userDb, acceptanceData, logNonPermDenied),
+        ).not.toBePermissionDenied();
+      } finally {
+        endTest();
+      }
+    });
+    it('should not create primitive data to accepted path', async () => {
+      expect.assertions(3);
+      const [settingUp, endTest] = await setUpDb();
+      try {
+        await settingUp;
+        await updateOnRoot(userDb, sampleData.roomOfUser, logNonPermDenied);
+        const usedPassword = sampleOfTalker.password;
+        await userDb.ref(passwordPath).set(usedPassword);
+        await anonymousDb.ref(anonymousRequestingPath).set({
+          password: usedPassword,
+        });
+        const requestsForUser = await getOnceVal(userDb.ref(requestingPath));
+        const requestKey = getOnlyRequestUid(requestsForUser)[0];
+        const requestingWithKeyPath = `${requestingPath}/${requestKey}`;
+        const acceptanceData = {
+          asBoolean: {
+            [requestingWithKeyPath]: null,
+            [acceptedPath]: false,
+          },
+          asNumber: {
+            [requestingWithKeyPath]: null,
+            [acceptedPath]: 1,
+          },
+          asString: {
+            [requestingWithKeyPath]: null,
+            [acceptedPath]: requestKey,
+          },
+        };
+        await assertAllSuccessLazy(
+          expect(
+            updateOnRoot(userDb, acceptanceData.asBoolean, logNonPermDenied),
+          ).toBePermissionDenied(),
+          expect(
+            updateOnRoot(userDb, acceptanceData.asNumber, logNonPermDenied),
+          ).toBePermissionDenied(),
+          expect(
+            updateOnRoot(userDb, acceptanceData.asString, logNonPermDenied),
+          ).toBePermissionDenied(),
+        );
+      } finally {
+        endTest();
+      }
+    });
+    it.todo('should not increase members_count by owner');
+    it.todo('should increase members_count by accepted user with entering');
+    it.todo(
+      'should not increase members_count by accepted user without entering',
+    );
+    it.todo('should not enter user without incrememt members_count');
+    it.todo('should not enter denied user');
+    it.todo('should not accept user who did not request');
+  });
+  describe('delete room test', () => {
+    beforeAll(() => dependsMap.roomCreatable.promise);
+    it('should delete own room, entrance and password', async () => {
+      expect.assertions(1);
+      const [settingUp, endTest] = await setUpDb();
+      try {
+        await settingUp;
+        await updateOnRoot(userDb, sampleData.roomOfUser, logNonPermDenied);
+        await expect(
+          updateOnRoot(userDb, sampleData.deletedOfUser, logNonPermDenied),
+        ).not.toBePermissionDenied();
+      } finally {
+        endTest();
+      }
+    });
+    it("should not delete other user's room and entrance", async () => {
+      expect.assertions(1);
+      const [settingUp, endTest] = await setUpDb();
+      try {
+        await settingUp;
+        await updateOnRoot(userDb, sampleData.roomOfUser, logNonPermDenied);
+        await expect(
+          updateOnRoot(anotherDb, sampleData.deletedOfUser, logNonPermDenied),
+        ).toBePermissionDenied();
+      } finally {
+        endTest();
+      }
+    });
+    it('should not delete only one of the room and entrance data', async () => {
+      expect.assertions(2);
+      const [settingUp, endTest] = await setUpDb();
+      try {
+        await settingUp;
+        await Promise.all([
+          updateOnRoot(userDb, sampleData.roomOfUser, logNonPermDenied),
+          updateOnRoot(anotherDb, sampleData.roomOfAnother, logNonPermDenied),
+        ]);
+        await assertAllSuccessLazy(
+          expect(
+            updateOnRoot(
+              userDb,
+              sampleData.withOutEntranceOfUser,
+              logNonPermDenied,
+            ),
+          ).toBePermissionDenied(),
+          expect(
+            updateOnRoot(
+              anotherDb,
+              sampleData.withOutOwnRoomsInfoOfAnother,
+              logNonPermDenied,
+            ),
+          ).toBePermissionDenied(),
+        );
+      } finally {
+        endTest();
+      }
+    });
+  });
+  describe('read inside data on room test', () => {
+    beforeAll(() => dependsMap.roomCreatable.promise);
+    it.todo('should show accepted user public_info');
+    it.todo('should not show not accepted user public_info');
+  });
+  describe('search rooms test', () => {
+    beforeAll(() => dependsMap.roomCreatable.promise);
+    it.todo('should search rooms order by created time');
+    it.todo('should show searched rooms info');
   });
 });
