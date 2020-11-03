@@ -42,69 +42,69 @@ export function getDateWithOffset(
   );
 }
 
-type TimeStamp = number | Object;
-
-export type PropertyModifies<T extends Object> = Partial<Record<keyof T, any>>;
-
-export interface ValidPropertiesFunction<T> {
-  (userUid: string): T;
-}
-
-export interface SampleValueGetter<T> {
-  (targetKey: keyof T): string;
-}
-
 export type RootKeyMap<T extends string> = Record<T, string>;
 
-export interface RootKeyMapCreator<T extends Object, U extends string> {
-  (getSampleValue: SampleValueGetter<T>): RootKeyMap<U>;
+export interface RootKeyMapCreator<T extends unknown, U extends string> {
+  (creatorArg: T): RootKeyMap<U>;
+}
+
+export interface RootKeyMapModifier<T extends unknown, U extends string> {
+  (modifierArg: T): Partial<RootKeyMap<U>>;
 }
 
 interface RootKeyObjectCreator<T extends string> {
   (targetKey: T, propertyValue: unknown): Object;
 }
 
-export interface RootKeyPropSwitcher<T, U extends string> {
-  <R>(exsistsKey: keyof T, propertyKey: U, propertyValue: R):
+export interface RootKeyPropSwitcher<T extends string, U extends string> {
+  <R>(exsistsKey: U, propertyKey: T, propertyValue: R):
     | { [propertyName: string]: R }
     | {};
 }
 
-export type DatabasePrimitive = string | number | boolean;
+export type DatabasePrimitive = string | number | boolean | null;
 
 export type DatabaseValue =
   | DatabasePrimitive
   | DatabasePrimitive[]
+  | Object
   | {
       [key: string]: typeof key extends string ? DatabaseValue : never;
     };
 
-export interface SampleDataCreateRunner<T, U extends string> {
-  (
-    getSampleValue: SampleValueGetter<T>,
-    rootKeyPropSwitcher: RootKeyPropSwitcher<T, U>,
-  ): Record<string, DatabaseValue>;
+export interface SampleDataCreateRunner<
+  T extends unknown,
+  U extends string,
+  V extends string
+> {
+  (rootKeyPropSwitcher: RootKeyPropSwitcher<U, V>, rootKeyMapArg: T): Record<
+    string,
+    DatabaseValue
+  >;
 }
 
+export type RootKeyExsistsMap<T extends string> = Record<T, boolean>;
+
 export interface CreateSampleDataOption<
-  T extends Object,
-  U extends string = string
+  T extends unknown = unknown,
+  U extends string = string,
+  V extends string = string
 > {
-  userUid?: string;
+  rootKeyMapArg: T;
   mode?: 'set' | 'update';
-  modifies?: PropertyModifies<T>;
-  validPropertiesFn: ValidPropertiesFunction<T>;
+  rootKeyExsistsMap: RootKeyExsistsMap<V>;
   rootKeyMapCreator: RootKeyMapCreator<T, U>;
-  createRunner: SampleDataCreateRunner<T, U>;
+  rootKeyMapModifier?: RootKeyMapModifier<T, U>;
+  createRunner: SampleDataCreateRunner<T, U, V>;
   // startPoint?: string;
 }
 
-function getRootKeyPropSwitcher<T, U extends string>(
-  createRootKeyObject: RootKeyObjectCreator<U>,
-  getSampleValue: SampleValueGetter<T>,
+function getRootKeyPropSwitcher<T extends string, U extends string>(
+  rootKeyExsistsMap: RootKeyExsistsMap<U>,
+  createRootKeyObject: RootKeyObjectCreator<T>,
 ): RootKeyPropSwitcher<T, U> {
   return (exsistsKey, propertyKey, propertyValue) => {
-    if (getSampleValue(exsistsKey)) {
+    if (rootKeyExsistsMap[exsistsKey]) {
       return createRootKeyObject(propertyKey, propertyValue);
     } else {
       return {};
@@ -116,85 +116,72 @@ function getFixedCreator<T extends string>(
   sampleData: Record<string, DatabaseValue>,
   rootKeyMap: RootKeyMap<T>,
 ) {
-  function createFixed(
+  return function createFixed(
     fixInfoListFn: (rootKeyMap: RootKeyMap<T>) => [string[], any][],
   ) {
+    // let fixInfoList: ReturnType<typeof fixInfoListFn>;
+    // try {
+    //   fixInfoList = fixInfoListFn(rootKeyMap);
+    // } catch (error) {
+    //   console.error(error);
+    //   fixInfoList = [];
+    // }
     const fixInfoList = fixInfoListFn(rootKeyMap);
-    return {
-      ...sampleData,
-      ...fixInfoList.reduce((prevResult, [propAddresses, propertyValue]) => {
-        if (propAddresses.length < 1) return prevResult;
-        function isLastAddress(index: number, addresses: unknown[]) {
-          return addresses.length - 1 <= index;
-        }
+    function isLastAddress(index: number, addressesLength: number) {
+      return addressesLength - 1 <= index;
+    }
+    return fixInfoList.reduce(
+      (prevResult, [propAddresses, propertyValue]) => {
+        const propAddressesLength = propAddresses.length;
+        if (propAddressesLength < 1) return prevResult;
 
         return propAddresses.reduce(
-          ({ srcRef, resultRefGetter, result }, address, index, addresses) => {
-            const currentResultRef = resultRefGetter(address);
-            let nextSrcRef = {};
-            let nextResultRefGetter: typeof resultRefGetter = () => ({});
+          ({ currentRef, result }, address, index) => {
+            let nextRef = {};
             /* eslint-disable no-param-reassign */
-            if (isLastAddress(index, addresses)) {
-              currentResultRef[address] = propertyValue;
+            if (isLastAddress(index, propAddressesLength)) {
+              currentRef[address] = propertyValue;
             } else {
-              const srcValue = srcRef[address];
-              if (typeof srcValue === 'object') {
-                nextSrcRef = srcValue;
-                nextResultRefGetter = (nextAddress: string) => {
-                  const nextResultRef = {
-                    ...srcValue,
-                    [nextAddress]: {},
-                  };
-                  currentResultRef[address] = nextResultRef;
-                  return nextResultRef;
-                };
+              const currentAddressValue = currentRef[address];
+              if (typeof currentAddressValue === 'object') {
+                nextRef = { ...currentAddressValue };
               }
+              currentRef[address] = nextRef;
             }
             /* eslint-enable no-param-reassign */
             return {
-              srcRef: nextSrcRef,
-              resultRefGetter: nextResultRefGetter,
+              currentRef: nextRef,
               result,
             };
           },
           {
-            srcRef: sampleData,
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            resultRefGetter: (nextAddress: string) => prevResult,
+            currentRef: prevResult,
             result: prevResult,
           },
         ).result;
-      }, {} as Record<string, any>),
-    };
-  }
-  return createFixed;
+      },
+      { ...sampleData } as Record<string, any>,
+    );
+  };
 }
 
-export function createSampleData<T extends Object, U extends string = string>({
-  userUid = 'sampleUser',
+export function createSampleData<
+  T extends unknown,
+  U extends string,
+  V extends string
+>({
+  rootKeyMapArg,
   mode = 'update',
-  modifies: modifyProperties = {},
-  validPropertiesFn,
+  rootKeyExsistsMap,
   rootKeyMapCreator,
+  rootKeyMapModifier = () => ({}),
   createRunner,
-}: CreateSampleDataOption<T, U>) {
-  type PropertyAddressKeys = keyof T;
-
-  const modifyPropertyKeys = Object.keys(
-    modifyProperties,
-  ) as PropertyAddressKeys[];
-
-  const validProperties = validPropertiesFn(userUid);
-
-  function getSampleValue(targetKey: PropertyAddressKeys) {
-    if (modifyPropertyKeys.includes(targetKey)) {
-      return modifyProperties[targetKey];
-    } else {
-      return validProperties[targetKey];
-    }
-  }
-
-  const rootKeyMap = rootKeyMapCreator(getSampleValue);
+}: CreateSampleDataOption<T, U, V>) {
+  const rootKeyMap = {
+    ...rootKeyMapCreator(rootKeyMapArg),
+    ...rootKeyMapModifier(rootKeyMapArg),
+  };
 
   let createRootKeyObject: RootKeyObjectCreator<U>;
   if (mode === 'set') {
@@ -223,11 +210,11 @@ export function createSampleData<T extends Object, U extends string = string>({
   }
 
   const rootKeyPropSwitcher = getRootKeyPropSwitcher(
+    rootKeyExsistsMap,
     createRootKeyObject,
-    getSampleValue,
   );
 
-  const sampleData = createRunner(getSampleValue, rootKeyPropSwitcher);
+  const sampleData = createRunner(rootKeyPropSwitcher, rootKeyMapArg);
 
   const createFixed = getFixedCreator(sampleData, rootKeyMap);
 
@@ -238,67 +225,46 @@ export function createSampleData<T extends Object, U extends string = string>({
 }
 
 export function createSampleDataCreator<
-  T extends Object,
-  U extends string = string
+  T extends unknown,
+  U extends string,
+  V extends string,
+  W extends CreateSampleDataOption<T, U, V> = CreateSampleDataOption<T, U, V>
 >({
-  validPropertiesFn,
+  rootKeyExsistsMap,
   rootKeyMapCreator,
   createRunner,
-}: Pick<
-  CreateSampleDataOption<T, U>,
-  'validPropertiesFn' | 'rootKeyMapCreator' | 'createRunner'
->) {
-  return (option: Partial<CreateSampleDataOption<T, U>> = {}) =>
+}: Pick<W, 'rootKeyExsistsMap' | 'rootKeyMapCreator' | 'createRunner'>) {
+  return (
+    option: Partial<Omit<W, 'rootKeyMapArg'>> & Pick<W, 'rootKeyMapArg'>,
+  ) =>
     createSampleData({
       ...option,
-      validPropertiesFn: option.validPropertiesFn ?? validPropertiesFn,
+      rootKeyMapArg: option.rootKeyMapArg,
+      rootKeyExsistsMap: option.rootKeyExsistsMap ?? rootKeyExsistsMap,
       rootKeyMapCreator: option.rootKeyMapCreator ?? rootKeyMapCreator,
       createRunner: option.createRunner ?? createRunner,
     });
 }
 
-export interface PropertiesModifyMapOfTalker {
-  'rooms-exsists': boolean;
-  'rooms-key/owner_id': string;
-  'rooms-key/own_room_id': string;
-  'rooms/public_info/room_id': string;
-  'rooms/public_info/allowed_users': Partial<Record<string, boolean>>;
-  'rooms/public_info/allowed_users_count': number;
-  'rooms/password': string;
-  'rooms/created_at': TimeStamp;
-  'room_entrances-exsists': boolean;
-  'room_entrances-key/room_id': string;
-  'room_entrances/owner_id': string;
-  'room_entrances/own_room_id': string;
-  'room_entrances/room_name': string;
-  'room_entrances/members_count': number;
-  'room_entrances/created_at': TimeStamp;
-  'entry_requests-exsists': boolean;
-  'entry_requests-key/room_id': string;
-  'entry_requests-key/user_id': string;
-  'entry_requests/password': string;
-  'delete_marks-exsists': boolean;
-  'delete_marks-key/room_id': string;
-  'delete_marks/value': false;
-}
+export type PropertyExsistsOfTalker =
+  | 'exsists-rooms/public_info'
+  | 'exsists-room_entrances'
+  | 'exsists-room_members_info/password'
+  | 'exsists-room_members_info/requesting';
 
-export type PropertyKeysOfTalker = keyof Pick<
-  PropertiesModifyMapOfTalker,
-  | 'rooms-key/owner_id'
-  | 'rooms-key/own_room_id'
-  | 'room_entrances-key/room_id'
-  | 'entry_requests-key/room_id'
-  | 'entry_requests-key/user_id'
-  | 'delete_marks-key/room_id'
->;
+export type PropertyKeysOfTalker =
+  | 'key-rooms/owner_id'
+  | 'key-rooms/own_room_id'
+  | 'key-rooms/public_info'
+  | 'key-room_entrances'
+  | 'key-room_members/room_id'
+  | 'key-room_members/password'
+  | 'key-room_members/requesting/user_id'
+  | 'key-room_members/accepted/user_id'
+  | 'key-room_members/denied';
 
-export type ModifyPropertiesOfTalker = keyof PropertiesModifyMapOfTalker;
-
-export interface SampleDataCreateOption {
-  modifies?: Partial<Record<ModifyPropertiesOfTalker, any>>;
-}
-
-export const sampleValuesOfTalker = {
+export const sampleOfTalker = {
+  emptyData: {},
   roomId: '101',
   password: 'foo',
   createdAtMin: 0,
@@ -306,101 +272,75 @@ export const sampleValuesOfTalker = {
   now: database.ServerValue.TIMESTAMP,
   ownRoomIdMin: (1).toString(),
   ownRoomIdMax: (3).toString(),
-  allowedUsersEmpty: {},
-  allowedUsersOneTrue: { baz: true },
-  allowedUsersOneFalse: { baz: true },
+  roomName: 'bar',
+  membersCountMin: 1,
+  membersCountMax: 100000 - 1,
+  requestUser: 'baz',
+  deleteMark: false,
 };
 
 export const createSampleDataCreatorForTalker = createSampleDataCreator<
-  PropertiesModifyMapOfTalker,
-  PropertyKeysOfTalker
+  { userUid: string; ownRoomId?: string | number; roomId: string | null },
+  PropertyKeysOfTalker,
+  PropertyExsistsOfTalker
 >({
-  validPropertiesFn: (userUid: string) => ({
-    'rooms-exsists': true,
-    'rooms-key/owner_id': userUid,
-    'rooms-key/own_room_id': sampleValuesOfTalker.ownRoomIdMin,
-    'rooms/public_info/room_id': sampleValuesOfTalker.roomId,
-    'rooms/public_info/allowed_users': sampleValuesOfTalker.allowedUsersEmpty,
-    'rooms/public_info/allowed_users_count': 0,
-    'rooms/password': sampleValuesOfTalker.password,
-    'rooms/created_at': sampleValuesOfTalker.now,
-    'room_entrances-exsists': true,
-    'room_entrances-key/room_id': sampleValuesOfTalker.roomId,
-    'room_entrances/owner_id': userUid,
-    'room_entrances/own_room_id': sampleValuesOfTalker.ownRoomIdMin,
-    'room_entrances/room_name': 'bar',
-    'room_entrances/members_count': 1,
-    'room_entrances/created_at': sampleValuesOfTalker.now,
-    'entry_requests-exsists': false,
-    'entry_requests-key/room_id': sampleValuesOfTalker.roomId,
-    'entry_requests-key/user_id': userUid,
-    'entry_requests/password': sampleValuesOfTalker.password,
-    'delete_marks-exsists': false,
-    'delete_marks-key/room_id': sampleValuesOfTalker.roomId,
-    'delete_marks/value': false,
-  }),
-  rootKeyMapCreator: (getSampleValue) => {
-    const gsv = getSampleValue;
-    const roomsOwnerIdKey: PropertyKeysOfTalker = 'rooms-key/owner_id';
-    const roomsOwnerIdValue = `rooms/${gsv(roomsOwnerIdKey)}`;
-    const roomsOwnRoomIdKey: PropertyKeysOfTalker = 'rooms-key/own_room_id';
-    const roomEntrancesRoomId: PropertyKeysOfTalker =
-      'room_entrances-key/room_id';
-    const entryRequestsRoomIdKey: PropertyKeysOfTalker =
-      'entry_requests-key/room_id';
-    const entryRequestsRoomIdValue = `entry_requests/${gsv(
-      entryRequestsRoomIdKey,
-    )}`;
-    const entryRequestsUserIdKey: PropertyKeysOfTalker =
-      'entry_requests-key/user_id';
-    const deleteMarksRoomIdKey: PropertyKeysOfTalker =
-      'delete_marks-key/room_id';
+  rootKeyExsistsMap: {
+    'exsists-rooms/public_info': true,
+    'exsists-room_entrances': true,
+    'exsists-room_members_info/password': true,
+    'exsists-room_members_info/requesting': false,
+  },
+  rootKeyMapCreator: ({
+    userUid,
+    ownRoomId = sampleOfTalker.ownRoomIdMin,
+    roomId,
+  }) => {
+    const roomsOwnerIdValue = `rooms/${userUid}`;
+    const roomsOwnRoomIdValue = `${roomsOwnerIdValue}/${ownRoomId}`;
+    const roomsPublicInfoKey = `${roomsOwnRoomIdValue}/public_info`;
+    const roomMembersRoomIdValue = `room_members_info/${roomId}`;
+    const requestUserIdValue = sampleOfTalker.requestUser;
     const rootKeyMap: Record<PropertyKeysOfTalker, string> = {
-      [roomsOwnerIdKey]: roomsOwnerIdValue,
-      [roomsOwnRoomIdKey]: `${roomsOwnerIdValue}/${gsv(roomsOwnRoomIdKey)}`,
-      [roomEntrancesRoomId]: `room_entrances/${gsv(roomEntrancesRoomId)}`,
-      [entryRequestsRoomIdKey]: entryRequestsRoomIdValue,
-      [entryRequestsUserIdKey]: `${entryRequestsRoomIdValue}/${gsv(
-        entryRequestsUserIdKey,
-      )}`,
-      [deleteMarksRoomIdKey]: `delete_marks/${gsv(deleteMarksRoomIdKey)}`,
+      'key-rooms/owner_id': roomsOwnerIdValue,
+      'key-rooms/own_room_id': roomsOwnRoomIdValue,
+      'key-rooms/public_info': roomsPublicInfoKey,
+      'key-room_entrances': `room_entrances/${roomId}`,
+      'key-room_members/room_id': roomMembersRoomIdValue,
+      'key-room_members/password': `${roomMembersRoomIdValue}/requesting/password`,
+      'key-room_members/requesting/user_id': `${roomMembersRoomIdValue}/requesting/${requestUserIdValue}`,
+      'key-room_members/accepted/user_id': `${roomMembersRoomIdValue}/accepted/${requestUserIdValue}`,
+      'key-room_members/denied': `${roomMembersRoomIdValue}/denied`,
     };
     return rootKeyMap;
   },
-  createRunner: (getSampleValue, rootKeyPropSwitcher) => {
-    const gsv = getSampleValue;
+  createRunner: (
+    rootKeyPropSwitcher,
+    { userUid, ownRoomId = sampleOfTalker.ownRoomIdMin, roomId },
+  ) => {
     return {
-      ...rootKeyPropSwitcher('rooms-exsists', 'rooms-key/own_room_id', {
-        public_info: {
-          room_id: gsv('rooms/public_info/room_id'),
-          allowed_users: gsv('rooms/public_info/allowed_users'),
-          allowed_users_count: gsv('rooms/public_info/allowed_users_count'),
-        },
-        password: gsv('rooms/password'),
-        created_at: gsv('rooms/created_at'),
+      ...rootKeyPropSwitcher(
+        'exsists-rooms/public_info',
+        'key-rooms/public_info',
+        { room_id: roomId },
+      ),
+      ...rootKeyPropSwitcher('exsists-room_entrances', 'key-room_entrances', {
+        owner_id: userUid,
+        own_room_id: ownRoomId,
+        room_name: sampleOfTalker.roomName,
+        members_count: sampleOfTalker.membersCountMin,
+        created_at: sampleOfTalker.now,
       }),
       ...rootKeyPropSwitcher(
-        'room_entrances-exsists',
-        'room_entrances-key/room_id',
-        {
-          owner_id: gsv('room_entrances/owner_id'),
-          own_room_id: gsv('room_entrances/own_room_id'),
-          room_name: gsv('room_entrances/room_name'),
-          members_count: gsv('room_entrances/members_count'),
-          created_at: gsv('room_entrances/created_at'),
-        },
+        'exsists-room_members_info/password',
+        'key-room_members/password',
+        sampleOfTalker.password,
       ),
       ...rootKeyPropSwitcher(
-        'entry_requests-exsists',
-        'entry_requests-key/user_id',
+        'exsists-room_members_info/requesting',
+        'key-room_members/requesting/user_id',
         {
-          password: gsv('entry_requests/password'),
+          password: sampleOfTalker.password,
         },
-      ),
-      ...rootKeyPropSwitcher(
-        'delete_marks-exsists',
-        'delete_marks-key/room_id',
-        gsv('delete_marks/value'),
       ),
     };
   },
