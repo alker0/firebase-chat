@@ -117,15 +117,8 @@ function getFixedCreator<T extends string>(
   rootKeyMap: RootKeyMap<T>,
 ) {
   return function createFixed(
-    fixInfoListFn: (rootKeyMap: RootKeyMap<T>) => [string[], any][],
+    fixInfoListFn: (rootKeyMap: RootKeyMap<T>) => Array<[string[], any]>,
   ) {
-    // let fixInfoList: ReturnType<typeof fixInfoListFn>;
-    // try {
-    //   fixInfoList = fixInfoListFn(rootKeyMap);
-    // } catch (error) {
-    //   console.error(error);
-    //   fixInfoList = [];
-    // }
     const fixInfoList = fixInfoListFn(rootKeyMap);
     function isLastAddress(index: number, addressesLength: number) {
       return addressesLength - 1 <= index;
@@ -135,6 +128,7 @@ function getFixedCreator<T extends string>(
         const propAddressesLength = propAddresses.length;
         if (propAddressesLength < 1) return prevResult;
 
+        // console.log(propAddresses, typeof propAddresses);
         return propAddresses.reduce(
           ({ currentRef, result }, address, index) => {
             let nextRef = {};
@@ -270,8 +264,8 @@ export const sampleOfTalker = {
   createdAtMin: 0,
   createdAtMax: database.ServerValue.TIMESTAMP,
   now: database.ServerValue.TIMESTAMP,
-  ownRoomIdMin: (1).toString(),
-  ownRoomIdMax: (3).toString(),
+  ownRoomIdMin: (0).toString(),
+  ownRoomIdMax: (2).toString(),
   roomName: 'bar',
   membersCountMin: 1,
   membersCountMax: 100000 - 1,

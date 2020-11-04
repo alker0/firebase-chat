@@ -81,7 +81,7 @@ export async function logOnceVal(reference: OnceGettable, prefix?: string) {
   console.log(...(prefix ? [prefix, val] : [val]));
 }
 
-const sampleRulesCreator = fork(
+export const sampleRulesCreator = fork(
   pathJoin(__dirname, 'sample-rules-creator.js'),
 ).on('error', (error: unknown) => {
   console.error(error);
