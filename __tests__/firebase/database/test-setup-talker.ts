@@ -1,11 +1,13 @@
 import {
   apps as firebaseApps,
   initializeAdminApp,
+  database as firebaseDb,
 } from '@firebase/rules-unit-testing';
 
 import {
   getDateWithOffset,
   createSampleDataCreatorForTalker,
+  PropertyKeysOfTalker,
 } from './sample-data-creator';
 import {
   logOnceVal,
@@ -28,9 +30,8 @@ export const { useRules } = createRulesLoader<SampleRulesKeys>(databaseName, {
   whole: null,
 });
 
-export const scheduler = seriesPromiseGenerator();
-
-export const roomEntranceRootPath = 'room_entrance';
+export const roomEntranceRoot = 'room_entrances';
+export const roomMembersInfoRoot = 'room_members_info';
 
 export interface UserContext {
   roomRef: ThenableRef;
@@ -43,7 +44,7 @@ export const createUserContext = createUserContextCreator<UserContext>(
     databaseName,
   },
   (db) => {
-    const roomRef = db.ref(roomEntranceRootPath).push();
+    const roomRef = db.ref(roomEntranceRoot).push();
     return {
       roomRef,
       roomId: roomRef.key,
@@ -128,22 +129,46 @@ export const sampleOfAnonymous = createSampleData({
   rootKeyMapArg: { userUid: anonymousUid, roomId: anonymousContext.roomId },
 });
 
+export type FixInfoPartsKeys =
+  | 'emptyPassword'
+  | 'nonPublicInfo'
+  | 'nonEntrance'
+  | 'nonPassword'
+  | 'nonDenied';
+
+export const fixInfoParts: Record<
+  FixInfoPartsKeys,
+  (rootKeyMap: Record<PropertyKeysOfTalker, string>) => [string[], any]
+> = {
+  emptyPassword: (rootKeyMap) => [
+    [rootKeyMap['key-room_members/password']],
+    '',
+  ],
+  nonPublicInfo: (rootKeyMap) => [[rootKeyMap['key-rooms/public_info']], null],
+  nonEntrance: (rootKeyMap) => [[rootKeyMap['key-room_entrances']], null],
+  nonPassword: (rootKeyMap) => [
+    [rootKeyMap['key-room_members/password']],
+    null,
+  ],
+  nonDenied: (rootKeyMap) => [[rootKeyMap['key-room_members/denied']], null],
+};
+
 export const sampleData = {
   roomOfUser: sampleOfUser.sampleData,
   roomOfAnother: sampleOfAnother.sampleData,
   roomOfOnlyPass: sampleOfOnlyPass.sampleData,
   roomOfAnonymous: sampleOfAnonymous.sampleData,
-  emptyPassword: sampleOfUser.createFixed((rootKeyMap) => [
-    [[rootKeyMap['key-room_members/password']], ''],
+  emptyPassword: sampleOfUser.createFixed((roomsKeyMap) => [
+    fixInfoParts.emptyPassword(roomsKeyMap),
   ]),
-  withOutEntranceOfUser: sampleOfUser.createFixed((rootKeyMap) => [
-    [[rootKeyMap['key-room_entrances']], null],
+  withOutEntranceOfUser: sampleOfUser.createFixed((roomsKeyMap) => [
+    fixInfoParts.nonEntrance(roomsKeyMap),
   ]),
-  withOutOwnRoomsInfoOfAnother: sampleOfAnother.createFixed((rootKeyMap) => [
-    [[rootKeyMap['key-rooms/public_info']], null],
+  withOutOwnRoomsInfoOfAnother: sampleOfAnother.createFixed((roomsKeyMap) => [
+    fixInfoParts.nonPublicInfo(roomsKeyMap),
   ]),
-  withOutPasswordOfUser: sampleOfAnother.createFixed((rootKeyMap) => [
-    [[rootKeyMap['key-room_members/password']], null],
+  withOutPasswordOfUser: sampleOfAnother.createFixed((roomsKeyMap) => [
+    fixInfoParts.nonPassword(roomsKeyMap),
   ]),
   roomCreatedAtFuture: sampleOfUser.createFixed((rootKeyMap) => [
     [
@@ -152,12 +177,19 @@ export const sampleData = {
     ],
   ]),
   deletedOfUser: sampleOfUser.createFixed((rootKeyMap) => [
-    [[rootKeyMap['key-rooms/public_info']], null],
-    [[rootKeyMap['key-room_entrances']], null],
-    [[rootKeyMap['key-room_members/password']], null],
-    [[rootKeyMap['key-room_members/denied']], null],
+    fixInfoParts.nonPublicInfo(rootKeyMap),
+    fixInfoParts.nonEntrance(rootKeyMap),
+    fixInfoParts.nonPassword(rootKeyMap),
+    fixInfoParts.nonDenied(rootKeyMap),
   ]),
 };
+
+export const serverValue = {
+  increment: firebaseDb.ServerValue.increment,
+  TIMESTAMP: firebaseDb.ServerValue.TIMESTAMP,
+};
+
+export const scheduler = seriesPromiseGenerator();
 
 export const setUpDb = createDbSettUpper(
   adminDb,
@@ -180,3 +212,5 @@ export function isNotPassword(target: unknown) {
 export function getOnlyRequestUid(target: any) {
   return Object.keys(target).filter(isNotPassword);
 }
+
+jest.setTimeout(10000);
