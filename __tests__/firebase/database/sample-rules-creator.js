@@ -47,6 +47,7 @@ const $ownerId = ruleValue('$owner_id', { isCaptured: true });
 const $ownRoomId = ruleValue('$own_room_id', { isCaptured: true });
 const $userId = ruleValue('$user_id', { isCaptured: true });
 
+const roomName = ruleValue('room_name', { isStringLiteral: true });
 const createdAt = ruleValue('created_at', { isStringLiteral: true });
 const rooms = ruleValue('rooms', { isStringLiteral: true });
 const roomEntrances = ruleValue('room_entrances', { isStringLiteral: true });
@@ -64,6 +65,10 @@ const denied = ruleValue('denied', { isStringLiteral: true });
 const membersCount = ruleValue('members_count', {
   isStringLiteral: true,
 });
+const maxMembersCount = ruleValue('100000');
+const entranceQueryLimit = ruleValue('10');
+const passwordMaxLength = ruleValue('20');
+const roomNameMaxLength = ruleValue('20');
 
 const membersInfoChildMap = {
   requesting,
@@ -75,7 +80,6 @@ const newDataRoot = {
   roomPublic: newData.parent(4),
   roomPublicChild: newData.parent(5),
   roomIdInEntrance: newData.parent(2),
-  membersCount: newData.parent(2),
   entranceChild: newData.parent(3),
   requesting: newData.parent(4),
   accepted: newData.parent(4),
@@ -209,7 +213,7 @@ const dataOwnerIdFromRoomId = root.child(roomEntrances, $roomId, ownerId).val();
  * @returns {RuleRef}
  * */
 function getAcceptedFromMembersCount(targetTiming) {
-  return (targetTiming === 'old' ? root : newDataRoot.membersCount).child(
+  return (targetTiming === 'old' ? root : newDataRoot.entranceChild).child(
     roomMembersInfo,
     $roomId,
     accepted,
@@ -268,7 +272,18 @@ const sampleRulesCreatorMap = {
                 ],
               ],
               public_info: {
-                [read]: data.hasChild(roomMembersInfo, auth.uid),
+                [read]: [
+                  exp`${auth.uid} === ${$ownerId}`,
+                  '||',
+                  exp`${root
+                    .child(
+                      roomMembersInfo,
+                      data.child(roomId).val(),
+                      accepted,
+                      auth.uid,
+                    )
+                    .val()} === true`,
+                ],
                 [write]: [
                   whenNotDelete,
                   '||',
@@ -329,13 +344,72 @@ const sampleRulesCreatorMap = {
           },
         },
         room_entrances: {
-          [read]: auth.isNotNull,
+          [read]: [
+            auth.isNotNull,
+            '&&',
+            [
+              [
+                exp`${query.orderByChild(ownerId)}`,
+                '&&',
+                exp`${query.equalTo} === ${auth.uid}`,
+                '&&',
+                exp`${query.limitToFirst} === ${entranceQueryLimit}`,
+              ],
+              '||',
+              [
+                exp`${query.orderByChild(roomName)}`,
+                '&&',
+                exp`${query.startAt} !== null`,
+                '&&',
+                exp`${query.endAt} !== null`,
+                '&&',
+                exp`${query.limitToFirst} === ${entranceQueryLimit}`,
+              ],
+              '||',
+              [
+                exp`${query.orderByChild(createdAt)}`,
+                '&&',
+                exp`${query.endAt} <= ${now}`,
+                '&&',
+                [
+                  exp`${query.limitToFirst} === ${entranceQueryLimit}`,
+                  '||',
+                  exp`${query.limitToLast} === ${entranceQueryLimit}`,
+                ],
+              ],
+              '||',
+              [
+                exp`${query.orderByChild(membersCount)}`,
+                '&&',
+                exp`1 <= ${query.startAt}`,
+                '&&',
+                exp`${query.endAt} <= ${maxMembersCount}`,
+                '&&',
+                [
+                  exp`${query.limitToFirst} === ${entranceQueryLimit}`,
+                  '||',
+                  exp`${query.limitToLast} === ${entranceQueryLimit}`,
+                ],
+              ],
+            ],
+          ],
           $room_id: {
             [write]: [
               [
                 whenCreate,
-                '||',
-                exp`${auth.uid} === ${data.child(ownerId).val()}`,
+                '?',
+                exp`${auth.uid} === ${newData.child(ownerId).val()}`,
+                ':',
+                [
+                  exp`${auth.uid} === ${data.child(ownerId).val()}`,
+                  '||',
+                  exp`${root.hasChild(
+                    roomMembersInfo,
+                    $roomId,
+                    accepted,
+                    auth.uid,
+                  )}`,
+                ],
               ],
               '&&',
               exp`${newData.exists()} === ${newDataRoot.roomIdInEntrance.hasChild(
@@ -349,8 +423,6 @@ const sampleRulesCreatorMap = {
               )}`,
             ],
             [validate]: [
-              exp`${auth.uid} === ${newData.child(ownerId).val()}`,
-              '&&',
               newData.hasChildren([
                 ownerId,
                 ownRoomId,
@@ -397,7 +469,9 @@ const sampleRulesCreatorMap = {
                 '&&',
                 exp`0 < ${newData.val().length}`,
                 '&&',
-                exp`${newData.val().length} < 20`,
+                exp`${newData.val().length} < ${roomNameMaxLength}`,
+                '&&',
+                exp`${auth.uid} === ${newData.parent().child(ownerId).val()}`,
               ],
             },
             members_count: {
@@ -406,25 +480,24 @@ const sampleRulesCreatorMap = {
                 '&&',
                 exp`1 <= ${newData.val()}`,
                 '&&',
-                exp`${newData.val()} < 100000`,
+                exp`${newData.val()} < ${maxMembersCount}`,
                 '&&',
                 [
                   whenCreate,
                   '?',
-                  [exp`${newData.val()} === 1`],
+                  exp`${newData.val()} === 1`,
                   ':',
                   [
+                    exp`${auth.uid} === ${data.parent().child(ownerId).val()}`,
+                    '?',
                     [
-                      exp`${auth.uid} === ${data
-                        .parent()
-                        .child(ownerId)
-                        .val()}`,
-                      '&&',
                       exp`${newData.val()} === 1`,
+                      '||',
+                      exp`${newData.val()} === ${data.val()}`,
                     ],
-                    '||',
+                    ':',
                     [
-                      exp`${getAcceptedFromMembersCount('new').exists()}`,
+                      exp`${getAcceptedFromMembersCount('old').exists()}`,
                       '&&',
                       [
                         [
@@ -520,7 +593,7 @@ const sampleRulesCreatorMap = {
                 [validate]: [
                   newData.isString(),
                   '&&',
-                  exp`${newData.val().length} < 20`,
+                  exp`${newData.val().length} < ${passwordMaxLength}`,
                 ],
               },
               $user_id: {
@@ -618,7 +691,7 @@ const sampleRulesCreatorMap = {
                   [
                     exp`${auth.uid} === ${dataOwnerIdFromRoomId}`,
                     '||',
-                    exp`${$userId} === ${auth.uid}`,
+                    exp`${auth.uid} === ${$userId}`,
                   ],
                 ],
                 [validate]: [
@@ -695,15 +768,15 @@ const sampleRulesCreatorMap = {
             },
             denied: {
               [write]: exp`${auth.uid} === ${dataOwnerIdFromRoomId}`,
+              [validate]: newDataIsObject,
               $user_id: {
-                [validate]: newDataIsObject,
-                $user_id: {
-                  [validate]: [
-                    exp`${newData.val()} === false`,
-                    '&&',
-                    exp`${$userId} !== ${dataOwnerIdFromRoomId}`,
-                  ],
-                },
+                [validate]: [
+                  exp`${newData.val()} === false`,
+                  '&&',
+                  exp`${auth.uid} !== ${$userId}`,
+                  '&&',
+                  exp`${$userId} !== ${dataOwnerIdFromRoomId}`,
+                ],
               },
             },
             $other: { [validate]: false },
