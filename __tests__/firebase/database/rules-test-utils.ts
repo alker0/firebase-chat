@@ -177,85 +177,53 @@ export function createRulesLoader<
   };
 }
 
-// export function createRulesRequester(
-//   rulesLoader: ReturnType<typeof createRulesLoader>,
-// ) {
-//   return function useRules(targetRulesKey: LoadRulesKeys) {
-//     function loader() {
-//       return rulesLoader(targetRulesKey);
-//     }
-//     if (targetRulesKey === 'database-json') return loader;
-
-//     const storePromise = sampleRulesPromiseStore[targetRulesKey];
-//     if (storePromise) return loader;
-
-//     const creating = new Promise<string>((resolve) => {
-//       sampleRulesCreator.on('message', (message) => {
-//         if (typeof message === 'object') {
-//           const { rulesKey, rulesText } = message as Partial<
-//             SampleRulesCreatorMessage
-//           >;
-//           if (rulesKey && rulesText) {
-//             resolve(rulesText);
-//           }
-//         }
-//       });
-//     });
-//     sampleRulesPromiseStore[targetRulesKey] = creating;
-//     sampleRulesCreator.send(targetRulesKey);
-
-//     return loader;
-//   };
+// type PromiseResolveArg<T> = T | PromiseLike<T>;
+// type PromiseResolveFunction<T> = (value: PromiseResolveArg<T>) => void;
+// type PromiseRejectFunction = (reason: unknown) => void;
+// interface SendHandleFn {
+//   <T = unknown>(
+//     value: T,
+//     resolve: PromiseResolveFunction<T>,
+//     reject: PromiseRejectFunction,
+//   ): void;
 // }
 
-type PromiseResolveArg<T> = T | PromiseLike<T>;
-type PromiseResolveFunction<T> = (value: PromiseResolveArg<T>) => void;
-type PromiseRejectFunction = (reason: unknown) => void;
-interface SendHandleFn {
-  <T = unknown>(
-    value: T,
-    resolve: PromiseResolveFunction<T>,
-    reject: PromiseRejectFunction,
-  ): void;
-}
+// function defaultSendHandleFunction<T = unknown>(
+//   value: T,
+//   resolve: PromiseResolveFunction<T>,
+//   reject: PromiseRejectFunction,
+// ) {
+//   if (value) {
+//     resolve(value);
+//   } else {
+//     reject(new Error('falsy value is sent'));
+//   }
+// }
 
-function defaultSendHandleFunction<T = unknown>(
-  value: T,
-  resolve: PromiseResolveFunction<T>,
-  reject: PromiseRejectFunction,
-) {
-  if (value) {
-    resolve(value);
-  } else {
-    reject(new Error('falsy value is sent'));
-  }
-}
-
-export function createPromiseInfoCreator(
-  defaultSendHandleFn: SendHandleFn = defaultSendHandleFunction,
-) {
-  return function createPromiseInfo<T = unknown>(
-    sendHandleFn: (
-      value: T,
-      resolve: PromiseResolveFunction<T>,
-      reject: PromiseRejectFunction,
-    ) => void = defaultSendHandleFn,
-  ) {
-    let resolve: PromiseResolveFunction<T> = () => {};
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    let reject: PromiseRejectFunction = (reason) => {};
-    const promise = new Promise<unknown>((resolveFn, rejectFn) => {
-      resolve = resolveFn;
-      reject = rejectFn;
-    }).catch(console.error);
-    return {
-      promise,
-      resolve,
-      reject,
-      send: (value: T) => sendHandleFn(value, resolve, reject),
-    };
-  };
-}
+// export function createPromiseInfoCreator(
+//   defaultSendHandleFn: SendHandleFn = defaultSendHandleFunction,
+// ) {
+//   return function createPromiseInfo<T = unknown>(
+//     sendHandleFn: (
+//       value: T,
+//       resolve: PromiseResolveFunction<T>,
+//       reject: PromiseRejectFunction,
+//     ) => void = defaultSendHandleFn,
+//   ) {
+//     let resolve: PromiseResolveFunction<T> = () => {};
+//     let reject: PromiseRejectFunction = () => {};
+//     const promise = new Promise<unknown>((resolveFn, rejectFn) => {
+//       resolve = resolveFn;
+//       reject = rejectFn;
+//     }).catch(console.error);
+//     return {
+//       promise,
+//       resolve,
+//       reject,
+//       send: (value: T) => sendHandleFn(value, resolve, reject),
+//     };
+//   };
+// }
 
 export async function* seriesPromiseGenerator() {
   let prevPromise = Promise.resolve();
@@ -285,24 +253,26 @@ export async function waitPrevTest(
 }
 
 export function createDbSettUpper<T extends string>(
-  adminDb: DatabaseType,
   rulesRequester: RulesRequester<LoadRulesKeys<T>>,
+  defaultInitializer: () => Promise<unknown>,
   defaultScheduler: AsyncGenerator<() => void, void, unknown>,
   defaultRulesKey: T,
 ) {
   return async function setUpDb({
-    prevTest = defaultScheduler.next(),
+    scheduler = defaultScheduler,
     rulesKey: targetRulesKey = defaultRulesKey,
-    shouldClear = true,
+    shouldInit = true,
+    initializer = defaultInitializer,
   }: {
-    prevTest?: Promise<IteratorResult<() => void, void>>;
+    scheduler?: AsyncGenerator<() => void, void, unknown>;
     rulesKey?: T;
-    shouldClear?: boolean;
+    shouldInit?: boolean;
+    initializer?: () => Promise<unknown>;
   } = {}) {
     const ruleLoader = rulesRequester(targetRulesKey);
-    const endTest = await waitPrevTest(prevTest);
+    const endTest = await waitPrevTest(scheduler.next());
     const settingUp = (async () => {
-      if (shouldClear) await adminDb.ref().remove();
+      if (shouldInit) await initializer();
       try {
         await ruleLoader();
       } catch (error) {
@@ -346,11 +316,11 @@ export function createUserContextCreator<T extends {} = {}>(
 }
 
 export function updateOnRoot(
-  userDbArg: DatabaseType,
+  dbArg: DatabaseType,
   values: Object,
-  onComplete?: ((a: Error | null) => any) | undefined,
+  onComplete: ((a: Error | null) => any) | false = logNonPermissionDeniedError,
 ) {
-  return userDbArg.ref().update(values, onComplete);
+  return dbArg.ref().update(values, onComplete || undefined);
 }
 
 export const emailVerifiedAuth = {
@@ -366,3 +336,45 @@ export const emailVerifiedAuth = {
 // ): key is keyof typeof target {
 //   return Object.prototype.hasOwnProperty.call(target, key);
 // }
+
+export type DateOffsetUnit =
+  | 'milli'
+  | 'second'
+  | 'minute'
+  | 'hour'
+  | 'day'
+  | 'week';
+
+export function getDateWithOffset(
+  offsetInfo: Partial<Record<DateOffsetUnit, number>> = {},
+) {
+  const offsetMap: Record<
+    DateOffsetUnit,
+    (value: number | undefined) => number
+  > = {
+    milli: (value: number = 0) => value,
+    get second() {
+      return (value: number = 0) => value * 1000;
+    },
+    get minute() {
+      return (value: number = 0) => offsetMap.second(value * 60);
+    },
+    get hour() {
+      return (value: number = 0) => offsetMap.minute(value * 60);
+    },
+    get day() {
+      return (value: number = 0) => offsetMap.hour(value * 24);
+    },
+    get week() {
+      return (value: number = 0) => offsetMap.day(value * 7);
+    },
+  };
+  return (
+    Date.now() +
+    Object.entries(offsetInfo).reduce(
+      (accum, [unitName, unitValue]) =>
+        accum + offsetMap[unitName as DateOffsetUnit](unitValue),
+      0,
+    )
+  );
+}

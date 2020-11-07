@@ -69,6 +69,7 @@ const maxMembersCount = ruleValue('100000');
 const entranceQueryLimit = ruleValue('10');
 const passwordMaxLength = ruleValue('20');
 const roomNameMaxLength = ruleValue('20');
+const ownRoomCountLimit = 3;
 
 const membersInfoChildMap = {
   requesting,
@@ -259,7 +260,7 @@ const sampleRulesCreatorMap = {
             $own_room_id: {
               [read]: exp`${$ownerId} === ${auth.uid}`,
               [validate]: [
-                $ownRoomId.matches('^[0-2]$'),
+                $ownRoomId.matches(`^[0-${ownRoomCountLimit - 1}]$`),
                 '&&',
                 newData.hasChild(publicInfo),
                 '&&',
@@ -349,11 +350,19 @@ const sampleRulesCreatorMap = {
             '&&',
             [
               [
+                exp`${query.orderByKey} !== null`,
+                '&&',
+                exp`${query.equalTo} !== null`,
+                '&&',
+                exp`${query.limitToFirst} === 1`,
+              ],
+              '||',
+              [
                 exp`${query.orderByChild(ownerId)}`,
                 '&&',
                 exp`${query.equalTo} === ${auth.uid}`,
                 '&&',
-                exp`${query.limitToFirst} === ${entranceQueryLimit}`,
+                exp`${query.limitToFirst} <= ${entranceQueryLimit}`,
               ],
               '||',
               [
@@ -363,36 +372,41 @@ const sampleRulesCreatorMap = {
                 '&&',
                 exp`${query.endAt} !== null`,
                 '&&',
-                exp`${query.limitToFirst} === ${entranceQueryLimit}`,
-              ],
-              '||',
-              [
-                exp`${query.orderByChild(createdAt)}`,
-                '&&',
-                exp`${query.endAt} <= ${now}`,
-                '&&',
-                [
-                  exp`${query.limitToFirst} === ${entranceQueryLimit}`,
-                  '||',
-                  exp`${query.limitToLast} === ${entranceQueryLimit}`,
-                ],
+                exp`${query.limitToFirst} <= ${entranceQueryLimit}`,
               ],
               '||',
               [
                 exp`${query.orderByChild(membersCount)}`,
                 '&&',
-                exp`1 <= ${query.startAt}`,
+                exp`${query.startAt} !== null`,
                 '&&',
-                exp`${query.endAt} <= ${maxMembersCount}`,
+                exp`${query.endAt} !== null`,
                 '&&',
                 [
-                  exp`${query.limitToFirst} === ${entranceQueryLimit}`,
-                  '||',
-                  exp`${query.limitToLast} === ${entranceQueryLimit}`,
+                  exp`${query.limitToFirst} === null`,
+                  '?',
+                  exp`${query.limitToLast} <= ${entranceQueryLimit}`,
+                  ':',
+                  exp`${query.limitToFirst} <= ${entranceQueryLimit}`,
+                ],
+              ],
+              '||',
+              [
+                exp`${query.orderByChild(createdAt)}`,
+                // '&&',
+                // exp`${query.endAt} !== null`,
+                '&&',
+                [
+                  exp`${query.limitToFirst} === null`,
+                  '?',
+                  exp`${query.limitToLast} <= ${entranceQueryLimit}`,
+                  ':',
+                  exp`${query.limitToFirst} <= ${entranceQueryLimit}`,
                 ],
               ],
             ],
           ],
+          [indexOn]: ['created_at'],
           $room_id: {
             [write]: [
               [

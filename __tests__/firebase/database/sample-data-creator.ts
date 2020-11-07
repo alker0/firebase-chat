@@ -1,47 +1,5 @@
 import { database } from '@firebase/rules-unit-testing';
 
-export type DateOffsetUnit =
-  | 'milli'
-  | 'second'
-  | 'minute'
-  | 'hour'
-  | 'day'
-  | 'week';
-
-export function getDateWithOffset(
-  offsetInfo: Partial<Record<DateOffsetUnit, number>>,
-) {
-  const offsetMap: Record<
-    DateOffsetUnit,
-    (value: number | undefined) => number
-  > = {
-    milli: (value: number = 0) => value,
-    get second() {
-      return (value: number = 0) => value * 1000;
-    },
-    get minute() {
-      return (value: number = 0) => offsetMap.second(value * 60);
-    },
-    get hour() {
-      return (value: number = 0) => offsetMap.minute(value * 60);
-    },
-    get day() {
-      return (value: number = 0) => offsetMap.hour(value * 24);
-    },
-    get week() {
-      return (value: number = 0) => offsetMap.day(value * 7);
-    },
-  };
-  return (
-    new Date().getTime() +
-    Object.entries(offsetInfo).reduce(
-      (accum, [unitName, unitValue]) =>
-        accum + offsetMap[unitName as DateOffsetUnit](unitValue),
-      0,
-    )
-  );
-}
-
 export type RootKeyMap<T extends string> = Record<T, string>;
 
 export interface RootKeyMapCreator<T extends unknown, U extends string> {
@@ -214,6 +172,7 @@ export function createSampleData<
 
   return {
     sampleData,
+    rootKeyMap,
     createFixed,
   };
 }
@@ -257,20 +216,13 @@ export type PropertyKeysOfTalker =
   | 'key-room_members/accepted/user_id'
   | 'key-room_members/denied';
 
-export const sampleOfTalker = {
-  emptyData: {},
-  roomId: '101',
-  password: 'foo',
-  createdAtMin: 0,
-  createdAtMax: database.ServerValue.TIMESTAMP,
-  now: database.ServerValue.TIMESTAMP,
+export const defaultSampleOfTalker = {
   ownRoomIdMin: (0).toString(),
-  ownRoomIdMax: (2).toString(),
-  roomName: 'bar',
+  roomName: 'foo',
   membersCountMin: 1,
-  membersCountMax: 100000 - 1,
+  password: 'bar',
   requestUser: 'baz',
-  deleteMark: false,
+  now: database.ServerValue.TIMESTAMP,
 };
 
 export const createSampleDataCreatorForTalker = createSampleDataCreator<
@@ -286,14 +238,14 @@ export const createSampleDataCreatorForTalker = createSampleDataCreator<
   },
   rootKeyMapCreator: ({
     userUid,
-    ownRoomId = sampleOfTalker.ownRoomIdMin,
+    ownRoomId = defaultSampleOfTalker.ownRoomIdMin,
     roomId,
   }) => {
     const roomsOwnerIdValue = `rooms/${userUid}`;
     const roomsOwnRoomIdValue = `${roomsOwnerIdValue}/${ownRoomId}`;
     const roomsPublicInfoKey = `${roomsOwnRoomIdValue}/public_info`;
     const roomMembersRoomIdValue = `room_members_info/${roomId}`;
-    const requestUserIdValue = sampleOfTalker.requestUser;
+    const requestUserIdValue = defaultSampleOfTalker.requestUser;
     const rootKeyMap: Record<PropertyKeysOfTalker, string> = {
       'key-rooms/owner_id': roomsOwnerIdValue,
       'key-rooms/own_room_id': roomsOwnRoomIdValue,
@@ -309,7 +261,7 @@ export const createSampleDataCreatorForTalker = createSampleDataCreator<
   },
   createRunner: (
     rootKeyPropSwitcher,
-    { userUid, ownRoomId = sampleOfTalker.ownRoomIdMin, roomId },
+    { userUid, ownRoomId = defaultSampleOfTalker.ownRoomIdMin, roomId },
   ) => {
     return {
       ...rootKeyPropSwitcher(
@@ -320,20 +272,20 @@ export const createSampleDataCreatorForTalker = createSampleDataCreator<
       ...rootKeyPropSwitcher('exsists-room_entrances', 'key-room_entrances', {
         owner_id: userUid,
         own_room_id: ownRoomId,
-        room_name: sampleOfTalker.roomName,
-        members_count: sampleOfTalker.membersCountMin,
-        created_at: sampleOfTalker.now,
+        room_name: defaultSampleOfTalker.roomName,
+        members_count: defaultSampleOfTalker.membersCountMin,
+        created_at: defaultSampleOfTalker.now,
       }),
       ...rootKeyPropSwitcher(
         'exsists-room_members_info/password',
         'key-room_members/password',
-        sampleOfTalker.password,
+        defaultSampleOfTalker.password,
       ),
       ...rootKeyPropSwitcher(
         'exsists-room_members_info/requesting',
         'key-room_members/requesting/user_id',
         {
-          password: sampleOfTalker.password,
+          password: defaultSampleOfTalker.password,
         },
       ),
     };

@@ -5,20 +5,21 @@ import {
 } from '@firebase/rules-unit-testing';
 
 import {
-  getDateWithOffset,
   createSampleDataCreatorForTalker,
   PropertyKeysOfTalker,
+  defaultSampleOfTalker,
 } from './sample-data-creator';
 import {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   logOnceVal,
   seriesPromiseGenerator,
   killSampleRulesCreator,
   createRulesLoader,
-  createPromiseInfoCreator,
   createUserContextCreator,
   ThenableRef,
   emailVerifiedAuth,
   createDbSettUpper,
+  getDateWithOffset,
 } from './rules-test-utils';
 import { SampleRulesKeys } from './sample-rules-creator-type';
 
@@ -107,14 +108,19 @@ export function clearApps() {
 
 export async function cleanup() {
   killSampleRulesCreator();
-  await logOnceVal(adminRoot, 'last root status is:');
+  // await logOnceVal(adminRoot, 'last root status is:');
   await clearDb();
   await clearApps();
 }
 
+const secondRoomIdOfUser = adminDb.ref(roomEntranceRoot).push().key;
+
 export const createSampleData = createSampleDataCreatorForTalker;
 export const sampleOfUser = createSampleData({
   rootKeyMapArg: { userUid, roomId: userContext.roomId },
+});
+export const secondSampleOfUser = createSampleData({
+  rootKeyMapArg: { userUid, ownRoomId: 1, roomId: secondRoomIdOfUser },
 });
 export const sampleOfAnother = createSampleData({
   rootKeyMapArg: { userUid: anotherUid, roomId: anotherContext.roomId },
@@ -153,28 +159,91 @@ export const fixInfoParts: Record<
   nonDenied: (rootKeyMap) => [[rootKeyMap['key-room_members/denied']], null],
 };
 
+export const serverValue = {
+  increment: firebaseDb.ServerValue.increment,
+  TIMESTAMP: firebaseDb.ServerValue.TIMESTAMP,
+};
+
+export const sampleValueOfTalker = {
+  ...defaultSampleOfTalker,
+  emptyData: {},
+  passwordMax: Array(20 - 1)
+    .fill('a')
+    .join(''),
+  roomNameMax: Array(20 - 1)
+    .fill('b')
+    .join(''),
+  createdAtMin: 0,
+  createdAtMax: serverValue.TIMESTAMP,
+  ownRoomIdMin: (0).toString(),
+  ownRoomIdMax: (2).toString(),
+  membersCountMin: 1,
+  membersCountMax: 100000 - 1,
+  secondRoomIdOfUser,
+  secondRoomNameOfUser: 'excellent',
+};
+
 export const sampleData = {
   roomOfUser: sampleOfUser.sampleData,
   roomOfAnother: sampleOfAnother.sampleData,
   roomOfOnlyPass: sampleOfOnlyPass.sampleData,
   roomOfAnonymous: sampleOfAnonymous.sampleData,
-  emptyPassword: sampleOfUser.createFixed((roomsKeyMap) => [
-    fixInfoParts.emptyPassword(roomsKeyMap),
+  secondRoomOfUser: secondSampleOfUser.createFixed((rootKeyMap) => [
+    [
+      [rootKeyMap['key-room_entrances'], 'room_name'],
+      sampleValueOfTalker.secondRoomNameOfUser,
+    ],
   ]),
-  withOutEntranceOfUser: sampleOfUser.createFixed((roomsKeyMap) => [
-    fixInfoParts.nonEntrance(roomsKeyMap),
+  emptyPassword: sampleOfUser.createFixed((rootKeyMap) => [
+    fixInfoParts.emptyPassword(rootKeyMap),
   ]),
-  withOutOwnRoomsInfoOfAnother: sampleOfAnother.createFixed((roomsKeyMap) => [
-    fixInfoParts.nonPublicInfo(roomsKeyMap),
+  maxLengthPassword: sampleOfUser.createFixed((rootKeyMap) => [
+    [
+      [rootKeyMap['key-room_members/password']],
+      sampleValueOfTalker.passwordMax,
+    ],
   ]),
-  withOutPasswordOfUser: sampleOfAnother.createFixed((roomsKeyMap) => [
-    fixInfoParts.nonPassword(roomsKeyMap),
+  tooLongPassword: sampleOfUser.createFixed((rootKeyMap) => [
+    [
+      [rootKeyMap['key-room_members/password']],
+      `${sampleValueOfTalker.passwordMax}a`,
+    ],
+  ]),
+  emptyRoomName: sampleOfUser.createFixed((rootKeyMap) => [
+    [[rootKeyMap['key-room_entrances'], 'room_name'], ''],
+  ]),
+  maxLengthRoomName: sampleOfUser.createFixed((rootKeyMap) => [
+    [
+      [rootKeyMap['key-room_entrances'], 'room_name'],
+      sampleValueOfTalker.roomNameMax,
+    ],
+  ]),
+  tooLongRoomName: sampleOfUser.createFixed((rootKeyMap) => [
+    [
+      [rootKeyMap['key-room_entrances'], 'room_name'],
+      `${sampleValueOfTalker.roomNameMax}b`,
+    ],
+  ]),
+  withOutEntranceOfUser: sampleOfUser.createFixed((rootKeyMap) => [
+    fixInfoParts.nonEntrance(rootKeyMap),
+  ]),
+  withOutOwnRoomsInfoOfAnother: sampleOfAnother.createFixed((rootKeyMap) => [
+    fixInfoParts.nonPublicInfo(rootKeyMap),
+  ]),
+  withOutPasswordOfUser: sampleOfAnother.createFixed((rootKeyMap) => [
+    fixInfoParts.nonPassword(rootKeyMap),
   ]),
   roomCreatedAtFuture: sampleOfUser.createFixed((rootKeyMap) => [
     [
       [rootKeyMap['key-room_entrances'], 'created_at'],
       getDateWithOffset({ minute: 1 }),
     ],
+  ]),
+  roomHasTwoMembers: sampleOfUser.createFixed((rootKeyMap) => [
+    [[rootKeyMap['key-room_entrances'], 'members_count'], 2],
+  ]),
+  secondRoomHasTwoMembers: secondSampleOfUser.createFixed((rootKeyMap) => [
+    [[rootKeyMap['key-room_entrances'], 'members_count'], 2],
   ]),
   deletedOfUser: sampleOfUser.createFixed((rootKeyMap) => [
     fixInfoParts.nonPublicInfo(rootKeyMap),
@@ -184,26 +253,15 @@ export const sampleData = {
   ]),
 };
 
-export const serverValue = {
-  increment: firebaseDb.ServerValue.increment,
-  TIMESTAMP: firebaseDb.ServerValue.TIMESTAMP,
-};
-
-export const scheduler = seriesPromiseGenerator();
+export const defaultScheduler = seriesPromiseGenerator();
+export const childScheduler = seriesPromiseGenerator();
 
 export const setUpDb = createDbSettUpper(
-  adminDb,
   useRules,
-  scheduler,
+  clearDb,
+  defaultScheduler,
   'sample1',
 );
-
-export const createPromiseInfo = createPromiseInfoCreator();
-
-export const dependsMap = {
-  requestable: createPromiseInfo(),
-  roomCreatable: createPromiseInfo(),
-};
 
 export function isNotPassword(target: unknown) {
   return target !== 'password';
