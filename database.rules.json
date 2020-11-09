@@ -1,6 +1,85 @@
 {
   "rules": {
     ".read": false,
-    ".write": false
+    ".write": false,
+    "rooms": {
+      "$owner_id": {
+        ".read": "$owner_id === auth.uid && query.orderByChild === 'created_at'",
+        ".indexOn": ["created_at"],
+        "$own_room_id": {
+          ".read": "$owner_id === auth.uid",
+          ".write": "$owner_id === auth.uid && auth.token.email_verified === true && (newData.exists() || !newData.parent().parent().parent().parent().child('room_entrances').hasChild(newData.child('public_info/room_id').val()))",
+          ".validate": "$own_room_id.matches(/^[1-3]$/) && newData.hasChildren(['public_info','password'])",
+          "public_info": {
+            ".read": "data.hasChild('allowed_users/'+auth.uid)",
+            ".validate": "newData.hasChildren(['room_id','allowed_users','allowed_users_count'])",
+            "room_id": {
+              ".validate": "newData.parent().parent().parent().parent().hasChild('room_entrances/'+newData.val())"
+            },
+            "allowed_users": {
+              "$user_id": {
+                ".validate": "newData.isBoolean() && ((data.exists() && data.val() === true) === newData.val() ? newData.parent().child('allowed_users_count').val() === data.parent().child('allowed_users_count').val() : newData.parent().child('allowed_users_count').val() === (data.parent().child('allowed_users_count').val() + (newData.val() === true ? 1 : -1)))"
+              }
+            },
+            "allowed_users_count": {
+              ".validate": "newData.isNumber() && (data.exists() ? (0 <= newData.val() && newData.val() < 100000) : newData.val() === 0)"
+            },
+            "$other": { ".validate": false }
+          },
+          "password": {
+            ".validate": "newData.isString() && newData.val().length < 16"
+          },
+          "created_at": {
+            ".validate": "newData.val() < now && (!data.exists() || newData.val() === data.val())"
+          },
+          "$other": { ".validate": false }
+        }
+      }
+    },
+    "room_entrances": {
+      ".read": "auth !== null",
+      "$room_id": {
+        ".write": "newData.child('owner_id').val() === auth.uid || (data.child('owner_id').val() === auth.uid && !newData.exists() && !newData.parent().parent().hasChild('rooms/'+data.child('owner_id').val()+'/'+data.child('owner_id/own_room_id').val()))",
+        ".validate": "newData.hasChildren(['owner_id','room_name','members_count','created_at']) && $room_id === newData.parent().parent().child(newData.child('owner_id').val()+'/'+newData.child('own_room_id').val()+'/room_id').val()",
+        "owner_id": {
+          ".validate": "newData.val() === auth.uid && newData.parent().parent().parent().hasChild('rooms/'+newData.val())"
+        },
+        "own_room_id": {
+          ".validate": "newData.parent().parent().parent().hasChild('rooms/'+newData.parent().child('owner_id').val()+'/'+newData.val())"
+        },
+        "room_name": {
+          ".validate": "newData.isString() && 0 < newData.val().length && newData.val().length < 20"
+        },
+        "members_count": {
+          ".validate": "newData.isNumber() && (data.exists() ? (0 <= newData.val() && newData.val() < 100000 && newData.val() <= newData.parent().parent().parent().child('rooms/'+newData.parent().child('owner_id').val()+'/'+newData.parent().child('own_room_id').val()+'/public_info/allowed_users_count').val() + 1) : newData.val() === 0)"
+        },
+        "created_at": {
+          ".validate": "newData.val() < now && (!data.exists() || newData.val() === data.val())"
+        },
+        "$other": { ".validate": false }
+      }
+    },
+    "entry_requests": {
+      "$room_id": {
+        ".read": "root.child('room_entrances/'+$room_id+'/owner_id').val() === auth.uid",
+        ".write": "root.child('room_entrances/'+$room_id+'/owner_id').val() === auth.uid && !newData.exists()",
+        "$user_id": {
+          ".write": "!data.exists() && root.child('room_entrances').hasChild($room_id) && $user_id === auth.uid",
+          ".validate": "newData.hasChild('password')",
+          "password": {
+            ".validate": "data.isString() && data.val() === root.child('rooms/'+$room_id+'/password').val()"
+          },
+          "$other": { ".validate": false }
+        }
+      }
+    },
+    "delete_marks": {
+      ".read": false,
+      "$room_id": {
+        ".write": "root.child('room_entrances/'+$room_id+'/owner_id').val() === auth.uid",
+        ".validate": "newData.val() === false"
+      }
+    },
+    "$other": { ".validate": false }
   }
 }

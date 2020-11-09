@@ -18,7 +18,7 @@ export const inputRegex = {
 type OnSubmit = NonNullable<
   JSX.FormHTMLAttributes<HTMLFormElement>['onSubmit']
 >;
-type CallableSubmit = JSX.EventHandler<HTMLFormElement, FocusEvent>;
+type CallableSubmit = JSX.EventHandler<HTMLFormElement, Event>;
 
 export interface LoginValidationInfo {
   condition: boolean;

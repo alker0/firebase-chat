@@ -47,7 +47,6 @@
   "include": [
     "./src/**/*",
     "./plugins/**/*",
-    "./scripts/**/*",
     "./*.config.js",
     "node_modules/solid-js/dist/types/rendering/jsx.d.ts",
     "node_modules/@alker/solid-styled-tsx/typings/*",

@@ -6,7 +6,9 @@ web_modules/
 /src/public/
 /eustia/cache/
 .parcel-cache/
+.env
 yarn-error.log
+database-debug.log
 *.gitskip*
 
 # ---- if using Zero-Install ----

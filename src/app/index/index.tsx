@@ -20,14 +20,22 @@ if (dropDownTarget) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  const firebaseSdk = firebase.default;
+  if (
+    import.meta.env.MODE === 'production' &&
+    import.meta.env.SNOWPACK_PUBLIC_USE_FIREBASE_ANALYTICS
+  ) {
+    firebaseSdk.analytics();
+  }
+
   // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
   // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
 
-  const auth = firebase.auth();
+  const auth = firebaseSdk.auth();
 
   auth.onAuthStateChanged(sessionStateChangedHandler);
 
-  auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
+  auth.setPersistence(firebaseSdk.auth.Auth.Persistence.SESSION);
 
   createRoot(() =>
     createComputed(() =>
@@ -100,16 +108,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   try {
-    const firebaseApp = firebase.app();
-    const features = (['database', 'storage'] as const).filter(
-      (feature) => typeof firebaseApp[feature] === 'function',
-    );
-    document.getElementById(
-      'load',
-    )!.innerHTML = `Firebase SDK loaded with ${features.join(', ')}`;
+    firebaseSdk.app();
+    document.getElementById('load')!.innerHTML = 'Firebase app is loaded.';
   } catch (e) {
     console.error(e);
     document.getElementById('load')!.innerHTML =
-      'Error loading the Firebase SDK, check the console.';
+      'Error Firebase App, check the console.';
   }
 });

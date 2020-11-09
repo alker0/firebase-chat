@@ -1,9 +1,10 @@
+import { firebaseSdk } from '@lib/firebase-sdk';
 import { createComputed, assignProps } from 'solid-js';
 import { ComponentCreater } from '../../typings/component-creater';
 
 const defaultProps: FirebaseAuthUI.DefaultProps = {
   uiConfig: {
-    signInOptions: [firebase.auth.EmailAuthProvider.PROVIDER_ID],
+    signInOptions: [firebaseSdk.auth.EmailAuthProvider.PROVIDER_ID],
   },
 };
 

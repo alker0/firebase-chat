@@ -1,7 +1,6 @@
 <extends src="layouts/html-born.html">
-  <block name="title">Page Not Found</block>
-</extends>
   <block name="head">
+    <title>Page Not Found</title>
     <meta name="theme-color" content="#ff9900">
 
     <style media="screen">
@@ -27,3 +26,4 @@
       <h1>Page Not Found</h1>
     </div>
   </block>
+</extends>

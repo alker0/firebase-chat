@@ -1,10 +1,10 @@
 {
   "name": "@alker/solid-styled-tsx",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "license": "MIT",
   "main": "",
   "peerDependencies": {
-    "solid-js": "~0.18.0",
+    "solid-js": "0.18.0 - 0.22",
     "solid-styled-jsx": "0.x",
     "styled-jsx": "3.x"
   }
