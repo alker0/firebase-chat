@@ -132,6 +132,7 @@ export function roomsQueryTest() {
       it('should search rooms order by room members count', async () => {
         expect.assertions(2);
         await assertAllSuccessLazy(
+          /* eslint-disable jest/valid-expect */
           expect(
             getOnceVal(
               userDb
@@ -152,11 +153,13 @@ export function roomsQueryTest() {
                 .limitToLast(8),
             ).then(getFirstResult),
           ).resolves.toStrictEqual(expectedObject.entranceOfUser),
+          /* eslint-enable jest/valid-expect */
         );
       });
       it('should search rooms order by created time', async () => {
         expect.assertions(2);
         await assertAllSuccessLazy(
+          /* eslint-disable jest/valid-expect */
           expect(
             getOnceVal(
               userDb
@@ -175,6 +178,7 @@ export function roomsQueryTest() {
                 .limitToLast(4),
             ).then(getFirstResult),
           ).resolves.toStrictEqual(expectedObject.entranceOfUser),
+          /* eslint-enable jest/valid-expect */
         );
       });
       it("should not search rooms by using other's owner_id", async () => {
