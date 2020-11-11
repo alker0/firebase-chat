@@ -9,17 +9,14 @@ const onlyVersion = (semVer) => semVer.replace(/[^\d.]/, '');
 
 const templatePathRootInfo = { root: 'src/templates' };
 
-const { NODE_ENV, SNOWPACK_PUBLIC_USE_FIREBASE_ANALYTICS } = process.env;
+const {
+  NODE_ENV = 'development',
+  SNOWPACK_PUBLIC_USE_FIREBASE_ANALYTICS = true,
+} = process.env;
 
-const nodeEnv = NODE_ENV || 'development';
+const isProduction = NODE_ENV === 'production';
 
-const isProduction = nodeEnv === 'production';
-
-console.error('posthtml.config.js', nodeEnv);
-
-const firebaseInitPath = isProduction
-  ? '/__/firebase/init.js'
-  : '/lib/firebase-init-app.js';
+console.error('posthtml.config.js', NODE_ENV);
 
 const firebaseUseSdks = ['auth', 'database', 'storage'];
 
@@ -34,12 +31,11 @@ module.exports = {
     include(templatePathRootInfo),
     expressoins({
       locals: {
-        mode: nodeEnv,
-        cirrusVersion: '@0.5.5',
+        mode: NODE_ENV,
+        cirrusVersion: `@0.5.5`,
         firebaseVersion: onlyVersion(devDeps.firebase),
-        firebaseInitPath,
         firebaseUseSdks,
-        firebaseConfig: {
+        firebaseConfig: JSON.stringify({
           apiKey: 'AIzaSyCUDlFQJZdo3NOIAHSt8NmgF-gOHQ9ZkHg',
           authDomain: 'talker-v1.firebaseapp.com',
           // databaseURL: 'https://talker-v1.firebaseio.com',
@@ -49,7 +45,7 @@ module.exports = {
           messagingSenderId: '578515840439',
           appId: '1:578515840439:web:2b7905e64ae01d07778c32',
           measurementId: 'G-S42EYX1LN4',
-        },
+        }),
       },
     }),
   ],
