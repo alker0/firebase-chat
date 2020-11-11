@@ -46,7 +46,6 @@
     "page:delete": "node ./scripts/delete-page.js"
   },
   "devDependencies": {
-    "@alker/solid-js-types": "file:./src/lib/packages/solid-js-types",
     "@alker/solid-styled-tsx": "file:./src/lib/packages/solid-styled-tsx",
     "@babel/core": "^7.12.3",
     "@babel/plugin-proposal-class-properties": "^7.12.1",
@@ -62,10 +61,11 @@
     "@snowpack/plugin-postcss": "^1.0.7",
     "@snowpack/plugin-run-script": "^2.2.0",
     "@types/jest": "^26.0.15",
-    "@types/node": "^14.14.6",
-    "@types/snowpack-env": "^2.3.1",
-    "@typescript-eslint/eslint-plugin": "^4.6.1",
-    "@typescript-eslint/parser": "^4.6.1",
+    "@types/node": "^14.14.7",
+    "@types/snowpack-env": "^2.3.2",
+    "@types/styled-jsx": "^2.2.8",
+    "@typescript-eslint/eslint-plugin": "^4.7.0",
+    "@typescript-eslint/parser": "^4.7.0",
     "babel-plugin-macros": "^2.8.0",
     "babel-plugin-transform-remove-console": "^6.9.4",
     "babel-preset-solid": "^0.21.3",
@@ -86,7 +86,7 @@
     "jest-github-actions-reporter": "^1.0.2",
     "long": "^4.0.0",
     "npm-run-all": "^4.1.5",
-    "postcss": "^8.1.6",
+    "postcss": "^8.1.7",
     "postcss-cli": "^8.2.0",
     "postcss-import": "^13.0.0",
     "postcss-import-url": "^5.1.0",
@@ -182,8 +182,8 @@
   "dependencies": {
     "clsx": "^1.1.1",
     "firebaseui": "^4.7.1",
-    "solid-js": "^0.21.5",
-    "solid-styled-jsx": "^0.21.5",
+    "solid-js": "^0.21.6",
+    "solid-styled-jsx": "^0.21.6",
     "styled-jsx": "^3.3.1"
   },
   "dependenciesMeta": {
