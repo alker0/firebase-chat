@@ -5,20 +5,22 @@ export type ClickHandle<T extends HTMLElement> = JSX.EventHandler<
   MouseEvent | KeyboardEvent
 >;
 
-export const buttonize: <T extends HTMLElement>(
-  clickFn: ClickHandle<T>,
-  otherProps?: {
-    role?: string;
+export function buttonize<T extends HTMLElement>(
+  clickHandle: ClickHandle<T>,
+  {
+    role = 'button',
+    tabIndex = 0,
+  }: {
+    role?: JSX.HTMLAttributes<T>['role'];
     tabIndex?: number;
-  },
-) => Pick<
-  JSX.HTMLAttributes<T>,
-  'onClick' | 'onKeyDown' | 'role' | 'tabIndex'
-> = (clickHandle, { role, tabIndex } = { role: 'button', tabIndex: 0 }) => ({
-  onClick: clickHandle,
-  onKeyDown: (event) => {
-    if (event.keyCode === 13) clickHandle(event);
-  },
-  role: role ?? 'button',
-  tabIndex: tabIndex ?? 0,
-});
+  } = {},
+): Pick<JSX.HTMLAttributes<T>, 'onClick' | 'onKeyDown' | 'role' | 'tabIndex'> {
+  return {
+    onClick: clickHandle,
+    onKeyDown: (event) => {
+      if (event.keyCode === 13) clickHandle(event);
+    },
+    role,
+    tabIndex,
+  };
+}

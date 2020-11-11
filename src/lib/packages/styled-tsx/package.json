@@ -1,0 +1,14 @@
+{
+  "name": "@alker/styled-tsx",
+  "version": "0.0.1",
+  "license": "MIT",
+  "main": "",
+  "peerDependencies": {
+    "styled-jsx": "3.x"
+  },
+  "peerDependenciesMeta": {
+    "styled-jsx": {
+      "optional": true
+    }
+  }
+}

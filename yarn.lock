@@ -12,14 +12,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@alker/solid-styled-tsx@file:./src/lib/packages/solid-styled-tsx::locator=firebase-chat%40workspace%3A.":
-  version: 0.0.2
-  resolution: "@alker/solid-styled-tsx@file:./src/lib/packages/solid-styled-tsx#./src/lib/packages/solid-styled-tsx::hash=72996f&locator=firebase-chat%40workspace%3A."
+"@alker/styled-tsx@file:./src/lib/packages/styled-tsx::locator=firebase-chat%40workspace%3A.":
+  version: 0.0.1
+  resolution: "@alker/styled-tsx@file:./src/lib/packages/styled-tsx#./src/lib/packages/styled-tsx::hash=da49dd&locator=firebase-chat%40workspace%3A."
   peerDependencies:
-    solid-js: 0.18.0 - 0.22
-    solid-styled-jsx: 0.x
     styled-jsx: 3.x
-  checksum: e72f917dcceb3c60ff6692306257cb59f68197d7087816f469979063747be5bd12911a08f853f55e957b153a8e807832d2780b66d09cc4b84d5bcb3a20f2b2b3
+  peerDependenciesMeta:
+    styled-jsx:
+      optional: true
+  checksum: 9aee0c71f62a102cfe1f5b7463423c136bb8da4272e6fd73c2a5c1ecf66b8ea628396c9e4d1546b4905b17733b045c8e3113191720a0555b59935fc708bea2fa
   languageName: node
   linkType: hard
 
@@ -2990,23 +2991,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/prop-types@npm:*":
-  version: 15.7.3
-  resolution: "@types/prop-types@npm:15.7.3"
-  checksum: bd0eab69d5120ad3784d0c9985f902653d5924707a7f2b3702a330e762dfd61b6494954cb54ad0c52b918ffd6f1e7e27c9270e4442bc15250de348596f2f60cb
-  languageName: node
-  linkType: hard
-
-"@types/react@npm:*":
-  version: 16.9.56
-  resolution: "@types/react@npm:16.9.56"
-  dependencies:
-    "@types/prop-types": "*"
-    csstype: ^3.0.2
-  checksum: 139867e2b3d577723b9361234f105d0cf1b143202f51fef207355332f972dd74030cfb3918037cb311eefd203ee06e0a370c37755204eefdd35734f0fde070a1
-  languageName: node
-  linkType: hard
-
 "@types/resolve@npm:1.17.1":
   version: 1.17.1
   resolution: "@types/resolve@npm:1.17.1"
@@ -3036,15 +3020,6 @@ __metadata:
   version: 2.0.0
   resolution: "@types/stack-utils@npm:2.0.0"
   checksum: 662312302e07685c99a1c45c6753eb997b31d2af66e646c5937f62d593a63a111289503d0b06a8d1e6f3922b67fc2ed94889d84653a08861a7fee67b81ce5b92
-  languageName: node
-  linkType: hard
-
-"@types/styled-jsx@npm:^2.2.8":
-  version: 2.2.8
-  resolution: "@types/styled-jsx@npm:2.2.8"
-  dependencies:
-    "@types/react": "*"
-  checksum: 4066e48c71d7d1c10ee77115522830cb11dec621d1555340b03cc2b48c5954c3124a436d5cf59e62f6226cc1704919c828a332fda4a9f997014f2d73c7d33f3f
   languageName: node
   linkType: hard
 
@@ -5298,13 +5273,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"csstype@npm:^3.0.2":
-  version: 3.0.4
-  resolution: "csstype@npm:3.0.4"
-  checksum: 90cd2ff9aced9049010c5c69470b30643761d511b4250f6ce2bbdbab23229822c325fd841be6066a94a9ba800112026e3c046be879cd44a066e8705991cdc700
-  languageName: node
-  linkType: hard
-
 "csv-streamify@npm:^3.0.4":
   version: 3.0.4
   resolution: "csv-streamify@npm:3.0.4"
@@ -7000,7 +6968,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "firebase-chat@workspace:."
   dependencies:
-    "@alker/solid-styled-tsx": "file:./src/lib/packages/solid-styled-tsx"
+    "@alker/styled-tsx": "file:./src/lib/packages/styled-tsx"
     "@babel/core": ^7.12.3
     "@babel/plugin-proposal-class-properties": ^7.12.1
     "@babel/plugin-proposal-object-rest-spread": ^7.12.1
@@ -7017,7 +6985,6 @@ __metadata:
     "@types/jest": ^26.0.15
     "@types/node": ^14.14.7
     "@types/snowpack-env": ^2.3.2
-    "@types/styled-jsx": ^2.2.8
     "@typescript-eslint/eslint-plugin": ^4.7.0
     "@typescript-eslint/parser": ^4.7.0
     babel-plugin-macros: ^2.8.0
