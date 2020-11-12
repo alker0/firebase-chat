@@ -12,6 +12,7 @@ const templatePathRootInfo = { root: 'src/templates' };
 const {
   NODE_ENV = 'development',
   SNOWPACK_PUBLIC_USE_FIREBASE_ANALYTICS = true,
+  SNOWPACK_PUBLIC_CIRRUS_VERSION = '0.5.5',
 } = process.env;
 
 const isProduction = NODE_ENV === 'production';
@@ -19,6 +20,13 @@ const isProduction = NODE_ENV === 'production';
 console.error('posthtml.config.js', NODE_ENV);
 
 const firebaseUseSdks = ['auth', 'database', 'storage'];
+
+const cssArray = [
+  `https://cdn.jsdelivr.net/npm/cirrus-ui@${SNOWPACK_PUBLIC_CIRRUS_VERSION}/dist/cirrus.min.css`,
+  '/css/index.css',
+];
+
+const jsArray = [];
 
 if (isProduction && SNOWPACK_PUBLIC_USE_FIREBASE_ANALYTICS) {
   firebaseUseSdks.push('analytics');
@@ -32,7 +40,8 @@ module.exports = {
     expressoins({
       locals: {
         mode: NODE_ENV,
-        cirrusVersion: `@0.5.5`,
+        cssArray,
+        jsArray,
         firebaseVersion: onlyVersion(devDeps.firebase),
         firebaseUseSdks,
         firebaseConfig: JSON.stringify({

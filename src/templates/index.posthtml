@@ -8,9 +8,7 @@
 
     <meta name="theme-color" content="#ff9900">
 
-    <link href="https://cdn.jsdelivr.net/npm/cirrus-ui{{ cirrusVersion }}/dist/cirrus.min.css" type="text/css" rel="stylesheet" />
-
-    <link href="/css/index.css" type="text/css" rel="stylesheet" />
+    <include src="partials/css-assets.html"></include>
   </block>
 
   <block name="body">
