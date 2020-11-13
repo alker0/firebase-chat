@@ -1,9 +1,7 @@
 {
   "compilerOptions": {
-    // Target latest browsers
-    // "target": "ES2020",
-    "target": "ES2019",
-    //"lib": ["ES2019"],
+    "target": "ES2020",
+    //"lib": ["ES2020"],
 
     "module": "commonjs",
 
@@ -12,7 +10,6 @@
 
     "jsx": "preserve",
 
-    // Required: Map "/web_modules/*" imports back to their node_modules/ TS definition files.
     "baseUrl": "./",
     "paths": {
     },
@@ -20,7 +17,6 @@
     "allowJs": true,
     "checkJs": false,
 
-    // Skip npm module type check.
     "skipLibCheck": true,
 
     // Only for type checks.
