@@ -12,7 +12,7 @@ const templatePathRootInfo = { root: 'src/templates' };
 const {
   NODE_ENV = 'development',
   SNOWPACK_PUBLIC_USE_FIREBASE_ANALYTICS = true,
-  SNOWPACK_PUBLIC_CIRRUS_VERSION = '0.5.5',
+  SNOWPACK_PUBLIC_CIRRUS_VERSION = '0.6.0',
 } = process.env;
 
 const isProduction = NODE_ENV === 'production';

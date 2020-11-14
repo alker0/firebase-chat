@@ -3,7 +3,6 @@ import { PathMatchRouter } from '@components/common/case/path-match-router';
 import { Redirect as RedirectCreator } from '@components/common/base/atoms/redirect';
 import { Cirrus } from '@components/common/typings/cirrus-style';
 import { inputRegex } from '@components/common/util/input-field-utils';
-import { styleUtils } from '@components/common/util/style-utils';
 import { createSignal, untrack } from 'solid-js';
 import { sessionState } from '@lib/solid-firebase-auth';
 import { fullPath } from '@lib/routing-utils';
@@ -73,9 +72,7 @@ const Redirect = RedirectCreator.createComponent({
 //   }
 // }
 
-const bottomPadding = styleUtils.noSidePadding().className as Cirrus;
-
-const cn: Clsx<Cirrus | typeof bottomPadding> = clsx;
+const cn: Clsx<Cirrus> = clsx;
 
 export const createRouter = (context: RouterContext) => {
   const routerContext: PathMatchRouter.Context = {
@@ -101,7 +98,7 @@ export const createRouter = (context: RouterContext) => {
   const AuthComponent = createLazyAuthUI({
     passwordRegex: inputRegex.password(8),
     bottomWrapper: (props) => (
-      <div class={cn(bottomPadding)}>
+      <div class={cn('px-0')}>
         <props.bottomContents />
       </div>
     ),

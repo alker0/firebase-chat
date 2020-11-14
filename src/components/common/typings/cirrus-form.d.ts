@@ -11,7 +11,7 @@ export type SizedFormItem = Extract<
   | 'input'
   | 'input-large'
   | 'input-xlarge'
-  | 'btn-tiny'
+  | 'btn-xsmall'
   | 'btn-small'
   | 'btn'
   | 'btn-large'

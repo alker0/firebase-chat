@@ -39,23 +39,19 @@ export const TopMenu = {
           </div>
           <div class={cn('row')}>
             <div class={cn('col-6', 'ignore-screen')}>
-              <div class={cn('btn-container')}>
-                <div
-                  class={cn('btn', 'btn-xlarge', 'btn-animated')}
-                  {...buttonize(context.onLeftButtonClick)}
-                >
-                  {context.leftButtonText}
-                </div>
+              <div
+                class={cn('btn', 'btn-xlarge', 'btn-animated')}
+                {...buttonize(context.onLeftButtonClick)}
+              >
+                {context.leftButtonText}
               </div>
             </div>
             <div class={cn('col-6', 'ignore-screen')}>
-              <div class={cn('btn-container')}>
-                <div
-                  class={cn('btn', 'btn-xlarge', 'btn-animated')}
-                  {...buttonize(context.onRightButtonClick)}
-                >
-                  {context.rightButtonText}
-                </div>
+              <div
+                class={cn('btn', 'btn-xlarge', 'btn-animated')}
+                {...buttonize(context.onRightButtonClick)}
+              >
+                {context.rightButtonText}
               </div>
             </div>
           </div>

@@ -1,4 +1,3 @@
-import { styleUtils } from '@components/common/util/style-utils';
 import { Cirrus } from '@components/common/typings/cirrus-style';
 import {
   inputRegex,
@@ -19,8 +18,6 @@ import { FirebaseAuth } from './typings/firebase-sdk';
 const [clearSignal] = createSignal();
 
 const cn: Clsx<Cirrus> = clsx;
-
-const noSidePadding = styleUtils.noSidePadding().className as Cirrus;
 
 type AuthComponentProps = FirebaseAuthOwnUI.Props<unknown>;
 
@@ -180,7 +177,7 @@ export const CompleteVerifyEmail = {
           clearSignal={clearSignal}
           inputMode={() => null}
           wholeOfBottom={(props) => (
-            <div class={cn('row', 'input-control', noSidePadding)}>
+            <div class={cn('row', 'input-control', 'px-0')}>
               <props.submitButton />
             </div>
           )}

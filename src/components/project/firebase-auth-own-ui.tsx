@@ -21,9 +21,7 @@ import {
   untrack,
 } from 'solid-js';
 
-type BottomPadding = 'This is Bottom Margin';
-
-const cn: Clsx<Cirrus | BottomPadding> = clsx;
+const cn: Clsx<Cirrus> = clsx;
 
 const defaultContainerProps: Required<ContainerProps> = {
   ofForm: {},

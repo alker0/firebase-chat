@@ -7,10 +7,7 @@ import {
   ClickHandle,
   DO_NOTHING,
 } from '@components/common/util/component-utils';
-import {
-  createMultiDisposableStyle,
-  styleUtils,
-} from '@components/common/util/style-utils';
+import { createMultiDisposableStyle } from '@components/common/util/style-utils';
 import { Cirrus } from '@components/common/typings/cirrus-style';
 import {
   ComponentMemo,
@@ -45,8 +42,6 @@ const { classNames } = createMultiDisposableStyle<Cirrus>(() => [
     }
   `,
 ]);
-
-const bottomPadding = styleUtils.noSidePadding().className as Cirrus;
 
 const [linkStyle, deviderStyle] = classNames;
 
@@ -99,7 +94,7 @@ const getSignUpOrSignInTogglerButton = (
     buttonText: string,
     clickFn: ClickHandle<HTMLDivElement>,
   ) => () => (
-    <div class={cn('col', 'btn-container', 'u-no-margin', 'u-no-padding')}>
+    <div class={cn('col', 'm-0', 'p-0')}>
       <div
         class={cn('btn', 'btn-animated', 'btn-info', 'outline')}
         {...buttonize(clickFn)}
@@ -424,17 +419,10 @@ export const LoginForm = {
           inputMode={loginMode}
           wholeOfBottom={(props) => (
             <>
-              <div
-                class={cn(
-                  'row',
-                  'input-control',
-                  'btn-container',
-                  bottomPadding,
-                )}
-              >
+              <div class={cn('row', 'input-control', 'px-0')}>
                 <props.submitButton />
               </div>
-              <div class={cn('row', bottomPadding)}>
+              <div class={cn('row', 'px-0')}>
                 <SignUpOrSignInToggler.Memo />
               </div>
               <AnchorArea.Memo />
