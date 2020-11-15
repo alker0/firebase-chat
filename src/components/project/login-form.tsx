@@ -231,11 +231,7 @@ const getSubmitAction = (
   resetEmailLinkUrl: string,
   cookieKeyOfEmail: string,
   emailCookieAge: number = 180,
-): AuthComponentProps['submitAction'] => ({
-  inputMode,
-  passwordRegex,
-  redirectToSuccessUrl,
-}) => {
+): AuthComponentProps['submitAction'] => {
   const errorMessageHandler = (errorMessage: string) =>
     setInputValue('errorMessage', errorMessage);
 
@@ -260,99 +256,101 @@ const getSubmitAction = (
     errorMessage: () => 'Email is invalid format',
   });
 
-  switch (inputMode) {
-    case SignUpMode:
-    case SignInWithVerifyEmailMode:
-      return loginMethodCreater({
-        errorMessageHandler,
-        freezeValue: freezeOnlyEmail,
-        methodRunner: ({ email }) => ({
-          validations: [emailValidation(email)],
-          whenValid: () => {
-            const actionCodeSettings = {
-              handleCodeInApp: true,
-              url: verifyEmailLinkUrl,
-            };
+  return ({ inputMode, passwordRegex, redirectToSuccessUrl }) => {
+    switch (inputMode) {
+      case SignUpMode:
+      case SignInWithVerifyEmailMode:
+        return loginMethodCreater({
+          errorMessageHandler,
+          freezeValue: freezeOnlyEmail,
+          methodRunner: ({ email }) => ({
+            validations: [emailValidation(email)],
+            whenValid: () => {
+              const actionCodeSettings = {
+                handleCodeInApp: true,
+                url: verifyEmailLinkUrl,
+              };
 
-            auth
-              .sendSignInLinkToEmail(email, actionCodeSettings)
-              .then(() => {
-                setInputValue(
-                  'infoMessage',
-                  'Check your inbox for completing login',
-                );
+              auth
+                .sendSignInLinkToEmail(email, actionCodeSettings)
+                .then(() => {
+                  setInputValue(
+                    'infoMessage',
+                    'Check your inbox for completing login',
+                  );
 
-                document.cookie = `${cookieKeyOfEmail}=${encodeURIComponent(
-                  email,
-                )}; domain=.${
-                  document.domain
-                }; max-age=${emailCookieAge}; sameSite=strict;`;
-              })
-              .catch((error) => {
-                console.log(error);
-                console.log(error.code);
-              });
-          },
-        }),
-      });
-
-    case SignInWithPasswordMode:
-      return loginMethodCreater({
-        errorMessageHandler,
-        freezeValue: freezeWithPassword,
-        methodRunner: ({ email, password }) => ({
-          validations: [
-            emailValidation(email),
-            {
-              condition: passwordRegex.test(password),
-              errorMessage: () => 'Password is invalid format',
+                  document.cookie = `${cookieKeyOfEmail}=${encodeURIComponent(
+                    email,
+                  )}; domain=.${
+                    document.domain
+                  }; max-age=${emailCookieAge}; sameSite=strict;`;
+                })
+                .catch((error) => {
+                  console.log(error);
+                  console.log(error.code);
+                });
             },
-          ],
-          whenValid: () => {
-            auth
-              .signInWithEmailAndPassword(email, password)
-              .then(() => {
-                console.log('Sign In');
-                redirectToSuccessUrl();
-              })
-              .catch((err) => {
-                setInputValue('errorMessage', err.message);
-                console.log(err.code);
-              });
-          },
-        }),
-      });
+          }),
+        });
 
-    case ResetPasswordMode:
-      return loginMethodCreater({
-        errorMessageHandler,
-        freezeValue: freezeOnlyEmail,
-        methodRunner: ({ email }) => ({
-          validations: [emailValidation(email)],
-          whenValid: () => {
-            const actionCodeSettings = {
-              handleCodeInApp: true,
-              url: resetEmailLinkUrl,
-            };
+      case SignInWithPasswordMode:
+        return loginMethodCreater({
+          errorMessageHandler,
+          freezeValue: freezeWithPassword,
+          methodRunner: ({ email, password }) => ({
+            validations: [
+              emailValidation(email),
+              {
+                condition: passwordRegex.test(password),
+                errorMessage: () => 'Password is invalid format',
+              },
+            ],
+            whenValid: () => {
+              auth
+                .signInWithEmailAndPassword(email, password)
+                .then(() => {
+                  console.log('Sign In');
+                  redirectToSuccessUrl();
+                })
+                .catch((err) => {
+                  setInputValue('errorMessage', err.message);
+                  console.log(err.code);
+                });
+            },
+          }),
+        });
 
-            auth
-              .sendPasswordResetEmail(getInputValue.email, actionCodeSettings)
-              .then(() => {
-                setInputValue(
-                  'infoMessage',
-                  'Check your inbox for a password reset email.',
-                );
-              })
-              .catch((error) => {
-                console.log(error.code);
-                setInputValue('errorMessage', error.message);
-              });
-          },
-        }),
-      });
-    default:
-      return DO_NOTHING;
-  }
+      case ResetPasswordMode:
+        return loginMethodCreater({
+          errorMessageHandler,
+          freezeValue: freezeOnlyEmail,
+          methodRunner: ({ email }) => ({
+            validations: [emailValidation(email)],
+            whenValid: () => {
+              const actionCodeSettings = {
+                handleCodeInApp: true,
+                url: resetEmailLinkUrl,
+              };
+
+              auth
+                .sendPasswordResetEmail(getInputValue.email, actionCodeSettings)
+                .then(() => {
+                  setInputValue(
+                    'infoMessage',
+                    'Check your inbox for a password reset email.',
+                  );
+                })
+                .catch((error) => {
+                  console.log(error.code);
+                  setInputValue('errorMessage', error.message);
+                });
+            },
+          }),
+        });
+      default:
+        return DO_NOTHING;
+    }
+  };
 };
 
 const defaultContext: Required<OnlyOptional<LoginForm.Context>> = {

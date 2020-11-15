@@ -3918,14 +3918,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-plugin-jsx-dom-expressions@npm:~0.22.2":
-  version: 0.22.2
-  resolution: "babel-plugin-jsx-dom-expressions@npm:0.22.2"
+"babel-plugin-jsx-dom-expressions@npm:~0.23.1":
+  version: 0.23.1
+  resolution: "babel-plugin-jsx-dom-expressions@npm:0.23.1"
   dependencies:
     "@babel/helper-module-imports": ^7.10.4
     "@babel/plugin-syntax-jsx": ^7.10.4
     "@babel/types": ^7.11.5
-  checksum: 4fc887cf884100c95b738d589b1d62f633be42203772410b1df32e7bc66fbf2748588979f609d7018f8585d48bd7080d01e34c28a903201e23c04f24894ecae4
+  checksum: e729491b0da63bef30579b1889cb93ca5dfb26691c50d744724eaf7899adf892636408cafb7b5cc7a3c8ae0730059f78f037572d4fbb170bcf855e815276b24a
   languageName: node
   linkType: hard
 
@@ -3995,13 +3995,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-preset-solid@npm:^0.21.3":
-  version: 0.21.3
-  resolution: "babel-preset-solid@npm:0.21.3"
+"babel-preset-solid@npm:^0.22.1":
+  version: 0.22.1
+  resolution: "babel-preset-solid@npm:0.22.1"
   dependencies:
-    babel-plugin-jsx-dom-expressions: ~0.22.2
+    babel-plugin-jsx-dom-expressions: ~0.23.1
     babel-plugin-transform-rename-import: ^2.3.0
-  checksum: 2c91ae599a1260db1f545991e8a23c3b44189db8cb2d33c4f8a04ef75d6b05f503bb6e5d012b065c5ac31c3f7fbcc524147ef7513422b54240d2ccabfbfdce07
+  checksum: b22af19d43e0203950d340fe77cd1a3377d90233ac245d02963078a2b91048414a50c3a8635e1caed8bcdad04087d50044d9c446800ac176730ed457e0509206
   languageName: node
   linkType: hard
 
@@ -6989,7 +6989,7 @@ __metadata:
     "@typescript-eslint/parser": ^4.7.0
     babel-plugin-macros: ^2.8.0
     babel-plugin-transform-remove-console: ^6.9.4
-    babel-preset-solid: ^0.21.3
+    babel-preset-solid: ^0.22.1
     clsx: ^1.1.1
     connect: ^3.7.0
     dotenv: ^8.2.0
@@ -7025,8 +7025,8 @@ __metadata:
     purgecss-from-js: ^1.0.0
     querystring: ^0.2.0
     snowpack: ^2.16.1
-    solid-js: ^0.21.6
-    solid-styled-jsx: ^0.21.6
+    solid-js: ^0.22.0
+    solid-styled-jsx: ^0.22.0
     source-map-support: ^0.5.19
     styled-jsx: ^3.3.1
     stylelint: ^13.7.2
@@ -13565,22 +13565,22 @@ resolve@^1.18.1:
   languageName: node
   linkType: hard
 
-"solid-js@npm:^0.21.6":
-  version: 0.21.6
-  resolution: "solid-js@npm:0.21.6"
-  checksum: a3e2038bc10b020a501db61cb416dc709ad12486ad4e1e943ec53ed85ccef224a89fa3ea2a3d8ab3c154864fd86aaa0cc14b8c62ed10bdfc13f8d2ad58d36292
+"solid-js@npm:^0.22.0":
+  version: 0.22.0
+  resolution: "solid-js@npm:0.22.0"
+  checksum: 66ff03e41807de03f0ff7d984a1ef897117f1df125acb0577a3df8b04596762bc678bd052701e8fb93eb235d7dafa3358b079d68523f27e307a93bba3ccb40ff
   languageName: node
   linkType: hard
 
-"solid-styled-jsx@npm:^0.21.6":
-  version: 0.21.6
-  resolution: "solid-styled-jsx@npm:0.21.6"
+"solid-styled-jsx@npm:^0.22.0":
+  version: 0.22.0
+  resolution: "solid-styled-jsx@npm:0.22.0"
   dependencies:
     babel-plugin-transform-rename-import: ^2.3.0
   peerDependencies:
-    solid-js: ^0.21.0
+    solid-js: ^0.22.0
     styled-jsx: ^3.2.5
-  checksum: 7177c5f3d6f09d0403e950e3bb27350808ff46c834d91d97340adc26d13640ee647f25c197a4b9a52ed3293d45e999e4fc9eada782e64681607b88c4bbdfb176
+  checksum: 3a986215632ec63e662b8abdddb7746d542aabab6e67eb652fc1ac96f534a29d29a8c8eed02fac42a04517c41938e83f5d4001bf266deddd97146444950b396b
   languageName: node
   linkType: hard
 

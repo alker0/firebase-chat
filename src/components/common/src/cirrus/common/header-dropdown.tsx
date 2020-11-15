@@ -1,7 +1,7 @@
 import { css } from 'styled-jsx/css';
 import { createSignal, For, assignProps } from 'solid-js';
 import clsx, { Clsx } from 'clsx';
-import { Portal } from 'solid-js/dom';
+import { Portal } from 'solid-js/web';
 import { Cirrus } from '../../../typings/cirrus-style';
 import { ComponentCreater } from '../../../typings/component-creater';
 import { buttonize } from '../../util/component-utils';

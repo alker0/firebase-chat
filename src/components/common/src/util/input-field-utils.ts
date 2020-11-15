@@ -1,3 +1,4 @@
+import { NativeHandlerOf } from '@components/common/typings/component-utils';
 import { batch } from 'solid-js';
 
 export const inputRegexSource = {
@@ -15,10 +16,9 @@ export const inputRegex = {
     RegExp(inputRegexSource.strongPassword(length)),
 } as const;
 
-type OnSubmit = NonNullable<
+export type CallableSubmit = NativeHandlerOf<
   JSX.FormHTMLAttributes<HTMLFormElement>['onSubmit']
 >;
-type CallableSubmit = JSX.EventHandler<HTMLFormElement, Event>;
 
 export interface LoginValidationInfo {
   condition: boolean;
@@ -32,47 +32,49 @@ export interface LoginMethodRunner<T> {
   };
 }
 
-export const loginMethodCreater = <T>(methodArg: {
+export function loginMethodCreater<T>(methodArg: {
   errorMessageHandler: (errorMessage: string) => void;
   freezeValue?: () => T;
   methodRunner: LoginMethodRunner<T>;
-}): OnSubmit => (e) => {
-  e.preventDefault();
-  const freezedValue = methodArg.freezeValue?.();
-  batch(() => {
-    methodArg.errorMessageHandler('');
+}): CallableSubmit {
+  return (e) => {
+    e.preventDefault();
+    const freezedValue = methodArg.freezeValue?.();
+    batch(() => {
+      methodArg.errorMessageHandler('');
 
-    const { validations, whenValid } = methodArg.methodRunner(freezedValue!);
+      const { validations, whenValid } = methodArg.methodRunner(freezedValue!);
 
-    const {
-      lastErrorMessage: resultErrorMessage,
-      anyError: hasAnyError,
-    } = validations.reduce(
-      (
-        { sep, lastErrorMessage: prevErrorMessage, anyError: errorInPrev },
-        { condition, errorMessage },
-      ) => {
-        if (condition) {
+      const {
+        lastErrorMessage: resultErrorMessage,
+        anyError: hasAnyError,
+      } = validations.reduce(
+        (
+          { sep, lastErrorMessage: prevErrorMessage, anyError: errorInPrev },
+          { condition, errorMessage },
+        ) => {
+          if (condition) {
+            return {
+              sep,
+              lastErrorMessage: prevErrorMessage,
+              anyError: errorInPrev,
+            };
+          }
+
           return {
-            sep,
-            lastErrorMessage: prevErrorMessage,
-            anyError: errorInPrev,
+            sep: '\n',
+            lastErrorMessage: `${prevErrorMessage}${sep}${errorMessage()}`,
+            anyError: true,
           };
-        }
+        },
+        { sep: '', lastErrorMessage: '', anyError: false },
+      );
 
-        return {
-          sep: '\n',
-          lastErrorMessage: `${prevErrorMessage}${sep}${errorMessage()}`,
-          anyError: true,
-        };
-      },
-      { sep: '', lastErrorMessage: '', anyError: false },
-    );
-
-    if (hasAnyError) {
-      methodArg.errorMessageHandler(resultErrorMessage);
-    } else {
-      whenValid(e);
-    }
-  });
-};
+      if (hasAnyError) {
+        methodArg.errorMessageHandler(resultErrorMessage);
+      } else {
+        batch(() => whenValid(e));
+      }
+    });
+  };
+}

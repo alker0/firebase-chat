@@ -1,18 +1,18 @@
 import type FirebaseType from 'firebase';
-import { createState } from 'solid-js';
+import { createState, createRoot } from 'solid-js';
 
 export type UserState = FirebaseType.User | null;
 
-export interface SessionState {
-  readonly isLoggedIn: boolean;
-  readonly currentUser: UserState;
-}
-
-export const [sessionState, setSessionState] = createState({
-  currentUser: null as UserState,
-  get isLoggedIn(): boolean {
-    return Boolean(sessionState.currentUser);
-  },
+export const [sessionState, setSessionState] = createRoot(() => {
+  const sessionStateAccessor = createState({
+    currentUser: null as UserState,
+    loginState: {
+      get isLoggedIn(): boolean {
+        return Boolean(sessionStateAccessor[0].currentUser);
+      },
+    },
+  });
+  return sessionStateAccessor;
 });
 
 export const sessionStateChangedHandler = (user: UserState) => {

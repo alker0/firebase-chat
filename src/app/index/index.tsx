@@ -1,5 +1,4 @@
 import 'solid-styled-jsx';
-import { For, render } from 'solid-js/dom';
 import { HeaderMenu } from '@components/project/header-menu';
 import {
   sessionState,
@@ -10,7 +9,8 @@ import {
   routingPaths,
   movePageFromPath,
 } from '@components/project/router';
-import { createComputed, createRoot } from 'solid-js';
+import { createComputed, createRoot, For } from 'solid-js';
+import { render } from 'solid-js/web';
 import { buttonize } from '@components/common/util/component-utils';
 
 const dropDownTarget = document.getElementById('header-menu');
@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   createRoot(() =>
     createComputed(() =>
-      console.log('Is Logged In =>', sessionState.isLoggedIn),
+      console.log('Is Logged In =>', sessionState.loginState.isLoggedIn),
     ),
   );
 

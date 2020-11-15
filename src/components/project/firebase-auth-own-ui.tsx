@@ -2,9 +2,15 @@ import { Form } from '@components/common/base/form/form';
 import { FormContainer } from '@components/common/base/form/form-container';
 import { BasicInputField } from '@components/common/cirrus/common/basic-input-field';
 import { LoginBasicBottom } from '@components/common/cirrus/domain/login-basic-bottom';
+import { memoHandler } from '@components/common/util/component-utils';
 import { Cirrus } from '@components/common/typings/cirrus-style';
-import { OnlyOptional } from '@components/common/typings/component-utils';
 import {
+  EventArg,
+  EventArgOf,
+  OnlyOptional,
+} from '@components/common/typings/component-utils';
+import {
+  CallableSubmit,
   inputRegex,
   inputRegexSource,
 } from '@components/common/util/input-field-utils';
@@ -68,10 +74,6 @@ const Bottom = LoginBasicBottom.createComponent({
   ),
 });
 
-type OnSubmit = NonNullable<
-  JSX.FormHTMLAttributes<HTMLFormElement>['onSubmit']
->;
-
 interface ContainerProps {
   ofForm?: JSX.FormHTMLAttributes<HTMLFormElement>;
   ofInternalContainer?: JSX.HTMLAttributes<HTMLDivElement>;
@@ -130,7 +132,8 @@ export const FirebaseAuthOwnUI = {
               required: true,
               pattern: inputRegexSource.email,
               value: props.getInputValue.email,
-              onChange: (e) => props.setInputValue('email', e.target.value),
+              onChange: (e: EventArg<HTMLInputElement>) =>
+                props.setInputValue('email', e.target.value),
             }}
           />
           {props.useFields.password && (
@@ -143,7 +146,7 @@ export const FirebaseAuthOwnUI = {
                 required: true,
                 pattern: context.passwordRegex.source,
                 value: props.getInputValue.password,
-                onChange: (e) =>
+                onChange: (e: EventArg<HTMLInputElement>) =>
                   props.setInputValue('password', e.target.value),
               }}
             />
@@ -158,7 +161,7 @@ export const FirebaseAuthOwnUI = {
                 required: true,
                 pattern: context.passwordRegex.source,
                 value: props.getInputValue.passConfirm,
-                onChange: (e) =>
+                onChange: (e: EventArg<HTMLInputElement>) =>
                   props.setInputValue('passConfirm', e.target.value),
               }}
             />
@@ -184,9 +187,9 @@ export const FirebaseAuthOwnUI = {
 
       const [getInputValue, setInputValue] = props.getInputValueAccessor();
 
-      const onSubmit: () => OnSubmit = createMemo(() => {
-        if (untrack(() => sessionState.isLoggedIn)) {
-          return (e) => {
+      const onSubmit: () => CallableSubmit = createMemo(() => {
+        if (untrack(() => sessionState.loginState.isLoggedIn)) {
+          return (e: EventArgOf<CallableSubmit>) => {
             e.preventDefault();
             console.log('Already Logged In');
             props.redirectToSuccessUrl();
@@ -210,7 +213,7 @@ export const FirebaseAuthOwnUI = {
           ofContainer={{
             containerProps: {
               ofForm: {
-                onSubmit: onSubmit(),
+                onSubmit: memoHandler(onSubmit),
                 class: cn('content', 'frame'),
               },
               ofInternalContainer: {
@@ -232,7 +235,7 @@ export const FirebaseAuthOwnUI = {
           ofBottomContents={{
             bottomComponent: props.wholeOfBottom,
             ofSubmit: props.submitButtonProps({
-              disabled: sessionState.isLoggedIn,
+              disabled: sessionState.loginState.isLoggedIn,
             }),
           }}
         />
@@ -264,7 +267,7 @@ export declare module FirebaseAuthOwnUI {
       inputMode: T;
       passwordRegex: RegExp;
       redirectToSuccessUrl: () => void;
-    }) => OnSubmit;
+    }) => CallableSubmit;
   }
 
   export interface UseFieldsInfo {
