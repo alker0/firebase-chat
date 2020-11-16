@@ -1,0 +1,7 @@
+{
+  "name": "rtdb-rules-builder",
+  "description": "JS Utilities for building firebase realtime database rules.",
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "license": "MIT"
+}

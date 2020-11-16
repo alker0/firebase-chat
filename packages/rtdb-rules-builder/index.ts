@@ -1,5 +1,3 @@
-#!/usr/local/bin/yarn ts-node-script
-
 export const read = '.read';
 export const write = '.write';
 export const validate = '.validate';
