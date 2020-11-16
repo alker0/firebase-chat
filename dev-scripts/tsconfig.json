@@ -1,14 +1,10 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    //"lib": ["ES2020"],
 
     "module": "commonjs",
 
-    // `import React` instead of `import * as React`
     "allowSyntheticDefaultImports": true,
-
-    "jsx": "preserve",
 
     "baseUrl": "./",
     "paths": {
@@ -19,13 +15,10 @@
 
     "skipLibCheck": true,
 
-    // Only for type checks.
     "noEmit": true,
 
-    // Useful type checks.
     "strictNullChecks": true,
 
-    // Disallow implicit any.
     "noImplicitAny": true,
   },
 
