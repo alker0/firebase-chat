@@ -5,7 +5,6 @@ web_modules/
 /dist/
 /src/public/
 /eustia/cache/
-.parcel-cache/
 .env
 yarn-error.log
 database-debug.log
