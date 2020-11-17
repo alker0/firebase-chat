@@ -21,7 +21,7 @@ module.exports = {
       { cmd: 'postcss', input: ['.pcss'], output: ['.css'] },
     ],
     [
-      './plugins/snowpack-posthtml.js',
+      '../../plugins/snowpack-posthtml.js',
       { inputDir: './src/templates', config: require('./posthtml.config') },
     ],
   ],
@@ -32,8 +32,8 @@ module.exports = {
     'src/assets': '/assets',
     'src/assets/favicon': '/',
     'src/styles': '/css',
-    'src/app/index': '/js',
-    'src/app/404': '/js',
+    'src/scripts/index': '/js',
+    'src/scripts/404': '/js',
     'src/lib': '/lib',
     'src/components': '/components',
   },
@@ -44,9 +44,6 @@ module.exports = {
     '@components/cirrus': './src/components/common/src/cirrus',
     '@components': './src/components',
     '@webModules': './web_modules',
-  },
-  proxy: {
-    '/__/firebase': 'https://www.gstatic.com/firebasejs',
   },
   installOptions: {
     installTypes: true,

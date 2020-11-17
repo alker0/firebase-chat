@@ -1,21 +1,16 @@
 {
   "compilerOptions": {
-    // Target latest browsers
-    "target": "ES2019",
-    "lib": ["ES2019", "DOM", "DOM.Iterable"],
+    "target": "ES2020",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
 
-    // Required: Use module="ESNext" so that TS won't compile/disallow any ESM syntax.
     "module": "ESNext",
 
-    // Required for some packages.
     "moduleResolution": "Node",
 
-    // `import React` instead of `import * as React`
     "allowSyntheticDefaultImports": true,
 
     "jsx": "preserve",
 
-    // Required: Map "/web_modules/*" imports back to their node_modules/ TS definition files.
     "baseUrl": "./",
     "paths": {
       "*": [
@@ -26,30 +21,23 @@
       ],
       "solid-js/*": ["solid-js/types/*"],
       "@lib/*": ["src/lib/*"],
-      "@components/*": ["src/components/*"],
-      "@components/common/*": ["src/components/common/src/*", "src/components/common/*"],
-      "@components/cirrus/*": ["src/components/common/src/cirrus/*"]
+      "@components/*": ["src/components/*"]
     },
 
-    // Skip npm module type check.
     "skipLibCheck": true,
 
-    // Only for type checks.
     "noEmit": true,
 
-    // Useful type checks.
     "strictNullChecks": true,
 
-    // Disallow implicit any.
     "noImplicitAny": true,
   },
 
   "include": [
     "./src/**/*",
-    "./plugins/**/*",
     "./*.config.js",
     "node_modules/solid-js/dist/types/rendering/jsx.d.ts",
-    "node_modules/type-filtered-clsx/clsx.d.ts"
+    "node_modules/type-filtered-clsx/index.d.ts"
   ],
 
   "exclude": [

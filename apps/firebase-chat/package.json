@@ -8,47 +8,19 @@
     "> 2%",
     "not dead"
   ],
-  "targets": {
-    "app": {
-      "context": "browser",
-      "engines": {
-        "browsers": [
-          "> 2%",
-          "not dead"
-        ]
-      },
-      "includeNodeModules": {
-        "inferno": false,
-        "firebase/app": false,
-        "firebase/database": false,
-        "firebase/storage": false
-      }
-    }
-  },
-  "alias": {
-    "lib": "~/src/lib",
-    "components": "~/src/components",
-    "/__/firebase": "https://www.gstatic.com/firebasejs"
-  },
-  "distDir": "build",
   "scripts": {
-    "start": "run-s start:snowpack",
+    "start": "yarn start:snowpack",
     "start:snowpack": "snowpack dev --port 8080",
     "build": "snowpack build",
     "test": "jest --verbose -i",
     "test:detect": "jest --verbose -i --detectOpenHandles",
     "citest": "CI=true jest --reporters=default --reporters=jest-github-action-reporter",
-    "rdb:compile:core": "tsc -d -t 'ES2020' -m commonjs --outDir ./scripts/dist ./scripts/database-rules-build-core.ts",
-    "rdb:build": "ts-node -sT ./scripts/database-rules-build database.rules.json",
-    "rdb:emulator:get:rule": "node ./scripts/database-emulator-access -a -p '/.settings/rules.json?ns=talker-v1'",
-    "rdb:emulator:put:rule": "ts-node -sT ./scripts/database-rules-build $HOME/bind/firebase-emulator/rules/talker-v1.rules.json",
-    "page:add": "node ./scripts/add-page.js",
-    "page:delete": "node ./scripts/delete-page.js"
+    "rdb:build": "ts-node -sT ./dev-scripts/database-rules-build database.rules.json",
+    "rdb:emulator:get:rule": "node ./dev-scripts/database-emulator-access -a -p '/.settings/rules.json?ns=talker-v1'",
+    "rdb:emulator:put:rule": "ts-node -sT ./dev-scripts/database-rules-build $HOME/bind/firebase-emulator/rules/talker-v1.rules.json"
   },
   "devDependencies": {
-    "@alker/styled-tsx": "file:./src/lib/packages/styled-tsx",
     "@babel/core": "^7.12.3",
-    "@babel/plugin-proposal-class-properties": "^7.12.1",
     "@babel/plugin-proposal-object-rest-spread": "^7.12.1",
     "@babel/preset-env": "^7.12.1",
     "@babel/preset-typescript": "^7.12.1",
@@ -65,19 +37,9 @@
     "@types/snowpack-env": "^2.3.2",
     "@typescript-eslint/eslint-plugin": "^4.7.0",
     "@typescript-eslint/parser": "^4.7.0",
-    "babel-plugin-macros": "^2.8.0",
     "babel-plugin-transform-remove-console": "^6.9.4",
     "babel-preset-solid": "^0.22.1",
-    "connect": "^3.7.0",
     "dotenv": "^8.2.0",
-    "eslint": "^7.13.0",
-    "eslint-config-airbnb-typescript": "^12.0.0",
-    "eslint-config-prettier": "^6.15.0",
-    "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-jest": "^24.1.3",
-    "eslint-plugin-jsx-a11y": "^6.4.1",
-    "eslint-plugin-prettier": "^3.1.4",
-    "eslint-plugin-react": "^7.21.5",
     "firebase": "^8.0.2",
     "firebase-admin": "^9.4.1",
     "firebase-tools": "^8.16.2",
@@ -87,11 +49,7 @@
     "npm-run-all": "^4.1.5",
     "postcss": "^8.1.7",
     "postcss-cli": "^8.2.0",
-    "postcss-import": "^13.0.0",
-    "postcss-import-url": "^5.1.0",
-    "postcss-ts-classnames": "^0.2.0",
     "posthtml": "^0.13.4",
-    "posthtml-cli": "^0.8.0",
     "posthtml-expressions": "^1.6.2",
     "posthtml-extend": "^0.5.2",
     "posthtml-include": "^1.6.0",
@@ -102,81 +60,11 @@
     "querystring": "^0.2.0",
     "snowpack": "^2.17.1",
     "source-map-support": "^0.5.19",
-    "stylelint": "^13.7.2",
-    "stylelint-config-prettier": "^8.0.2",
-    "stylelint-config-standard": "^20.0.0",
-    "stylelint-prettier": "^1.1.2",
-    "superstatic": "^7.0.1",
     "supports-color": "^7.2.0",
     "ts-jest": "^26.4.4",
     "ts-node": "^9.0.0",
-    "type-filtered-clsx": "file:./src/lib/packages/type-filtered-clsx",
     "typescript": "^4.0.5",
-    "url": "^0.11.0",
-    "websocket-driver": "^0.7.4"
-  },
-  "dependencies:about": {
-    "module: solid": "DOM renderer",
-    "module: clsx": "function of CSS class name",
-    "module: firebase": "Firebase",
-    "dev-tool: @babel/core": "JS transformer",
-    "dev-tool: babel-plugin-macros": "JS macro",
-    "dev-tool: @babel/preset-env": "Modern JS to ES5",
-    "dev-tool: @babel/preset-typecsript": "TS to JS",
-    "dev-tool: @babel/proposals-class-properties": "In JS, class",
-    "dev-tool: @babel/proposals-object-rest-spread": "In JS, spread",
-    "dev-tool: fast-fp.macro": "macro of pipe",
-    "dev-tool: inline-loops.macro": "macro of loop",
-    "dev-tool: postcss": "CSS transformer",
-    "dev-tool: postcss-cli": "CLI of PostCSS",
-    "dev-tool: postcss-import": "In CSS, @import",
-    "dev-tool: postcss-import-url": "In CSS, @import from CDN",
-    "dev-tool: postcss-ts-classname": ".d.ts from CSS",
-    "dev-tool: @fullhuman/postcss-purgecss": "combine: postcss & purgecss",
-    "dev-tool: precss": "In CSS, many-future",
-    "dev-tool: posthtml": "HTML transformer",
-    "dev-tool: posthtml-cli": "CLI of PostHTML",
-    "dev-tool: posthtml-expressions": "In HTML, meny expressions",
-    "dev-tool: posthtml-extend": "In HTML, extend",
-    "dev-tool: posthtml-include": "In HTML, include",
-    "dev-tool: purgecss": "delete unused css",
-    "dev-tool: purgecss-from-js": "combine: purgecss & JS",
-    "dev-tool: snowpack": "module builder",
-    "dev-tool: stylelint": "linter for css",
-    "dev-tool: stylelint-config-standard": "base config of stylelint",
-    "dev-tool: stylelint-config-prettier": "prettier config of stylelint",
-    "dev-tool: stylelint-prettier": "combine: prettier & stylelint",
-    "dev-tool: npm-run-all": "multiple scripts",
-    "dev-tool: jest": "test tool",
-    "dev-tool: jest-github-actions-reporter": "add pull request annotation when jest error",
-    "dev-tool: pipe-and-compose-types": "type of pipe function",
-    "linter & formatter: prettier": "formatter",
-    "linter & formatter: pretty-quick": "format only modified file",
-    "linter & formatter: eslint": "linter",
-    "linter & formatter: eslint-config-prettier": "combine: eslint & prettier",
-    "linter & formatter: eslint-config-airbnb-typescript": "eslint base config",
-    "linter & formatter: eslint-plugin-prettier": "combine: eslint & prettier",
-    "linter & formatter: eslint-plugin-import": "for airbnb",
-    "linter & formatter: eslint-plugin-jsx-a11y": "for airbnb",
-    "linter & formatter: eslint-plugin-react": "for airbnb",
-    "linter & formatter: @typescript-esllint/parser": "combine: eslint & typescript",
-    "linter & formatter: @typescript-esllint/eslint-plugin": "combine: eslint & typescript",
-    "for-firebase: firebase-tools": "Firebase",
-    "for-firebase: connect": "server for Firebase",
-    "for-firebase: superstatic": "provider for Firebase",
-    "for-firebase: websocket-driver": "websockets (HMR) for Firebase & dev-server",
-    "language: squirrelly": "alt html",
-    "language: typescript": "typescript",
-    "assets: cirrus-ui": "CSS Assets",
-    "assets: licia": "JS Utils"
-  },
-  "dependencies:for-stop-warning": {
-    "url": "@types/node",
-    "querystring": "@types/node",
-    "supports-color": "debug",
-    "long": "@protobufjs/inquire",
-    "@firebase/app": "@firebase/database",
-    "@firebase/component": "@firebase/rules-unit-testing"
+    "url": "^0.11.0"
   },
   "dependencies": {
     "clsx": "^1.1.1",
@@ -184,11 +72,6 @@
     "solid-js": "^0.22.0",
     "solid-styled-jsx": "^0.22.0",
     "styled-jsx": "^3.3.1"
-  },
-  "dependenciesMeta": {
-    "fsevents": {
-      "built": false
-    }
   },
   "jest": {
     "projects": [
