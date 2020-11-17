@@ -7,6 +7,10 @@
   "scripts": {
     "rdb:compile:core": "tsc -d -t 'ES2020' -m commonjs --outDir ./dev-scripts/rules-builder ./packages/database-rules-build-core/index.ts"
   },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "devDependencies": {
     "@babel/core": "^7.12.3",
     "@babel/plugin-proposal-object-rest-spread": "^7.12.1",
