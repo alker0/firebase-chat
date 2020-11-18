@@ -11,7 +11,7 @@
   },
   "devDependencies": {
     "@alker/styled-tsx": "workspace:*",
-    "@babel/cli": "^7.10.5",
+    "@babel/cli": "^7.12.1",
     "@babel/core": "^7.12.3",
     "@babel/preset-typescript": "^7.12.1",
     "firebaseui": "^4.7.1",
