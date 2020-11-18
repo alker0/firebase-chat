@@ -1,6 +1,7 @@
 *.code-workspace
 node_modules/
 web_modules/
+tmp/
 /build/
 /dist/
 /src/public/
