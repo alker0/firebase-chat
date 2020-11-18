@@ -1,5 +1,5 @@
 {
-  "name": "firebase-chat",
+  "name": "web-workspace",
   "version": "0.0.1",
   "author": "alker",
   "license": "MIT",
@@ -116,6 +116,9 @@
     "long": "@protobufjs/inquire",
     "@firebase/app": "@firebase/database",
     "@firebase/component": "@firebase/rules-unit-testing"
+  },
+  "peerDependencies": {
+    "jest": "26.6 - 27"
   },
   "dependenciesMeta": {
     "fsevents": {
