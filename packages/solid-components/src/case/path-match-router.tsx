@@ -1,4 +1,4 @@
-import { ComponentCreater } from '../../typings/component-creater';
+import { ComponentCreater } from '../../types/component-creater';
 import { Router } from '../base/molecules/router';
 
 const staticMatch = (matchText: string) =>

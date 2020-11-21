@@ -1,6 +1,6 @@
 import { createMemo, assignProps, Match, Suspense, Switch } from 'solid-js';
 import { Dynamic } from 'solid-js/web';
-import { ComponentCreater } from '../../../typings/component-creater';
+import { ComponentCreater } from '../../../types/component-creater';
 
 const defaultContext: Router.DefaultContext = {
   loadingElement: () => <div>Loading...</div>,

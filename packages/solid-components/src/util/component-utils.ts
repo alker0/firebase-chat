@@ -1,4 +1,4 @@
-import { EventArgOf } from '@components/common/typings/component-utils';
+import { EventArgOf } from '../../types/component-utils';
 
 export const DO_NOTHING: (...args: any[]) => void = () => {};
 
