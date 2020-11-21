@@ -30,19 +30,18 @@
     "es6": true,
     "commonjs": true
   },
-  "globals": {
-    "JSX": "readonly",
-    "firebase": "readonly",
-    "firebaseui": "readonly"
-  },
   "rules": {
     "no-console": "off",
     "default-case": "off",
     "no-else-return": "off",
     "global-require": "off",
-    "yoda": ["error", "never", {
-      "onlyEquality": true
-    }],
+    "yoda": [
+      "error",
+      "never",
+      {
+        "onlyEquality": true
+      }
+    ],
     "react/jsx-filename-extension": ["error", {"extensions": [".js", ".jsx", ".ts", ".tsx"]}],
     "react/react-in-jsx-scope": "off",
     "react/jsx-props-no-spreading": "off",
@@ -58,13 +57,16 @@
     "import/no-unresolved": "off",
     "import/prefer-default-export": "off",
     "import/no-extraneous-dependencies": "off",
-    "import/extensions": ["error", {
-      "js": "never",
-      "jsx": "never",
-      "ts": "never",
-      "tsx": "never",
-      "d.ts": "never"
-    }]
+    "import/extensions": [
+      "error",
+      {
+        "js": "never",
+        "jsx": "never",
+        "ts": "never",
+        "tsx": "never",
+        "d.ts": "never"
+      }
+    ]
     // "jest/no-hooks": [
     //   "error",
     //   {
