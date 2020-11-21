@@ -53,7 +53,12 @@ module.exports = {
   },
   installOptions: {
     installTypes: true,
-    externalPackage: ['https://cdn.skypack.dev', 'styled-jsx/css', 'firebase'],
+    externalPackage: [
+      'https://cdn.skypack.dev',
+      'styled-jsx/css',
+      'firebase',
+      'firebaseui',
+    ],
   },
   install: [],
   devOptions: {
