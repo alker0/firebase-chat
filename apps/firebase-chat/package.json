@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "start": "yarn start:snowpack",
-    "start:snowpack": "snowpack dev --port 8080",
+    "start:snowpack": "snowpack dev",
     "build": "snowpack build",
     "test": "jest --verbose -i",
     "test:detect": "jest --verbose -i --detectOpenHandles",

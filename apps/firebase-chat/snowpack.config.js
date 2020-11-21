@@ -63,5 +63,6 @@ module.exports = {
   install: [],
   devOptions: {
     bundle: false,
+    port: 8080,
   },
 };
