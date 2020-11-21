@@ -1,7 +1,7 @@
 import clsx, { Clsx } from 'clsx';
 import { PathMatchRouter } from '@components/common/case/path-match-router';
 import { Redirect as RedirectCreator } from '@components/common/base/atoms/redirect';
-import { Cirrus } from '@components/common/typings/cirrus-style';
+import { Cirrus } from 'cirrus-types';
 import { inputRegex } from '@components/common/util/input-field-utils';
 import { createSignal, untrack } from 'solid-js';
 import { sessionState } from '@lib/solid-firebase-auth';

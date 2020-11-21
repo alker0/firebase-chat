@@ -1,8 +1,8 @@
 import clsx, { Clsx } from 'clsx';
+import { Cirrus } from 'cirrus-types';
 import { assignProps, Component } from 'solid-js';
 import { sizeSuffixMap } from '../../util/cirrus-utils';
 import { SizedFormItem } from '../../../types/cirrus-form';
-import { Cirrus } from '../../../types/cirrus-style';
 
 const cn: Clsx<Cirrus> = clsx;
 

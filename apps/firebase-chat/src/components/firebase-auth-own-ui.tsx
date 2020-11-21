@@ -3,7 +3,7 @@ import { FormContainer } from '@components/common/base/form/form-container';
 import { BasicInputField } from '@components/common/cirrus/common/basic-input-field';
 import { LoginBasicBottom } from '@components/common/cirrus/domain/login-basic-bottom';
 import { memoHandler } from '@components/common/util/component-utils';
-import { Cirrus } from '@components/common/typings/cirrus-style';
+import { Cirrus } from 'cirrus-types';
 import {
   EventArg,
   EventArgOf,

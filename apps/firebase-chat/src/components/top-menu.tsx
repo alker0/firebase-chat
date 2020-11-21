@@ -3,7 +3,7 @@ import {
   ClickHandle,
   DO_NOTHING,
 } from '@components/common/util/component-utils';
-import { Cirrus } from '@components/common/typings/cirrus-style';
+import { Cirrus } from 'cirrus-types';
 import clsx, { Clsx } from 'clsx';
 import { assignProps, Component } from 'solid-js';
 

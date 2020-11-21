@@ -8,7 +8,7 @@ import {
   DO_NOTHING,
 } from '@components/common/util/component-utils';
 import { createMultiDisposableStyle } from '@components/common/util/style-utils';
-import { Cirrus } from '@components/common/typings/cirrus-style';
+import { Cirrus } from 'cirrus-types';
 import {
   ComponentMemo,
   OnlyOptional,

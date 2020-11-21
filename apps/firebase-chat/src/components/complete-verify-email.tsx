@@ -1,4 +1,4 @@
-import { Cirrus } from '@components/common/typings/cirrus-style';
+import { Cirrus } from 'cirrus-types';
 import {
   inputRegex,
   loginMethodCreater,
