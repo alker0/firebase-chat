@@ -363,9 +363,10 @@ export const LoginForm = {
     const context = assignProps({}, defaultContext, contextArg);
 
     return () => {
-      const [getInputValue, setInputValue] = createState<
-        FirebaseAuthOwnUI.InputValueScheme
-      >({
+      const [
+        getInputValue,
+        setInputValue,
+      ] = createState<FirebaseAuthOwnUI.InputValueScheme>({
         email: '',
         password: '',
         passConfirm: '',

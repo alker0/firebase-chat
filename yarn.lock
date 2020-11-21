@@ -7165,6 +7165,7 @@ __metadata:
   resolution: "firebase-chat@workspace:apps/firebase-chat"
   dependencies:
     "@alker/solid-components": "workspace:*"
+    "@alker/styled-tsx": "workspace:*"
     "@babel/core": ^7.12.7
     "@babel/plugin-proposal-object-rest-spread": ^7.12.1
     "@babel/preset-env": ^7.12.7
