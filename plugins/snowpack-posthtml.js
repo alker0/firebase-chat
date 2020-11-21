@@ -45,7 +45,7 @@ module.exports = function postHtmlPlugin(snowpackConfig, pluginOption) {
         }));
 
       if (!fsSync.existsSync(outputDir)) {
-        await fs.mkDir(outputDir);
+        await fs.mkdir(outputDir);
       }
 
       await Promise.all(
