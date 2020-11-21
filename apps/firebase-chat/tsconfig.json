@@ -19,9 +19,21 @@
         "node_modules/*",
         // "web_modules/*.js"
       ],
-      "solid-js/*": ["solid-js/types/*"],
-      "@lib/*": ["src/lib/*"],
-      "@components/*": ["src/components/*"]
+      "solid-js/*": [
+        "solid-js/types/*"
+      ],
+      "@lib/*": [
+        "src/lib/*"
+      ],
+      "@components/common/*": [
+        "../../packages/solid-components/src/*",
+      ],
+      "@components/types/*": [
+        "../../packages/solid-components/types/*"
+      ],
+      "@components/project/*": [
+        "src/components/*"
+      ],
     },
 
     "skipLibCheck": true,
@@ -37,7 +49,10 @@
     "./src/**/*",
     "./*.config.js",
     "node_modules/solid-js/dist/types/rendering/jsx.d.ts",
-    "node_modules/type-filtered-clsx/index.d.ts"
+    // "node_modules/@alker/styled-tsx/index.d.ts",
+    "../../packages/styled-tsx/index.d.ts",
+    // "node_modules/type-filtered-clsx/index.d.ts",
+    "../../packages/type-filtered-clsx/index.d.ts"
   ],
 
   "exclude": [

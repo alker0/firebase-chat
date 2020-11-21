@@ -8,7 +8,7 @@ import {
   EventArg,
   EventArgOf,
   OnlyOptional,
-} from '@components/common/typings/component-utils';
+} from '@components/types/component-utils';
 import {
   CallableSubmit,
   inputRegex,

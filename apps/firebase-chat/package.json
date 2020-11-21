@@ -65,11 +65,12 @@
     "ts-jest": "^26.4.4",
     "ts-node": "^9.0.0",
     "typescript": "^4.0.5",
+    "type-filtered-clsx": "workspace:*",
     "url": "^0.11.0"
   },
   "dependencies": {
+    "@alker/solid-components": "workspace:*",
     "clsx": "^1.1.1",
-    "firebaseui": "^4.7.1",
     "solid-js": "^0.22.0",
     "solid-styled-jsx": "^0.22.0",
     "styled-jsx": "^3.3.2"

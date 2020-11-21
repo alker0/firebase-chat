@@ -1,4 +1,4 @@
-import { HeaderMenu } from '@components/cirrus/common/header-dropdown';
+import { HeaderMenu } from '@components/common/cirrus/common/header-dropdown';
 import { createMemo } from 'solid-js';
 import { sessionState } from '@lib/solid-firebase-auth';
 import { buttonize, DO_NOTHING } from '@components/common/util/component-utils';
