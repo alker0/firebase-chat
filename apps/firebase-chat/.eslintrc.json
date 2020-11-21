@@ -4,7 +4,7 @@
     "ecmaFeatuers": {
       "jsx": true
     },
-    "project": [ "./tsconfig.json", "./scripts/tsconfig.json", "./__tests__/tsconfig.json" ],
+    "project": [ "./tsconfig.json", "./__tests__/tsconfig.json" ],
     "useJSXTextNode": true
   },
   "plugins": ["@typescript-eslint", "jest", "import", "prettier"],
