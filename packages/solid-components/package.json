@@ -15,6 +15,7 @@
     "@babel/core": "^7.12.3",
     "@babel/preset-typescript": "^7.12.1",
     "cirrus-types": "workspace:*",
+    "firebase": "^8.1.1",
     "firebaseui": "^4.7.1",
     "npm-run-all": "^4.1.5",
     "solid-js": "^0.22.0",
@@ -26,11 +27,10 @@
     "cirrus-ui": "0.6.x",
     "clsx": "1.x",
     "firebase": "7.11 - 8",
-    "firebaseui": "4.6.x",
+    "firebaseui": "4.6.0 - 4.8",
     "solid-js": "0.22.x",
     "solid-styled-jsx": "0.22.x",
-    "styled-jsx": "3.3 - 4",
-    "type-filtered-clsx": "*"
+    "styled-jsx": "3.3 - 4"
   },
   "peerDependenciesMeta": {
     "cirrus-ui": {
@@ -43,9 +43,6 @@
       "optional": true
     },
     "firebaseui": {
-      "optional": true
-    },
-    "type-filtered-clsx": {
       "optional": true
     }
   }
