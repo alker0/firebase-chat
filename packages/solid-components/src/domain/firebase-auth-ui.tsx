@@ -1,4 +1,3 @@
-import 'solid-styled-jsx/style';
 import firebase from 'firebase';
 import firebaseui from 'firebaseui';
 import { createComputed, assignProps } from 'solid-js';

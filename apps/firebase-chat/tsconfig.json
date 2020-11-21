@@ -42,11 +42,7 @@
   "include": [
     "./src/**/*",
     "./*.config.js",
-    "node_modules/solid-js/dist/types/rendering/jsx.d.ts",
-    // "node_modules/@alker/styled-tsx/index.d.ts",
-    "../../packages/styled-tsx/index.d.ts",
-    // "node_modules/type-filtered-clsx/index.d.ts",
-    "../../packages/type-filtered-clsx/index.d.ts"
+    "node_modules/solid-js/dist/types/render/jsx.d.ts",
   ],
   "exclude": [
     "node_modules"
