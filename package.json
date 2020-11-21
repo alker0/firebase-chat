@@ -5,7 +5,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "rdb:compile:core": "tsc -d -t 'ES2020' -m commonjs --outDir ./dev-scripts/rules-builder ./packages/database-rules-build-core/index.ts"
+    "rdb:compile:core": "tsc -d -t 'ES2020' -m commonjs --outDir ./dev-scripts/rules-builder ./packages/rtdb-rules-builder/index.ts"
   },
   "workspaces": [
     "apps/*",
