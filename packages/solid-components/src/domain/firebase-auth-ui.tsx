@@ -24,10 +24,7 @@ export const FirebaseAuthUI: ComponentCreater<
       });
 
       return (
-        /* eslint-disable react/jsx-one-expression-per-line */
-        /* eslint-disable react/jsx-closing-tag-location */
         <div style={{ display: 'contents' }} ref={authRef}>
-          {/* prettier-ignore */}
           <style jsx>{`
             div :global(label.mdl-textfield__label:not(.no-match)) {
               margin-left: unset;
@@ -42,8 +39,6 @@ export const FirebaseAuthUI: ComponentCreater<
             }
           `}</style>
         </div>
-        /* eslint-enable react/jsx-one-expression-per-line */
-        /* eslint-enable react/jsx-closing-tag-location */
       );
     };
   },
