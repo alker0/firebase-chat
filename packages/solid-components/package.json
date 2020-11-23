@@ -12,6 +12,7 @@
   "devDependencies": {
     "@alker/cirrus-types": "workspace:*",
     "@alker/styled-tsx": "workspace:*",
+    "@alker/type-filtered-clsx": "workspace:*",
     "@babel/cli": "^7.12.7",
     "@babel/core": "^7.12.7",
     "@babel/preset-typescript": "^7.12.7",
@@ -20,8 +21,7 @@
     "npm-run-all": "^4.1.5",
     "solid-js": "^0.22.4",
     "solid-styled-jsx": "^0.22.4",
-    "styled-jsx": "~3.3.2",
-    "type-filtered-clsx": "workspace:*"
+    "styled-jsx": "~3.3.2"
   },
   "peerDependencies": {
     "cirrus-ui": "0.6.x",

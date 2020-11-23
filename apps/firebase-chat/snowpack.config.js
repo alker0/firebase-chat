@@ -49,7 +49,7 @@ module.exports = {
     '@web_modules': './web_modules',
     '@alker/cirrus-types': '../../packages/cirrus-types',
     '@alker/styled-tsx': '../../packages/styled-tsx',
-    'type-filtered-clsx': '../../packages/type-filtered-clsx',
+    '@alker/type-filtered-clsx': '../../packages/type-filtered-clsx',
   },
   installOptions: {
     installTypes: true,
