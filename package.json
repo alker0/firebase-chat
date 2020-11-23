@@ -36,7 +36,7 @@
     "postcss-cli": "^8.3.0",
     "postcss-import": "^13.0.0",
     "postcss-import-url": "^5.1.0",
-    "postcss-ts-classnames": "^0.2.0",
+    "postcss-ts-classnames": "patch:postcss-ts-classnames@0.2.0#./patches/postcss-ts-classnames.patch",
     "posthtml": "^0.14.0",
     "posthtml-cli": "^0.8.1",
     "posthtml-expressions": "^1.6.2",

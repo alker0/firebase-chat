@@ -12,22 +12,37 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@alker/cirrus-types@workspace:*, @alker/cirrus-types@workspace:packages/cirrus-types":
+  version: 0.0.0-use.local
+  resolution: "@alker/cirrus-types@workspace:packages/cirrus-types"
+  dependencies:
+    postcss: ^8.1.9
+    postcss-import-url: ^5.1.0
+    postcss-ts-classnames: ^0.2.0
+  peerDependencies:
+    cirrus-ui: 0.6.0
+  peerDependenciesMeta:
+    cirrus-ui:
+      optional: true
+  languageName: unknown
+  linkType: soft
+
 "@alker/solid-components@workspace:*, @alker/solid-components@workspace:packages/solid-components":
   version: 0.0.0-use.local
   resolution: "@alker/solid-components@workspace:packages/solid-components"
   dependencies:
+    "@alker/cirrus-types": "workspace:*"
     "@alker/styled-tsx": "workspace:*"
+    "@alker/type-filtered-clsx": "workspace:*"
     "@babel/cli": ^7.12.7
     "@babel/core": ^7.12.7
     "@babel/preset-typescript": ^7.12.7
-    cirrus-types: "workspace:*"
     firebase: ^8.1.1
     firebaseui: ^4.7.1
     npm-run-all: ^4.1.5
     solid-js: ^0.22.4
     solid-styled-jsx: ^0.22.4
     styled-jsx: ~3.3.2
-    type-filtered-clsx: "workspace:*"
   peerDependencies:
     cirrus-ui: 0.6.x
     clsx: 1.x
@@ -56,6 +71,14 @@ __metadata:
   peerDependenciesMeta:
     styled-jsx:
       optional: true
+  languageName: unknown
+  linkType: soft
+
+"@alker/type-filtered-clsx@workspace:*, @alker/type-filtered-clsx@workspace:packages/type-filtered-clsx":
+  version: 0.0.0-use.local
+  resolution: "@alker/type-filtered-clsx@workspace:packages/type-filtered-clsx"
+  peerDependencies:
+    clsx: 1.x
   languageName: unknown
   linkType: soft
 
@@ -4795,17 +4818,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cirrus-types@workspace:*, cirrus-types@workspace:packages/cirrus-types":
-  version: 0.0.0-use.local
-  resolution: "cirrus-types@workspace:packages/cirrus-types"
-  peerDependencies:
-    cirrus-ui: 0.6.0
-  peerDependenciesMeta:
-    cirrus-ui:
-      optional: true
-  languageName: unknown
-  linkType: soft
-
 "cjs-module-lexer@npm:^0.5.0":
   version: 0.5.2
   resolution: "cjs-module-lexer@npm:0.5.2"
@@ -7164,8 +7176,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "firebase-chat@workspace:apps/firebase-chat"
   dependencies:
+    "@alker/cirrus-types": "workspace:*"
     "@alker/solid-components": "workspace:*"
     "@alker/styled-tsx": "workspace:*"
+    "@alker/type-filtered-clsx": "workspace:*"
     "@babel/core": ^7.12.7
     "@babel/plugin-proposal-object-rest-spread": ^7.12.1
     "@babel/preset-env": ^7.12.7
@@ -7185,7 +7199,6 @@ __metadata:
     "@typescript-eslint/parser": ^4.8.1
     babel-plugin-transform-remove-console: ^6.9.4
     babel-preset-solid: ^0.22.4
-    cirrus-types: "workspace:*"
     clsx: ^1.1.1
     dotenv: ^8.2.0
     firebase: ^8.1.1
@@ -7209,7 +7222,6 @@ __metadata:
     styled-jsx: ^3.3.2
     ts-jest: ^26.4.4
     ts-node: ^9.0.0
-    type-filtered-clsx: "workspace:*"
     typescript: ^4.1.2
   peerDependencies:
     eslint: 7.x
@@ -12329,7 +12341,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss-ts-classnames@npm:^0.2.0":
+"postcss-ts-classnames@0.2.0, postcss-ts-classnames@npm:^0.2.0":
   version: 0.2.0
   resolution: "postcss-ts-classnames@npm:0.2.0"
   dependencies:
@@ -12337,6 +12349,17 @@ __metadata:
     postcss: ^7.0.21
     postcss-selector-parser: ^6.0.2
   checksum: b0151388ba4749540486deebba90a75b32d5156e0aa896f2b4be0167827e9716cb3c090cab5c8635818c91df8e60a035b74b14ff94932adc358180bb4b29ecd7
+  languageName: node
+  linkType: hard
+
+"postcss-ts-classnames@patch:postcss-ts-classnames@0.2.0#./patches/postcss-ts-classnames.patch::locator=web-workspace%40workspace%3A.":
+  version: 0.2.0
+  resolution: "postcss-ts-classnames@patch:postcss-ts-classnames@npm%3A0.2.0#./patches/postcss-ts-classnames.patch::version=0.2.0&hash=09edcb&locator=web-workspace%40workspace%3A."
+  dependencies:
+    lodash.debounce: ^4.0.8
+    postcss: ^7.0.21
+    postcss-selector-parser: ^6.0.2
+  checksum: 1f05a045df20c228e4833a3ee354e5d8ef1b6455c2aa0abb1edabdd358d605362beb4ab82f2a1dae1d7bce571879608dcdeac51a3e7f9ff4cca6ee997de2f7cd
   languageName: node
   linkType: hard
 
@@ -15220,14 +15243,6 @@ resolve@^1.18.1:
   languageName: node
   linkType: hard
 
-"type-filtered-clsx@workspace:*, type-filtered-clsx@workspace:packages/type-filtered-clsx":
-  version: 0.0.0-use.local
-  resolution: "type-filtered-clsx@workspace:packages/type-filtered-clsx"
-  peerDependencies:
-    clsx: 1.x
-  languageName: unknown
-  linkType: soft
-
 "type-is@npm:~1.6.17, type-is@npm:~1.6.18":
   version: 1.6.18
   resolution: "type-is@npm:1.6.18"
@@ -15777,7 +15792,7 @@ typescript@^4.1.2:
     postcss-cli: ^8.3.0
     postcss-import: ^13.0.0
     postcss-import-url: ^5.1.0
-    postcss-ts-classnames: ^0.2.0
+    postcss-ts-classnames: "patch:postcss-ts-classnames@0.2.0#./patches/postcss-ts-classnames.patch"
     posthtml: ^0.14.0
     posthtml-cli: ^0.8.1
     posthtml-expressions: ^1.6.2
