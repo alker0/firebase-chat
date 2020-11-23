@@ -152,9 +152,10 @@ export const CompleteVerifyEmail = {
         }
       });
 
-      const [getInputValue, setInputValue] = createState<
-        FirebaseAuthOwnUI.InputValueScheme
-      >({
+      const [
+        getInputValue,
+        setInputValue,
+      ] = createState<FirebaseAuthOwnUI.InputValueScheme>({
         email: cookieEmailValue,
         password: '',
         passConfirm: '',
