@@ -2,6 +2,7 @@
   "name": "@alker/type-filtered-clsx",
   "description": "Type declarations for filtering class name of clsx.",
   "version": "0.0.1",
+  "author": "alker",
   "license": "MIT",
   "main": "",
   "files": [

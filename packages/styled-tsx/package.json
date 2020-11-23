@@ -2,6 +2,7 @@
   "name": "@alker/styled-tsx",
   "description": "Minimal type declarations for styled-jsx.",
   "version": "0.0.1",
+  "author": "alker",
   "license": "MIT",
   "main": "",
   "peerDependencies": {

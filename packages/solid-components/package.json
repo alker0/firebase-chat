@@ -2,6 +2,7 @@
   "name": "@alker/solid-components",
   "description": "Solid JS components.",
   "version": "0.0.1",
+  "author": "alker",
   "license": "MIT",
   "main": "",
   "scripts": {
