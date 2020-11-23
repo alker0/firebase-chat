@@ -1,6 +1,6 @@
 import clsx, { Clsx } from 'clsx';
 import { assignProps, Component } from 'solid-js';
-import { Cirrus } from 'cirrus-types';
+import { Cirrus } from '@alker/cirrus-types';
 import { DefaultComponents } from '../../../types/component-creater';
 
 const cn: Clsx<Cirrus> = clsx;

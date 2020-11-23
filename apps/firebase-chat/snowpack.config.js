@@ -47,7 +47,7 @@ module.exports = {
     '@components/common': '../../packages/solid-components/src',
     '@components/types': '../../packages/solid-components/types',
     '@web_modules': './web_modules',
-    'cirrus-types': '../../packages/cirrus-types',
+    '@alker/cirrus-types': '../../packages/cirrus-types',
     '@alker/styled-tsx': '../../packages/styled-tsx',
     'type-filtered-clsx': '../../packages/type-filtered-clsx',
   },

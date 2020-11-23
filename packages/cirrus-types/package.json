@@ -1,5 +1,5 @@
 {
-  "name": "cirrus-types",
+  "name": "@alker/cirrus-types",
   "description": "A type declaration for cirrus.",
   "version": "0.6.0",
   "license": "MIT",

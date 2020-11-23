@@ -1,5 +1,5 @@
 import clsx, { Clsx } from 'clsx';
-import { Cirrus } from 'cirrus-types';
+import { Cirrus } from '@alker/cirrus-types';
 import { assignProps, Component } from 'solid-js';
 import { sizeSuffixMap } from '../../util/cirrus-utils';
 import { SizedFormItem } from '../../../types/cirrus-form';

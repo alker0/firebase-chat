@@ -3,7 +3,7 @@ import { createMemo } from 'solid-js';
 import { sessionState } from '@lib/solid-firebase-auth';
 import { buttonize, DO_NOTHING } from '@components/common/util/component-utils';
 import clsx from 'clsx';
-import { Cirrus } from 'cirrus-types';
+import { Cirrus } from '@alker/cirrus-types';
 
 const createMenuItems = () =>
   createMemo(() => [

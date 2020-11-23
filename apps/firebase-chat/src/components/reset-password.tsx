@@ -1,5 +1,5 @@
 import { styleUtils } from '@components/common/util/style-utils';
-import { Cirrus } from 'cirrus-types';
+import { Cirrus } from '@alker/cirrus-types';
 import { loginMethodCreater } from '@components/common/util/input-field-utils';
 import clsx, { Clsx } from 'clsx';
 import { Component, createSignal, createState } from 'solid-js';

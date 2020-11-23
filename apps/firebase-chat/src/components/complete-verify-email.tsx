@@ -1,4 +1,4 @@
-import { Cirrus } from 'cirrus-types';
+import { Cirrus } from '@alker/cirrus-types';
 import {
   inputRegex,
   loginMethodCreater,
