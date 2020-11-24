@@ -27,6 +27,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@alker/rtdb-rules-builder@workspace:packages/rtdb-rules-builder":
+  version: 0.0.0-use.local
+  resolution: "@alker/rtdb-rules-builder@workspace:packages/rtdb-rules-builder"
+  dependencies:
+    typescript: ^4.1.2
+  languageName: unknown
+  linkType: soft
+
 "@alker/solid-components@workspace:*, @alker/solid-components@workspace:packages/solid-components":
   version: 0.0.0-use.local
   resolution: "@alker/solid-components@workspace:packages/solid-components"
@@ -13541,12 +13549,6 @@ resolve@^1.18.1:
   checksum: eb70274fb392bb5e4f33ce8ebdee411fc8ce813ccf7d1684830c6752ba1b0346f0527107dcd7ce690ba7c1a9f2c731918fcd4ded11f57ed612897527a46c5f44
   languageName: node
   linkType: hard
-
-"rtdb-rules-builder@workspace:packages/rtdb-rules-builder":
-  version: 0.0.0-use.local
-  resolution: "rtdb-rules-builder@workspace:packages/rtdb-rules-builder"
-  languageName: unknown
-  linkType: soft
 
 "run-async@npm:^2.2.0":
   version: 2.4.1

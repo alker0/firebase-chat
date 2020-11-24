@@ -1,8 +1,17 @@
 {
-  "name": "rtdb-rules-builder",
-  "description": "JS Utilities for building firebase realtime database rules.",
+  "name": "@alker/rtdb-rules-builder",
+  "description": "JS utilities for building firebase realtime database rules.",
   "version": "0.0.1",
   "author": "alker",
+  "license": "MIT",
   "main": "dist/index.js",
-  "license": "MIT"
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "^4.1.2"
+  }
 }
