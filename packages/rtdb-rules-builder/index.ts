@@ -4,23 +4,17 @@ export const validate = '.validate';
 export const indexOn = '.indexOn';
 
 export interface RuleValue {
-  (): string;
-  length: RuleValue;
+  rawValue: string;
   isCaptured: boolean;
   isNum: boolean;
   isBool: boolean;
   isStringLiteral: boolean;
-  rawValue: string;
-
+  length: RuleValue;
+  toString(): string;
   matches: (regexText: string) => RuleValue;
 }
 
-interface FunctionWithLength {
-  (): string;
-  length: RuleValue;
-}
-
-export const ruleValue = (
+export function ruleValue(
   currentValue: string,
   {
     isCaptured = false,
@@ -28,64 +22,66 @@ export const ruleValue = (
     isBool = false,
     isStringLiteral = false,
   } = {},
-): RuleValue => {
-  function getCurrentResult() {
-    if (isStringLiteral) {
-      return `'${currentValue}'`;
-    } else if (isBool) {
-      return `${currentValue} === true`;
-    } else {
-      return currentValue;
-    }
-  }
-  Object.defineProperty(getCurrentResult, 'length', {
-    get: () => ruleValue(`${currentValue}.length`, { isNum: true }),
-  });
-  return Object.assign(getCurrentResult as FunctionWithLength, {
+): RuleValue {
+  return {
     isCaptured,
     isNum: typeof currentValue === 'number' || isNum,
     isBool,
     isStringLiteral,
     rawValue: currentValue,
-
+    toString() {
+      if (isStringLiteral) {
+        return `'${currentValue}'`;
+      } else if (isBool) {
+        return `${currentValue} === true`;
+      } else {
+        return currentValue;
+      }
+    },
+    get length() {
+      return ruleValue(`${currentValue}.length`, { isNum: true });
+    },
     matches: (regexText: string) =>
       ruleValue(`${currentValue}.matches(/${regexText}/)`),
-  });
-};
+  };
+}
 
 type RuleValueArg = string | number | boolean | RuleValue;
 type RuleValueArgs = RuleValueArg[];
 type Literals = readonly string[];
 
-const IsRuleValue = (target: RuleValueArg): target is RuleValue => {
+function IsRuleValue(target: RuleValueArg): target is RuleValue {
   return !['string', 'number'].includes(typeof target);
-};
+}
 
-const fixIfNum = (callRawValue = false) => (ruleValueArg: RuleValueArg) => {
-  switch (typeof ruleValueArg) {
-    case 'function':
-      if (ruleValueArg.isNum) {
-        return `''+${ruleValueArg()}`;
-      } else if (callRawValue) {
-        return ruleValueArg.rawValue;
-      } else {
-        return ruleValueArg();
-      }
-    case 'string':
-    case 'number':
-      return `'${ruleValueArg}'`;
-    default:
-      throw new Error('Expected arg is only [string, number, function]');
-  }
-};
+function fixIfNum(callRawValue = false) {
+  return function fixIfNumRunner(ruleValueArg: RuleValueArg): string {
+    switch (typeof ruleValueArg) {
+      case 'object':
+        if (ruleValueArg.isNum) {
+          return `''+${ruleValueArg}`;
+        } else if (callRawValue) {
+          return ruleValueArg.rawValue;
+        } else {
+          return ruleValueArg.toString();
+        }
+      case 'string':
+      case 'number':
+        return `'${ruleValueArg}'`;
+      default:
+        throw new Error('Expected arg is only [string, number, RuleValue]');
+    }
+  };
+}
 
 export const { joinArrayValues, joinPaths, joinTexts } = (() => {
-  const isStringifiable = (target: RuleValueArg): target is string | number =>
-    !IsRuleValue(target);
+  function isStringifiable(target: RuleValueArg): target is string | number {
+    return !IsRuleValue(target);
+  }
 
-  const getRuleValueStatus = (
+  function getRuleValueStatus(
     target: RuleValueArg,
-  ): [string | boolean, boolean] => {
+  ): [string | boolean, boolean] {
     if (isStringifiable(target)) {
       return [String(target), true];
     } else if (typeof target === 'boolean') {
@@ -93,14 +89,14 @@ export const { joinArrayValues, joinPaths, joinTexts } = (() => {
     } else {
       return [target.rawValue, target.isStringLiteral];
     }
-  };
+  }
 
-  const getPrefixAndSuffix = (
+  function getPrefixAndSuffix(
     firstArg: RuleValueArg,
     isSingleArg: boolean,
     firstIsStringLiteral: boolean,
     lastIsStringLiteral: boolean,
-  ) => {
+  ) {
     if (isSingleArg) {
       if (!IsRuleValue(firstArg) || firstArg.isNum) {
         return ["''+", ''];
@@ -110,17 +106,17 @@ export const { joinArrayValues, joinPaths, joinTexts } = (() => {
     } else {
       return [firstIsStringLiteral ? "'" : '', lastIsStringLiteral ? "'" : ''];
     }
-  };
+  }
 
-  const existsTagArgInfo = (literalArg: string, ruleValueArg: unknown) => [
-    literalArg !== '',
-    Boolean(ruleValueArg),
-  ];
+  function existsTagArgInfo(literalArg: string, ruleValueArg: unknown) {
+    return [literalArg !== '', Boolean(ruleValueArg)];
+  }
 
-  const joinArrayValuesFn = (values: RuleValueArgs) =>
-    values.map(fixIfNum()).join(',');
+  function joinArrayValuesFn(values: RuleValueArgs) {
+    return values.map(fixIfNum()).join(',');
+  }
 
-  const joinPathsFn = (paths: RuleValueArgs) => {
+  function joinPathsFn(paths: RuleValueArgs) {
     const [firstRawValue, firstIsStringLiteral] = getRuleValueStatus(paths[0]);
     const {
       rawValue: result,
@@ -146,12 +142,9 @@ export const { joinArrayValues, joinPaths, joinTexts } = (() => {
     );
 
     return `${prefix}${result}${suffix}`;
-  };
+  }
 
-  const joinTextsFn = (
-    literalArgs: Literals,
-    ...ruleValueArgs: RuleValueArgs
-  ) => {
+  function joinTextsFn(literalArgs: Literals, ...ruleValueArgs: RuleValueArgs) {
     const firstLiteral = literalArgs[0];
     const firstRuleValueArg = ruleValueArgs[0];
 
@@ -222,7 +215,7 @@ export const { joinArrayValues, joinPaths, joinTexts } = (() => {
     );
 
     return ruleValue(`${prefix}${result}${suffix}`);
-  };
+  }
 
   return {
     joinArrayValues: joinArrayValuesFn,
@@ -232,7 +225,7 @@ export const { joinArrayValues, joinPaths, joinTexts } = (() => {
 })();
 
 export interface RuleRef {
-  raw: string;
+  rawRef: string;
   parent: (depth?: number) => RuleRef;
   child: (...paths: RuleValueArgs) => RuleRef;
   exists: () => RuleValue;
@@ -245,7 +238,7 @@ export interface RuleRef {
 }
 
 export const ruleRef = (currentRef = ''): RuleRef => ({
-  raw: currentRef,
+  rawRef: currentRef,
   parent: (depth = 1) =>
     ruleRef(`${currentRef}.${Array(depth).fill('parent()').join('.')}`),
   child: (...paths: RuleValueArgs) =>
@@ -309,29 +302,21 @@ export const now = ruleValue('now', { isNum: true });
 export type RuleExpArg = RuleValueArg;
 export type RuleExpArgs = RuleExpArg[];
 
-export const extractText = (text: RuleExpArg) =>
-  typeof text === 'function' ? text() : text;
-
 export function getRuleResultFromRuleNode(
   ruleNode: RuleExpArg | (RuleExpArg | RuleExpArgs)[],
   withBracket: boolean,
 ): string {
-  switch (typeof ruleNode) {
-    case 'string':
-      return ruleNode;
-    case 'number':
-    case 'boolean':
-      return ruleNode.toString();
-    case 'function':
-      return ruleNode();
-  }
-  const ruleNodeValue = ruleNode
-    .map((ruleNodeElm) => getRuleResultFromRuleNode(ruleNodeElm, true))
-    .join(' ');
-  if (withBracket) {
-    return `(${ruleNodeValue})`;
+  if (Array.isArray(ruleNode)) {
+    const ruleNodeValue = ruleNode
+      .map((ruleNodeElm) => getRuleResultFromRuleNode(ruleNodeElm, true))
+      .join(' ');
+    if (withBracket) {
+      return `(${ruleNodeValue})`;
+    } else {
+      return ruleNodeValue;
+    }
   } else {
-    return ruleNodeValue;
+    return ruleNode.toString();
   }
 }
 
@@ -399,16 +384,7 @@ export function createRuleObject<T extends {}, U extends ResultRuleObject<T>>(
         result[prop] = boolOrExtract<T>(srcObj, prop);
         break;
       case indexOn:
-        result[prop] = srcObj[prop as IndexOnKey & keyof T].map(
-          (srcElement) => {
-            switch (typeof srcElement) {
-              case 'string':
-                return srcElement;
-              default:
-                return srcElement();
-            }
-          },
-        );
+        result[prop] = srcObj[prop as IndexOnKey & keyof T].map(String);
         break;
       default:
         result[
@@ -423,18 +399,13 @@ export function createRuleObject<T extends {}, U extends ResultRuleObject<T>>(
   }, {} as U);
 }
 
-export const join = (...texts: RuleExpArgs) =>
-  getRuleResultFromRuleNode(texts, false);
-export const bracket = (...texts: RuleExpArgs) =>
-  getRuleResultFromRuleNode(texts, true);
-export const exp = (literalArgs: Literals, ...jsArgs: RuleExpArgs) => {
-  return literalArgs
-    .map((literalArg, index) => {
-      const jsArg = jsArgs[index];
-      return `${literalArg}${extractText(jsArg ?? '')}`;
-    })
-    .join('');
-};
+export function ruleJoin(...texts: RuleExpArgs) {
+  return getRuleResultFromRuleNode(texts, false);
+}
+export function brecket(...texts: RuleExpArgs) {
+  return getRuleResultFromRuleNode(texts, true);
+}
 
-export const indexOnChild = (...children: RuleValueArgs) =>
-  children.map(fixIfNum(true));
+export function indexOnChild(...children: RuleValueArgs) {
+  return children.map(fixIfNum(true));
+}
