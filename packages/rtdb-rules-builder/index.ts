@@ -402,7 +402,7 @@ export function createRuleObject<T extends {}, U extends ResultRuleObject<T>>(
 export function ruleJoin(...texts: RuleExpArgs) {
   return getRuleResultFromRuleNode(texts, false);
 }
-export function brecket(...texts: RuleExpArgs) {
+export function bracket(...texts: RuleExpArgs) {
   return getRuleResultFromRuleNode(texts, true);
 }
 
