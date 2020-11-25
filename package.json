@@ -5,7 +5,9 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "rdb:compile:core": "tsc -d -t 'ES2020' -m commonjs --outDir ./dev-scripts/rules-builder ./packages/rtdb-rules-builder/index.ts"
+    "fbc:start": "yarn workspace firebase-chat start",
+    "rtdb:build": "yarn workspace @alker/rtdb-rules-builder build",
+    "rtdb:compile:core": "tsc -d -t 'ES2020' -m commonjs --outDir ./dev-scripts/rules-builder ./packages/rtdb-rules-builder/index.ts"
   },
   "workspaces": [
     "apps/*",
