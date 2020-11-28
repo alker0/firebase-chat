@@ -11,6 +11,8 @@ yarn-error.log
 database-debug.log
 *.gitskip*
 
+/packages/rtdb-rules-builder/dist/
+
 # ---- if using Zero-Install ----
 # .yarn/unplugged/
 # .yarn/build-state.yml

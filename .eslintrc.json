@@ -43,6 +43,7 @@
         "onlyEquality": true
       }
     ],
+    "@typescript-eslint/lines-between-class-members": "off",
     "react/jsx-filename-extension": ["error", {"extensions": [".js", ".jsx", ".ts", ".tsx"]}],
     "react/react-in-jsx-scope": "off",
     "react/jsx-props-no-spreading": "off",

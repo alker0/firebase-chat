@@ -1,54 +1,8 @@
-export const read = '.read';
-export const write = '.write';
-export const validate = '.validate';
-export const indexOn = '.indexOn';
+import { RuleValue } from './rule-value';
+import { read, write, validate, indexOn } from './native-keys';
 
-export interface RuleValue {
-  rawValue: string;
-  isCaptured: boolean;
-  isNum: boolean;
-  isBool: boolean;
-  isStringLiteral: boolean;
-  length: RuleValue;
-  toString(): string;
-  matches: (regexText: string) => RuleValue;
-}
-
-export function ruleValue(
-  currentValue: string,
-  {
-    isCaptured = false,
-    isNum = false,
-    isBool = false,
-    isStringLiteral = false,
-  } = {},
-): RuleValue {
-  return {
-    isCaptured,
-    isNum: typeof currentValue === 'number' || isNum,
-    isBool,
-    isStringLiteral,
-    rawValue: currentValue,
-    toString() {
-      if (isStringLiteral) {
-        return `'${currentValue}'`;
-      } else if (isBool) {
-        return `${currentValue} === true`;
-      } else {
-        return currentValue;
-      }
-    },
-    get length() {
-      return ruleValue(`${currentValue}.length`, { isNum: true });
-    },
-    matches: (regexText: string) =>
-      ruleValue(`${currentValue}.matches(/${regexText}/)`),
-  };
-}
-
-type RuleValueArg = string | number | boolean | RuleValue;
-type RuleValueArgs = RuleValueArg[];
-type Literals = readonly string[];
+export type RuleValueArg = string | number | boolean | RuleValue;
+export type RuleValueArgs = RuleValueArg[];
 
 function IsRuleValue(target: RuleValueArg): target is RuleValue {
   return !['string', 'number'].includes(typeof target);
@@ -143,6 +97,7 @@ export const { joinArrayValues, joinPaths, joinTexts } = (() => {
 
     return `${prefix}${result}${suffix}`;
   }
+  type Literals = readonly string[];
 
   function joinTextsFn(literalArgs: Literals, ...ruleValueArgs: RuleValueArgs) {
     const firstLiteral = literalArgs[0];
@@ -214,7 +169,7 @@ export const { joinArrayValues, joinPaths, joinTexts } = (() => {
       lastIsStringLiteral,
     );
 
-    return ruleValue(`${prefix}${result}${suffix}`);
+    return new RuleValue(`${prefix}${result}${suffix}`);
   }
 
   return {
@@ -223,81 +178,6 @@ export const { joinArrayValues, joinPaths, joinTexts } = (() => {
     joinTexts: joinTextsFn,
   };
 })();
-
-export interface RuleRef {
-  rawRef: string;
-  parent: (depth?: number) => RuleRef;
-  child: (...paths: RuleValueArgs) => RuleRef;
-  exists: () => RuleValue;
-  isString: () => RuleValue;
-  isNumber: () => RuleValue;
-  isBoolean: () => RuleValue;
-  val: (valOpts?: { isNum?: boolean; isBool?: boolean }) => RuleValue;
-  hasChild: (...paths: RuleValueArgs) => RuleValue;
-  hasChildren: (children: RuleValueArgs) => RuleValue;
-}
-
-export const ruleRef = (currentRef = ''): RuleRef => ({
-  rawRef: currentRef,
-  parent: (depth = 1) =>
-    ruleRef(`${currentRef}.${Array(depth).fill('parent()').join('.')}`),
-  child: (...paths: RuleValueArgs) =>
-    ruleRef(`${currentRef}.child(${joinPaths(paths)})`),
-
-  exists: () => ruleValue(`${currentRef}.exists()`),
-  isString: () => ruleValue(`${currentRef}.isString()`),
-  isNumber: () => ruleValue(`${currentRef}.isNumber()`),
-  isBoolean: () => ruleValue(`${currentRef}.isBoolean()`),
-  val: (valOpts) => ruleValue(`${currentRef}.val()`, valOpts),
-  hasChild: (...paths: RuleValueArgs) =>
-    ruleValue(`${currentRef}.hasChild(${joinPaths(paths)})`),
-  hasChildren: (children: RuleValueArgs) =>
-    ruleValue(`${currentRef}.hasChildren([${joinArrayValues(children)}])`),
-});
-
-export const root = ruleRef('root');
-export const data = ruleRef('data');
-export const newData = ruleRef('newData');
-
-export const auth = {
-  isNull: 'auth === null',
-  isNotNull: 'auth !== null',
-  uid: ruleValue('auth.uid'),
-  token: {
-    email: ruleValue('auth.token.email'),
-    emailVerified: ruleValue('auth.token.email_verified', {
-      isBool: true,
-    }),
-    phoneNumber: ruleValue('auth.token.phone_number'),
-    name: ruleValue('auth.token.name'),
-    sub: ruleValue('auth.token.sub'),
-    firebase: {
-      identities: ruleValue('auth.token.firebase.identities'),
-      signInProvider: ruleValue('auth.token.firebase.sign_in_provider'),
-    },
-  },
-  provider: ruleValue('auth.provider'),
-};
-
-export const query = {
-  orderByChild: (firstPath: RuleValueArg | null, ...paths: RuleValueArgs) =>
-    ruleValue(
-      `query.orderByChild === ${
-        firstPath === null ? 'null' : joinPaths([firstPath, ...paths])
-      }`,
-    ),
-  orderByChildIsNull: 'query.orderByChild === null',
-  orderByKey: ruleValue('query.orderByKey'),
-  orderByValue: ruleValue('query.orderByValue'),
-  orderByPriority: ruleValue('query.orderByPriority'),
-  equalTo: ruleValue(`query.equalTo`),
-  startAt: ruleValue('query.startAt'),
-  endAt: ruleValue('query.endAt'),
-  limitToFirst: ruleValue('query.limitToFirst', { isNum: true }),
-  limitToLast: ruleValue('query.limitToLast', { isNum: true }),
-};
-
-export const now = ruleValue('now', { isNum: true });
 
 export type RuleExpArg = RuleValueArg;
 export type RuleExpArgs = RuleExpArg[];
