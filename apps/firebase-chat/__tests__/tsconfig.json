@@ -1,37 +1,29 @@
 {
   "compilerOptions": {
-    // Target latest browsers
     "target": "ES2020",
 
     "module": "CommonJS",
 
-    // `import React` instead of `import * as React`
-    // when type check
+    "moduleResolution": "Node",
+
     "allowSyntheticDefaultImports": true,
-    // when compiling
     "esModuleInterop": true,
 
     "jsx": "preserve",
 
-    // Required: Map "/web_modules/*" imports back to their node_modules/ TS definition files.
     "baseUrl": "./",
     "paths": {
-      "@scripts/*": ["../scripts/*"]
     },
 
     "allowJs": true,
     "checkJs": false,
 
-    // Skip npm module type check.
     "skipLibCheck": true,
 
-    // Only for type checks.
     "noEmit": true,
 
-    // Useful type checks.
     "strictNullChecks": true,
 
-    // Disallow implicit any.
     "noImplicitAny": true,
   },
 
@@ -40,9 +32,6 @@
     "**/*.d.ts",
     "**/*.spec.ts",
     "**/*.js",
-    "../scripts/**/*.ts",
-    "../scripts/**/*.d.ts",
-    "../scripts/**/*.js"
   ],
 
   "exclude": [
