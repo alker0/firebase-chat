@@ -1,3 +1,4 @@
+import { resolve as pathResolve } from 'path';
 import {
   apps as firebaseApps,
   initializeAdminApp,
@@ -13,18 +14,23 @@ import {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   logOnceVal,
   seriesPromiseGenerator,
-  killSampleRulesCreator,
-  createRulesLoader,
   createUserContextCreator,
   ThenableRef,
   emailVerifiedAuth,
   createDbSettUpper,
   getDateWithOffset,
+  createSampleRulesFactory,
 } from './rules-test-utils';
-import { SampleRulesKeys } from './sample-rules-creator-type';
+import { SampleRulesKeys } from './sample-rules';
 
 export const projectId = 'talker-v1';
 export const databaseName = 'talker-v1';
+
+const { createRulesLoader, killSampleRulesCreator } = createSampleRulesFactory({
+  bridgeJsAbsPath: pathResolve(__dirname, './sample-rules-creator-bridge.js'),
+  tsNodeOption: { project: pathResolve(__dirname, '../../tsconfig.json') },
+  creatorTsAbsPath: pathResolve(__dirname, './sample-rules-creator.ts'),
+});
 
 export const { useRules } = createRulesLoader<SampleRulesKeys>(databaseName, {
   sample1: null,

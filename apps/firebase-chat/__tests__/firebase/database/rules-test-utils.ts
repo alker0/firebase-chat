@@ -1,23 +1,28 @@
 import { readFileSync } from 'fs';
-import { join as pathJoin } from 'path';
-import { fork } from 'child_process';
+import { join as pathJoin, resolve as pathResolve } from 'path';
+import { Worker } from 'worker_threads';
 import firebase from 'firebase';
 import {
   loadDatabaseRules,
   initializeTestApp,
 } from '@firebase/rules-unit-testing';
 import { AppOptions } from '@firebase/rules-unit-testing/dist/src/api';
+import { RegisterOptions } from 'ts-node';
+import { RulesFactoryOptions } from './rules-factory';
 
 const cwd = process.cwd();
 
-const DO_NOTHING = () => {};
+interface VoidFunction {
+  (): void;
+}
+
+function DO_NOTHING() {}
 
 const rulesOfDatabaseJson = readFileSync(pathJoin(cwd, 'database.rules.json'), {
   encoding: 'utf-8',
 });
 
 export const permDeniedCode = 'PERMISSION_DENIED';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const permDeniedMsg = 'PERMISSION_DENIED: Permission denied';
 
 interface ErrorWithCode extends Error {
@@ -81,20 +86,8 @@ export async function logOnceVal(reference: OnceGettable, prefix?: string) {
   console.log(...(prefix ? [prefix, val] : [val]));
 }
 
-export const sampleRulesCreator = fork(
-  pathJoin(__dirname, 'sample-rules-creator.js'),
-).on('error', (error: unknown) => {
-  console.error(error);
-  sampleRulesCreator.kill();
-});
-
-export function killSampleRulesCreator() {
-  if (!sampleRulesCreator.kill()) {
-    console.error('terminating sample rule creator is failed');
-  }
-}
-
-export type DatabaseJsonKey = 'database-json';
+const databaseJsonKey = 'database-json';
+export type DatabaseJsonKey = typeof databaseJsonKey;
 export type LoadRulesKeys<T extends string> = T | DatabaseJsonKey;
 
 export type SampleRulesPromiseStore<T extends string> = Record<
@@ -111,69 +104,89 @@ export interface RulesRequester<T extends string> {
   (targetRulesKey: T): () => Promise<void>;
 }
 
-export function createRulesLoader<
-  T extends string,
-  U extends LoadRulesKeys<T> = LoadRulesKeys<T>
->(
-  databaseName: string,
-  sampleRulesPromiseStoreArg: SampleRulesPromiseStore<T>,
-) {
-  const sampleRulesPromiseStore: SampleRulesPromiseStore<U> = {
-    ...sampleRulesPromiseStoreArg,
-    'database-json': Promise.resolve(rulesOfDatabaseJson),
-  };
+export function createSampleRulesFactory(options: RulesFactoryOptions) {
+  const sampleRulesCreator = new Worker(options.bridgeJsAbsPath, {
+    workerData: options,
+  }).on('error', (error: unknown) => {
+    console.error(error);
+    sampleRulesCreator.terminate();
+  });
 
-  let prevRulesKey: U;
-  async function loadRules(targetRulesKey: U) {
-    const rulesText = sampleRulesPromiseStore[targetRulesKey];
-    if (!rulesText) {
-      console.error(
-        `requested rules '${targetRulesKey}' has not been initialized`,
-      );
-      return;
+  function killSampleRulesCreator() {
+    if (!sampleRulesCreator.terminate()) {
+      console.error('terminating sample rule creator is failed');
     }
-    const targetRulesText = await rulesText!;
-
-    if (targetRulesKey === prevRulesKey) return;
-    prevRulesKey = targetRulesKey;
-
-    await loadDatabaseRules({
-      databaseName,
-      rules: targetRulesText,
-    });
   }
 
-  function useRules(targetRulesKey: U) {
-    function loader() {
-      return loadRules(targetRulesKey);
-    }
-    if (targetRulesKey === 'database-json') return loader;
+  function createRulesLoader<
+    T extends string,
+    U extends LoadRulesKeys<T> = LoadRulesKeys<T>
+  >(
+    databaseName: string,
+    sampleRulesPromiseStoreArg: SampleRulesPromiseStore<T>,
+  ) {
+    const sampleRulesPromiseStore: SampleRulesPromiseStore<U> = {
+      ...sampleRulesPromiseStoreArg,
+      [databaseJsonKey]: Promise.resolve(rulesOfDatabaseJson),
+    };
 
-    const storePromise = sampleRulesPromiseStore[targetRulesKey];
-    if (storePromise) return loader;
+    let prevRulesKey: U;
+    async function loadRules(targetRulesKey: U) {
+      const rulesText = sampleRulesPromiseStore[targetRulesKey];
+      if (!rulesText) {
+        console.error(
+          `requested rules '${targetRulesKey}' has not been initialized`,
+        );
+        return;
+      }
+      const targetRulesText = await rulesText!;
 
-    const creating = new Promise<string>((resolve) => {
-      sampleRulesCreator.on('message', (message) => {
-        if (typeof message === 'object') {
-          const { rulesKey, rulesText } = message as Partial<
-            SampleRulesCreatorMessage<T>
-          >;
-          if (rulesKey && rulesText) {
-            resolve(rulesText);
-          }
-        }
+      if (targetRulesKey === prevRulesKey) return;
+      prevRulesKey = targetRulesKey;
+
+      await loadDatabaseRules({
+        databaseName,
+        rules: targetRulesText,
       });
-    });
-    sampleRulesPromiseStore[targetRulesKey] = creating;
-    sampleRulesCreator.send(targetRulesKey);
+    }
 
-    return loader;
+    function useRules(targetRulesKey: U) {
+      function loader() {
+        return loadRules(targetRulesKey);
+      }
+      if (targetRulesKey === databaseJsonKey) return loader;
+
+      const storePromise = sampleRulesPromiseStore[targetRulesKey];
+      if (storePromise) return loader;
+
+      const creating = new Promise<string>((resolve) => {
+        sampleRulesCreator.on('message', (message) => {
+          if (typeof message === 'object') {
+            const { rulesKey, rulesText } = message as Partial<
+              SampleRulesCreatorMessage<T>
+            >;
+            if (rulesKey && rulesText) {
+              resolve(rulesText);
+            }
+          }
+        });
+      });
+      sampleRulesPromiseStore[targetRulesKey] = creating;
+      sampleRulesCreator.postMessage(targetRulesKey);
+
+      return loader;
+    }
+
+    return {
+      sampleRulesPromiseStore,
+      loadRules,
+      useRules,
+    };
   }
 
   return {
-    sampleRulesPromiseStore,
-    loadRules,
-    useRules,
+    killSampleRulesCreator,
+    createRulesLoader,
   };
 }
 
@@ -230,7 +243,7 @@ export async function* seriesPromiseGenerator() {
   function createPromiseWithResolve() {
     let resultResolve = DO_NOTHING;
     const resultPromise = new Promise<undefined>((resolve) => {
-      resultResolve = resolve;
+      resultResolve = resolve as VoidFunction;
     });
     return [resultPromise, resultResolve] as const;
   }
@@ -247,15 +260,17 @@ export async function* seriesPromiseGenerator() {
 }
 
 export async function waitPrevTest(
-  prevTest: Promise<IteratorResult<() => void, void>>,
+  prevTest: Promise<IteratorResult<VoidFunction, void>>,
 ) {
   return (await prevTest).value as () => {};
 }
 
+interface VoidGenerator extends AsyncGenerator<VoidFunction, void, unknown> {}
+
 export function createDbSettUpper<T extends string>(
   rulesRequester: RulesRequester<LoadRulesKeys<T>>,
   defaultInitializer: () => Promise<unknown>,
-  defaultScheduler: AsyncGenerator<() => void, void, unknown>,
+  defaultScheduler: VoidGenerator,
   defaultRulesKey: T,
 ) {
   return async function setUpDb({
@@ -264,7 +279,7 @@ export function createDbSettUpper<T extends string>(
     shouldInit = true,
     initializer = defaultInitializer,
   }: {
-    scheduler?: AsyncGenerator<() => void, void, unknown>;
+    scheduler?: VoidGenerator;
     rulesKey?: T;
     shouldInit?: boolean;
     initializer?: () => Promise<unknown>;
