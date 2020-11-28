@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "@alker/cirrus-types": "workspace:*",
+    "@alker/rtdb-rules-builder": "workspace:*",
     "@alker/styled-tsx": "workspace:*",
     "@alker/type-filtered-clsx": "workspace:*",
     "@babel/core": "^7.12.7",

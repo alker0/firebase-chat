@@ -27,7 +27,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@alker/rtdb-rules-builder@workspace:packages/rtdb-rules-builder":
+"@alker/rtdb-rules-builder@workspace:*, @alker/rtdb-rules-builder@workspace:packages/rtdb-rules-builder":
   version: 0.0.0-use.local
   resolution: "@alker/rtdb-rules-builder@workspace:packages/rtdb-rules-builder"
   dependencies:
@@ -7185,6 +7185,7 @@ __metadata:
   resolution: "firebase-chat@workspace:apps/firebase-chat"
   dependencies:
     "@alker/cirrus-types": "workspace:*"
+    "@alker/rtdb-rules-builder": "workspace:*"
     "@alker/solid-components": "workspace:*"
     "@alker/styled-tsx": "workspace:*"
     "@alker/type-filtered-clsx": "workspace:*"
