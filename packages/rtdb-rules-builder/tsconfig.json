@@ -4,16 +4,18 @@
     "module": "CommonJS",
     "moduleResolution": "Node",
     "baseUrl": "./",
-    "outDir": "./dist/",
-    "declaration": true,
+    "rootDir": "./src",
+    "declaration": false,
     "skipLibCheck": true,
-    "strictNullChecks": true,
-    "noImplicitAny": true,
+    "strict": true,
+    "strictFunctionTypes": false,
+    "strictPropertyInitialization": false,
   },
   "include": [
     "./src/*.ts",
+    "./*.config.js",
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
   ],
 }

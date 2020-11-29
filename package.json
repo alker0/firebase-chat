@@ -6,9 +6,8 @@
   "private": true,
   "scripts": {
     "w:fbc": "yarn workspace firebase-chat",
-    "fbc:start": "yarn workspace firebase-chat start",
-    "rtdb:build": "yarn workspace @alker/rtdb-rules-builder build",
-    "rtdb:compile:core": "tsc -d -t 'ES2020' -m commonjs --outDir ./dev-scripts/rules-builder ./packages/rtdb-rules-builder/index.ts"
+    "w:rtdb": "yarn workspace @alker/rtdb-rules-builder",
+    "fbc:start": "yarn workspace firebase-chat start"
   },
   "workspaces": [
     "apps/*",

@@ -31,6 +31,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@alker/rtdb-rules-builder@workspace:packages/rtdb-rules-builder"
   dependencies:
+    "@rollup/plugin-commonjs": ^16.0.0
+    "@rollup/plugin-node-resolve": ^10.0.0
+    "@rollup/plugin-typescript": ^6.1.0
+    camelcase: ^6.2.0
+    npm-run-all: ^4.1.5
+    rimraf: ^3.0.2
+    rollup: ^2.33.3
+    tslib: ^2.0.3
     typescript: ^4.1.2
   languageName: unknown
   linkType: soft
@@ -2814,6 +2822,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rollup/plugin-typescript@npm:^6.1.0":
+  version: 6.1.0
+  resolution: "@rollup/plugin-typescript@npm:6.1.0"
+  dependencies:
+    "@rollup/pluginutils": ^3.1.0
+    resolve: ^1.17.0
+  peerDependencies:
+    rollup: ^2.14.0
+    tslib: "*"
+    typescript: ">=3.4.0"
+  checksum: a90e81b60f3364e1d6e139357020d6c759df1ca1745edb756430ae79cb66ed1d4d1325a64ad7dd3bcc7f2dc8907f70bd27f2e7c360b7b3d95b87cb7cb5ec75b9
+  languageName: node
+  linkType: hard
+
 "@rollup/pluginutils@npm:^3.0.4, @rollup/pluginutils@npm:^3.0.8, @rollup/pluginutils@npm:^3.1.0":
   version: 3.1.0
   resolution: "@rollup/pluginutils@npm:3.1.0"
@@ -4620,6 +4642,13 @@ __metadata:
   version: 6.0.0
   resolution: "camelcase@npm:6.0.0"
   checksum: d92305180bc2041141cc0c889ee54d14f90b16365dc7c01eabe6d54e913eb8011313f98dde3025ae11f0003b601ba320f56ee56db476c64060cf2305bf7f6f2a
+  languageName: node
+  linkType: hard
+
+"camelcase@npm:^6.2.0":
+  version: 6.2.0
+  resolution: "camelcase@npm:6.2.0"
+  checksum: 654700600a80cb1f06ab85b3e2fe80333f94b441884d40826becdac549774f51b0317c6dcb6040416df26241fa9481eb58d0c1659d4d6d5627dcd4259be61beb
   languageName: node
   linkType: hard
 
@@ -13522,6 +13551,20 @@ resolve@^1.18.1:
   languageName: node
   linkType: hard
 
+"rollup@npm:^2.33.3":
+  version: 2.33.3
+  resolution: "rollup@npm:2.33.3"
+  dependencies:
+    fsevents: ~2.1.2
+  dependenciesMeta:
+    fsevents:
+      optional: true
+  bin:
+    rollup: dist/bin/rollup
+  checksum: b14dc27a1c766a90d4c6b98c8cbedc79185a26f1ccb0eae23f82e5edbc2ec21951e2244de918aff696f9ee783c6cb8c1c788c60e3890c414794c19f7e3e80599
+  languageName: node
+  linkType: hard
+
 "router@npm:^1.3.1":
   version: 1.3.5
   resolution: "router@npm:1.3.5"
@@ -15139,6 +15182,13 @@ resolve@^1.18.1:
   version: 2.0.1
   resolution: "tslib@npm:2.0.1"
   checksum: 7b42337a07f536c9650c72471cdf51317f07eb981692e91b8979fee3f6e20136a8f047e6ecdc5f2f3201132a6cc4e0096fa3c58655eba3803bf7fe739ccd088e
+  languageName: node
+  linkType: hard
+
+"tslib@npm:^2.0.3":
+  version: 2.0.3
+  resolution: "tslib@npm:2.0.3"
+  checksum: 447bfca5deaa157806c3f77eaba74d05dd0b38b014e47ce79d98b5c77ce7d91b00a687ba13ca1b5a74d35ca1098ac7a072c0a97fad06f0266612f2a03a6c8e8f
   languageName: node
   linkType: hard
 
