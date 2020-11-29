@@ -12,7 +12,7 @@
     "build": "node ./create-types.js"
   },
   "devDependencies": {
-    "postcss": "^8.1.9",
+    "postcss": "^8.1.10",
     "postcss-import-url": "^5.1.0",
     "postcss-ts-classnames": "^0.2.0"
   },
