@@ -31,10 +31,10 @@ const newDataIsObject = ruleValue(
   `!(${newData.isBoolean()} || ${newData.isNumber()} || ${newData.isString()})`,
 );
 
-const $roomId = ruleValue('$room_id', { isCaptured: true });
-const $ownerId = ruleValue('$owner_id', { isCaptured: true });
-const $ownRoomId = ruleValue('$own_room_id', { isCaptured: true });
-const $userId = ruleValue('$user_id', { isCaptured: true });
+const $roomId = ruleValue('$room_id');
+const $ownerId = ruleValue('$owner_id');
+const $ownRoomId = ruleValue('$own_room_id');
+const $userId = ruleValue('$user_id');
 
 const roomName = ruleValue('room_name', { isStringLiteral: true });
 const createdAt = ruleValue('created_at', { isStringLiteral: true });
