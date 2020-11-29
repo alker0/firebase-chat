@@ -1,0 +1,40 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+
+    "module": "CommonJS",
+
+    "moduleResolution": "Node",
+
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+
+    "jsx": "preserve",
+
+    "baseUrl": "./",
+    "paths": {
+    },
+
+    "allowJs": true,
+    "checkJs": false,
+
+    "skipLibCheck": true,
+
+    "noEmit": true,
+
+    "strictNullChecks": true,
+
+    "noImplicitAny": true,
+  },
+
+  "include": [
+    "**/*.ts",
+    "**/*.d.ts",
+    "**/*.spec.ts",
+    "**/*.js",
+  ],
+
+  "exclude": [
+    "../node_modules"
+  ],
+}

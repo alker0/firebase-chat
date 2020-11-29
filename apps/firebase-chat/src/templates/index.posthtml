@@ -1,0 +1,35 @@
+<extends src="layouts/html-born.html">
+  <block name="head">
+    <title>Talker</title>
+
+    <include src="partials/favicon.html" locals='{
+      "iconPath": "/assets/favicon/favicon.ico"
+    }'></include>
+
+    <meta name="theme-color" content="#ff9900">
+
+    <include src="partials/css-assets.html"></include>
+  </block>
+
+  <block name="body">
+
+    <include src="partials/firebase-sdk.html"></include>
+
+    <div id="header" class="header header-fixed unselectable header-animated" role="banner">
+      <div class="header-brand">
+        <div id="header-brand-container" class="nav-item no-hover">
+        </div>
+      </div>
+      <div id="header-menu" class="display-contents">
+      </div>
+    </div>
+
+    <div id="main-contents" role="main"></div>
+
+    <div id="firebase-auth-container"></div>
+
+    <p id="load">Firebase SDK Loading&hellip;</p>
+
+    <script type="module" src="/js/index.js"></script>
+  </block>
+</extends>

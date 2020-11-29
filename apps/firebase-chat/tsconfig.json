@@ -1,0 +1,50 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "lib": [
+      "ES2020",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "allowSyntheticDefaultImports": true,
+    "jsx": "preserve",
+    "baseUrl": "./",
+    "paths": {
+      "*": [
+        "node_modules/@types/*",
+        "web_modules/.types/*",
+        "node_modules/*",
+        // "web_modules/*.js"
+      ],
+      "solid-js/*": [
+        "solid-js/types/*"
+      ],
+      "@lib/*": [
+        "src/lib/*"
+      ],
+      "@components/common/*": [
+        "../../packages/solid-components/src/*",
+      ],
+      "@components/types/*": [
+        "../../packages/solid-components/types/*"
+      ],
+      "@components/project/*": [
+        "src/components/*"
+      ],
+    },
+    "skipLibCheck": true,
+    "noEmit": true,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+  },
+  "include": [
+    "./src/**/*",
+    "./*.config.js",
+    "node_modules/solid-js/dist/types/render/jsx.d.ts",
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+}

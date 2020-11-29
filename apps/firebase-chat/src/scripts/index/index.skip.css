@@ -1,0 +1,11 @@
+.header-fixed + * {
+  margin-top: 66px;
+}
+
+.header-brand > :not(.nav-item) {
+  display: contents;
+}
+
+.display-contents {
+  display: contents;
+}

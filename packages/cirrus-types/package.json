@@ -1,0 +1,27 @@
+{
+  "name": "@alker/cirrus-types",
+  "description": "A type declaration for cirrus.",
+  "version": "0.6.0",
+  "author": "alker",
+  "license": "MIT",
+  "main": "",
+  "files": [
+    "index.d.ts"
+  ],
+  "scripts": {
+    "build": "node ./create-types.js"
+  },
+  "devDependencies": {
+    "postcss": "^8.1.10",
+    "postcss-import-url": "^5.1.0",
+    "postcss-ts-classnames": "^0.2.0"
+  },
+  "peerDependencies": {
+    "cirrus-ui": "0.6.0"
+  },
+  "peerDependenciesMeta": {
+    "cirrus-ui": {
+      "optional": true
+    }
+  }
+}

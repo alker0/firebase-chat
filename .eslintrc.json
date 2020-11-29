@@ -4,17 +4,26 @@
     "ecmaFeatuers": {
       "jsx": true
     },
-    "project": [ "./tsconfig.json", "./scripts/tsconfig.json", "./__tests__/tsconfig.json" ],
+    "project": [
+      "./tsconfig.json",
+      "./dev-scripts/tsconfig.json",
+      "./packages/solid-components/tsconfig.json",
+      "./packages/rtdb-rules-builder/tsconfig.json"
+    ],
     "useJSXTextNode": true
   },
-  "plugins": ["@typescript-eslint", "jest", "import", "prettier"],
+  "plugins": [
+    "@typescript-eslint",
+    "import",
+    "prettier"
+  ],
   "extends": [
     "airbnb-typescript",
     // "plugin:@typescript-eslint/recommended",
-    "plugin:jest/all",
+    // "plugin:jest/all",
+    "plugin:prettier/recommended",
     "prettier/@typescript-eslint",
-    "prettier/react",
-    "plugin:prettier/recommended"
+    "prettier/react"
   ],
   "env": {
     "browser": true,
@@ -22,19 +31,19 @@
     "es6": true,
     "commonjs": true
   },
-  "globals": {
-    "JSX": "readonly",
-    "firebase": "readonly",
-    "firebaseui": "readonly"
-  },
   "rules": {
     "no-console": "off",
     "default-case": "off",
     "no-else-return": "off",
     "global-require": "off",
-    "yoda": ["error", "never", {
-      "onlyEquality": true
-    }],
+    "yoda": [
+      "error",
+      "never",
+      {
+        "onlyEquality": true
+      }
+    ],
+    "@typescript-eslint/lines-between-class-members": "off",
     "react/jsx-filename-extension": ["error", {"extensions": [".js", ".jsx", ".ts", ".tsx"]}],
     "react/react-in-jsx-scope": "off",
     "react/jsx-props-no-spreading": "off",
@@ -50,24 +59,27 @@
     "import/no-unresolved": "off",
     "import/prefer-default-export": "off",
     "import/no-extraneous-dependencies": "off",
-    "import/extensions": ["error", {
-      "js": "never",
-      "jsx": "never",
-      "ts": "never",
-      "tsx": "never",
-      "d.ts": "never"
-    }],
-    "jest/no-hooks": [
+    "import/extensions": [
       "error",
       {
-        "allow": ["beforeAll", "afterAll"]
-      }
-    ],
-    "jest/expect-expect": [
-      "error",
-      {
-        "assertFunctionNames": ["expect", "firebase.assertSucceeds", "firebase.assertFails"]
+        "js": "never",
+        "jsx": "never",
+        "ts": "never",
+        "tsx": "never",
+        "d.ts": "never"
       }
     ]
+    // "jest/no-hooks": [
+    //   "error",
+    //   {
+    //     "allow": ["beforeAll", "afterAll"]
+    //   }
+    // ],
+    // "jest/expect-expect": [
+    //   "error",
+    //   {
+    //     "assertFunctionNames": ["expect", "firebase.assertSucceeds", "firebase.assertFails"]
+    //   }
+    // ]
   }
 }

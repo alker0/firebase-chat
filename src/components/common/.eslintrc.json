@@ -1,9 +1,0 @@
-{
-  "rules": {
-    "@typescript-eslint/no-redeclare": "off",
-    "import/export": "off",
-    "jsx-a11y/label-has-associated-control": [ 2, {
-    "assert": "either"
-    }]
-  }
-}

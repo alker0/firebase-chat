@@ -1,0 +1,16 @@
+<if condition="mode === 'production'">
+  <script src="/__/firebase/{{ firebaseVersion }}/firebase-app.js"></script>
+  <each loop="sdk in firebaseUseSdks">
+    <script src="/__/firebase/{{ firebaseVersion }}/firebase-{{ sdk }}.js"></script>
+  </each>
+  <script src="/__/firebase/init.js"></script>
+</if>
+<else>
+  <script src="https://www.gstatic.com/firebasejs/{{ firebaseVersion }}/firebase-app.js"></script>
+  <each loop="sdk in firebaseUseSdks">
+    <script src="https://www.gstatic.com/firebasejs/{{ firebaseVersion }}/firebase-{{ sdk }}.js"></script>
+  </each>
+  <script>
+    firebase.initializeApp(JSON.parse('{{{ firebaseConfig }}}'));
+  </script>
+</else>
