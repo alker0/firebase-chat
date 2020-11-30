@@ -11,6 +11,6 @@
     <script src="https://www.gstatic.com/firebasejs/{{ firebaseVersion }}/firebase-{{ sdk }}.js"></script>
   </each>
   <script>
-    firebase.initializeApp(JSON.parse('{{{ firebaseConfig }}}'));
+    firebase.initializeApp({{ firebaseConfig }});
   </script>
 </else>

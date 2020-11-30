@@ -44,7 +44,7 @@ module.exports = {
         jsArray,
         firebaseVersion: onlyVersion(devDeps.firebase),
         firebaseUseSdks,
-        firebaseConfig: JSON.stringify({
+        firebaseConfig: {
           apiKey: 'AIzaSyCUDlFQJZdo3NOIAHSt8NmgF-gOHQ9ZkHg',
           authDomain: 'talker-v1.firebaseapp.com',
           // databaseURL: 'https://talker-v1.firebaseio.com',
@@ -54,7 +54,7 @@ module.exports = {
           messagingSenderId: '578515840439',
           appId: '1:578515840439:web:2b7905e64ae01d07778c32',
           measurementId: 'G-S42EYX1LN4',
-        }),
+        },
       },
     }),
   ],
