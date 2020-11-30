@@ -5,3 +5,11 @@ export const sizeSuffixMap = {
   large: '-large',
   xlarge: '-xlarge',
 } as const;
+
+export const sizedInputMap = {
+  xsmall: 'input-xsmall',
+  small: 'input-small',
+  normal: '',
+  large: 'input-large',
+  xlarge: 'input-xlarge',
+};
