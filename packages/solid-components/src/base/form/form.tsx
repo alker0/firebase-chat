@@ -1,5 +1,5 @@
 import { assignProps, Component } from 'solid-js';
-import { DefaultComponents } from '../../../types/component-creater';
+import { DefaultComponents } from '../../../types/component-creator';
 
 type DefaultPropsMap = {
   container: JSX.HTMLAttributes<HTMLElement>;

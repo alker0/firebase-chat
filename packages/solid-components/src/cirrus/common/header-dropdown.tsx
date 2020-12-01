@@ -3,7 +3,7 @@ import { createSignal, For, assignProps } from 'solid-js';
 import clsx, { Clsx } from 'clsx';
 import { Portal } from 'solid-js/web';
 import { Cirrus } from '@alker/cirrus-types';
-import { ComponentCreater } from '../../../types/component-creater';
+import { ComponentCreater } from '../../../types/component-creator';
 import { buttonize } from '../../util/component-utils';
 
 type LinkButtonClass = 'LinkButtonClassName';

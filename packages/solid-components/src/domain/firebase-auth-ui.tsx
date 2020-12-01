@@ -1,7 +1,7 @@
 import firebase from 'firebase';
 import firebaseui from 'firebaseui';
 import { createComputed, assignProps } from 'solid-js';
-import { ComponentCreater } from '../../types/component-creater';
+import { ComponentCreater } from '../../types/component-creator';
 
 const defaultProps: FirebaseAuthUI.DefaultProps = {
   uiConfig: {
