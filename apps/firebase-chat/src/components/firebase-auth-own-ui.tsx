@@ -56,14 +56,11 @@ const InputField = BasicInputField.createComponent({
 });
 
 interface OuterBottomProps extends LoginBasicBottom.BottomWholeProps {
-  // eslint-disable-next-line react/no-unused-prop-types
   bottomComponent: Component<LoginBasicBottom.BottomWholeProps>;
 }
 
 interface InnerBottomProps extends LoginBasicBottom.BottomWholePropsOpts {
-  // eslint-disable-next-line react/no-unused-prop-types
   bottomComponent: Component<LoginBasicBottom.BottomWholeProps>;
-  // eslint-disable-next-line react/no-unused-prop-types
   ofSubmit: JSX.InputHTMLAttributes<HTMLInputElement>;
 }
 
