@@ -10,6 +10,7 @@ import { createLazyAuthUI } from './lazy/firebase-auth-own-ui';
 import { TopMenu as TopMenuCreator } from './top-menu';
 import { createLazyCompleteVerifyEmail } from './lazy/complete-verify-email';
 import { createLazyLoginForm } from './lazy/login-form';
+import { createLazyCreateRoom } from './lazy/create-room';
 import { FirebaseAuth } from './typings/firebase-sdk';
 
 const [routeSignal, sendRouteSignal] = createSignal('', true);
@@ -122,6 +123,11 @@ export const createRouter = (context: RouterContext) => {
     redirectToFailedUrl: redirectToHome,
   });
 
+  const CreateRoomComponent = createLazyCreateRoom({
+    redirectToSuccessUrl: redirectToHome,
+    redirectToFailedUrl: redirectToHome,
+  });
+
   return () => (
     <RouteComponent
       routeSignal={routeSignal}
@@ -154,7 +160,7 @@ export const createRouter = (context: RouterContext) => {
         },
         {
           matcher: routingPaths.createRoom,
-          getComponent: () => <div>Create Room Page</div>,
+          getComponent: () => <CreateRoomComponent />,
         },
       ]}
     />
