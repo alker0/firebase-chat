@@ -43,7 +43,9 @@ const Container = FormContainer.createComponent({
     return (
       <form class={cn('content', 'frame')} onSubmit={props.onSubmit}>
         <div class={cn('content')}>
-          <div class={cn('frame__header')} />
+          <div class={cn('frame__header', 'u-text-center')}>
+            <h6>Create Your New Chat Room</h6>
+          </div>
           <div class={cn('frame__body')} children={props.children} />
         </div>
       </form>
