@@ -2921,16 +2921,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@snowpack/plugin-postcss@npm:^1.0.7":
-  version: 1.0.7
-  resolution: "@snowpack/plugin-postcss@npm:1.0.7"
-  peerDependencies:
-    postcss: "*"
-    postcss-cli: "*"
-  checksum: 074fdb349c36994e9645b153b2a98ae8eb69f3fbcbc9923e29b2dd6074bd52ebd34b2c9a9cef34b06308be38e13f8d5b7ab8541b8eb0d8f873ec6c663e54d5d3
-  languageName: node
-  linkType: hard
-
 "@snowpack/plugin-run-script@npm:^2.2.0":
   version: 2.2.0
   resolution: "@snowpack/plugin-run-script@npm:2.2.0"
@@ -7262,7 +7252,6 @@ __metadata:
     "@snowpack/plugin-babel": ^2.1.4
     "@snowpack/plugin-build-script": ^2.0.11
     "@snowpack/plugin-dotenv": ^2.0.4
-    "@snowpack/plugin-postcss": ^1.0.7
     "@snowpack/plugin-run-script": ^2.2.0
     "@types/jest": ^26.0.15
     "@types/node": ^14.14.10
