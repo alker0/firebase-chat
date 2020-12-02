@@ -4,7 +4,6 @@ module.exports = {
     '**/__test__/*',
     '**/*.@(spec|test).@(js|mjs)',
     '**/templates/@(layouts|partials)/**/*',
-    '**/styles/cdn/**/*',
     '**/typings/**/*',
     '**/types/**/*',
     '../../packages/type-filtered-clsx/**/*',
@@ -32,7 +31,7 @@ module.exports = {
   mount: {
     web_modules: '/web_modules',
     'src/public': '/',
-    // 'src/templates': '/',
+    'src/templates': '/',
     'src/assets': '/assets',
     'src/assets/favicon': '/',
     'src/styles': '/css',
