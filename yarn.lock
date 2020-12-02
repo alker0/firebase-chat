@@ -2911,6 +2911,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@snowpack/plugin-dotenv@npm:^2.0.4":
+  version: 2.0.4
+  resolution: "@snowpack/plugin-dotenv@npm:2.0.4"
+  dependencies:
+    dotenv: ^8.2.0
+    dotenv-expand: ^5.1.0
+  checksum: 5e4e8c95ba3565782a5e4365a7a586c4af75f54a86bedd8c1588b86f74aa33501d746e31f4adc4d28a90315c6a19c4fe1837053eaa1df088babb59c5afa62d3e
+  languageName: node
+  linkType: hard
+
 "@snowpack/plugin-postcss@npm:^1.0.7":
   version: 1.0.7
   resolution: "@snowpack/plugin-postcss@npm:1.0.7"
@@ -5970,6 +5980,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dotenv-expand@npm:^5.1.0":
+  version: 5.1.0
+  resolution: "dotenv-expand@npm:5.1.0"
+  checksum: b895c6220d345db8f58dca439d3bc65c2ee538659df570ed3fa8c99487df854afd6d1ddadf1e43a4091c9ed6166956e7db7bc5a05cf48fa812c0772e1f5cf860
+  languageName: node
+  linkType: hard
+
 "dotenv@npm:^6.1.0":
   version: 6.2.0
   resolution: "dotenv@npm:6.2.0"
@@ -7244,6 +7261,7 @@ __metadata:
     "@fullhuman/postcss-purgecss": ^3.0.0
     "@snowpack/plugin-babel": ^2.1.4
     "@snowpack/plugin-build-script": ^2.0.11
+    "@snowpack/plugin-dotenv": ^2.0.4
     "@snowpack/plugin-postcss": ^1.0.7
     "@snowpack/plugin-run-script": ^2.2.0
     "@types/jest": ^26.0.15

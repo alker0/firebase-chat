@@ -34,6 +34,7 @@
     "@fullhuman/postcss-purgecss": "^3.0.0",
     "@snowpack/plugin-babel": "^2.1.4",
     "@snowpack/plugin-build-script": "^2.0.11",
+    "@snowpack/plugin-dotenv": "^2.0.4",
     "@snowpack/plugin-postcss": "^1.0.7",
     "@snowpack/plugin-run-script": "^2.2.0",
     "@types/jest": "^26.0.15",
