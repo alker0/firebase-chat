@@ -1,11 +1,10 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
+    "target": "ESNext",
     "module": "CommonJS",
     "moduleResolution": "Node",
 
     "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
 
     "baseUrl": "./",
     "paths": {
@@ -14,19 +13,15 @@
     "noEmit": true,
     "skipLibCheck": true,
     "allowJs": true,
-    "checkJs": false,
 
     "strict": true,
   },
-
   "include": [
-    "**/*.ts",
-    "**/*.d.ts",
-    "**/*.spec.ts",
-    "**/*.js",
+    "./*rc.js",
+    "./*.config.js",
   ],
-
   "exclude": [
-    "../node_modules"
+    "node_modules",
   ],
 }
+

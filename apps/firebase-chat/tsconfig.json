@@ -8,8 +8,11 @@
     ],
     "module": "ESNext",
     "moduleResolution": "Node",
+
     "allowSyntheticDefaultImports": true,
+
     "jsx": "preserve",
+
     "baseUrl": "./",
     "paths": {
       "*": [
@@ -34,14 +37,15 @@
         "src/components/*"
       ],
     },
-    "skipLibCheck": true,
+
     "noEmit": true,
+    "skipLibCheck": true,
+
     "strictNullChecks": true,
     "noImplicitAny": true,
   },
   "include": [
     "./src/**/*",
-    "./*.config.js",
     "node_modules/solid-js/dist/types/render/jsx.d.ts",
   ],
   "exclude": [
