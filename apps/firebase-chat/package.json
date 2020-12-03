@@ -15,9 +15,9 @@
     "test": "jest --verbose -i",
     "test:detect": "jest --verbose -i --detectOpenHandles",
     "citest": "CI=true jest --reporters=default --reporters=jest-github-action-reporter",
-    "rdb:build": "ts-node -sT ./dev-scripts/database-rules-build database.rules.json",
+    "rdb:build": "ts-node -sT ./dev-scripts/rtdb-rules-generate database.rules.json",
     "rdb:emulator:get:rule": "node ./dev-scripts/database-emulator-access -a -p '/.settings/rules.json?ns=talker-v1'",
-    "rdb:emulator:put:rule": "ts-node -sT ./dev-scripts/database-rules-build $HOME/bind/firebase-emulator/rules/talker-v1.rules.json"
+    "rdb:emulator:put:rule": "ts-node -sT ./dev-scripts/rtdb-rules-generate $HOME/bind/firebase-emulator/rules/talker-v1.rules.json"
   },
   "devDependencies": {
     "@alker/cirrus-types": "workspace:*",
