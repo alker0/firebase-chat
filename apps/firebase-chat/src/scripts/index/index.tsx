@@ -1,4 +1,3 @@
-import 'solid-styled-jsx';
 import { HeaderMenu } from '@components/project/header-menu';
 import {
   sessionState,
