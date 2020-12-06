@@ -19,8 +19,6 @@
   ],
   "extends": [
     "airbnb-typescript",
-    // "plugin:@typescript-eslint/recommended",
-    // "plugin:jest/all",
     "plugin:prettier/recommended",
     "prettier/@typescript-eslint",
     "prettier/react"
@@ -69,17 +67,5 @@
         "d.ts": "never"
       }
     ]
-    // "jest/no-hooks": [
-    //   "error",
-    //   {
-    //     "allow": ["beforeAll", "afterAll"]
-    //   }
-    // ],
-    // "jest/expect-expect": [
-    //   "error",
-    //   {
-    //     "assertFunctionNames": ["expect", "firebase.assertSucceeds", "firebase.assertFails"]
-    //   }
-    // ]
   }
 }
