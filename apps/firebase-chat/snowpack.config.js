@@ -3,6 +3,8 @@ const {
   SNOWPACK_PUBLIC_AUTH_EMULATOR_PATH = '',
 } = require('dotenv').config().parsed ?? {};
 
+const packagesPath = '../../packages';
+
 module.exports = {
   exclude: [
     '**/node_modules/**/*',
@@ -11,8 +13,8 @@ module.exports = {
     '**/templates/@(layouts|partials)/**/*',
     '**/typings/**/*',
     '**/types/**/*',
-    '../../packages/type-filtered-clsx/**/*',
-    '../../packages/styled-tsx/**/*',
+    `${packagesPath}/type-filtered-clsx/**/*`,
+    `${packagesPath}/styled-tsx/**/*`,
     '**/*.skip*',
     '**/.pnp.js',
     '**/.gitkeep',
@@ -44,17 +46,17 @@ module.exports = {
     'src/scripts/404': '/js',
     'src/lib': '/lib',
     'src/components': '/components',
-    '../../packages/solid-components/src': '/components',
+    [`${packagesPath}/solid-components/src`]: '/components',
   },
   alias: {
     '@lib': './src/lib',
     '@components/project': './src/components',
-    '@components/common': '../../packages/solid-components/src',
-    '@components/types': '../../packages/solid-components/types',
+    '@components/common': `${packagesPath}/solid-components/src`,
+    '@components/types': `${packagesPath}/solid-components/types`,
     '@web_modules': './web_modules',
-    '@alker/cirrus-types': '../../packages/cirrus-types',
-    '@alker/styled-tsx': '../../packages/styled-tsx',
-    '@alker/type-filtered-clsx': '../../packages/type-filtered-clsx',
+    '@alker/cirrus-types': `${packagesPath}/cirrus-types`,
+    '@alker/styled-tsx': `${packagesPath}/styled-tsx`,
+    '@alker/type-filtered-clsx': `${packagesPath}/type-filtered-clsx`,
   },
   installOptions: {
     installTypes: true,
