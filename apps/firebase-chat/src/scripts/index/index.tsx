@@ -20,6 +20,7 @@ if (dropDownTarget) {
 
 document.addEventListener('DOMContentLoaded', () => {
   const firebaseSdk = firebase.default;
+
   if (
     import.meta.env.MODE === 'production' &&
     import.meta.env.SNOWPACK_PUBLIC_USE_FIREBASE_ANALYTICS
@@ -31,6 +32,17 @@ document.addEventListener('DOMContentLoaded', () => {
   // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
 
   const auth = firebaseSdk.auth();
+
+  if (
+    import.meta.env.MODE !== 'production' &&
+    import.meta.env.SNOWPACK_PUBLIC_AUTH_EMULATOR_PATH
+  ) {
+    auth.useEmulator(
+      `${import.meta.env.SNOWPACK_PUBLIC_HTTP_LOCAL_HOST}${
+        import.meta.env.SNOWPACK_PUBLIC_AUTH_EMULATOR_PATH
+      }`,
+    );
+  }
 
   auth.onAuthStateChanged(sessionStateChangedHandler);
 

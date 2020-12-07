@@ -1,3 +1,8 @@
+const {
+  FIREBASE_AUTH_EMULATOR_HOST = '',
+  SNOWPACK_PUBLIC_AUTH_EMULATOR_PATH = '',
+} = require('dotenv').config().parsed ?? {};
+
 module.exports = {
   exclude: [
     '**/node_modules/**/*',
@@ -60,7 +65,9 @@ module.exports = {
       'firebaseui',
     ],
   },
-  install: [],
+  proxy: {
+    [SNOWPACK_PUBLIC_AUTH_EMULATOR_PATH]: `http://${FIREBASE_AUTH_EMULATOR_HOST}`,
+  },
   devOptions: {
     bundle: false,
     port: 8080,
