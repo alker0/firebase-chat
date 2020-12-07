@@ -1,4 +1,11 @@
-import { createMemo, assignProps, Match, Suspense, Switch } from 'solid-js';
+import {
+  createMemo,
+  assignProps,
+  Match,
+  Suspense,
+  Switch,
+  JSX,
+} from 'solid-js';
 import { Dynamic } from 'solid-js/web';
 import { ComponentCreater } from '../../../types/component-creator';
 

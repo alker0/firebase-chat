@@ -1,4 +1,4 @@
-import { batch } from 'solid-js';
+import { batch, JSX } from 'solid-js';
 import { NativeHandlerOf } from '../../types/component-utils';
 
 export const inputRegexSource = {

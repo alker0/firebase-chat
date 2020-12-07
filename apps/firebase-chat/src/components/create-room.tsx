@@ -20,6 +20,7 @@ import {
   SetStateFunction,
   State,
   untrack,
+  JSX,
 } from 'solid-js';
 
 const cn: Clsx<Cirrus> = clsx;

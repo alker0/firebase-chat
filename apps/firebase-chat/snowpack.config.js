@@ -65,6 +65,7 @@ module.exports = {
       'firebaseui',
     ],
   },
+  install: ['solid-styled-jsx'],
   proxy: {
     [SNOWPACK_PUBLIC_AUTH_EMULATOR_PATH]: `http://${FIREBASE_AUTH_EMULATOR_HOST}`,
   },

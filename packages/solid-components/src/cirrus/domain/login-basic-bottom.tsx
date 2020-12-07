@@ -1,5 +1,5 @@
 import clsx, { Clsx } from 'clsx';
-import { assignProps, Component } from 'solid-js';
+import { assignProps, Component, JSX } from 'solid-js';
 import { Cirrus } from '@alker/cirrus-types';
 import { DefaultComponents } from '../../../types/component-creator';
 

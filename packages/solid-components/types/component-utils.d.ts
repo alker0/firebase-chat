@@ -1,3 +1,5 @@
+import { JSX } from 'solid-js';
+
 export type OnlyOptional<T extends object> = Pick<
   T,
   Exclude<

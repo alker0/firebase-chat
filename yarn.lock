@@ -56,16 +56,16 @@ __metadata:
     firebase: ^8.1.1
     firebaseui: ^4.7.1
     npm-run-all: ^4.1.5
-    solid-js: ^0.22.8
-    solid-styled-jsx: ^0.22.8
+    solid-js: ^0.23.0
+    solid-styled-jsx: ^0.23.0
     styled-jsx: ~3.3.2
   peerDependencies:
     cirrus-ui: 0.6.x
     clsx: 1.x
     firebase: 7.11 - 8
     firebaseui: 4.6.0 - 4.8
-    solid-js: 0.22.x
-    solid-styled-jsx: 0.22.x
+    solid-js: 0.23.x
+    solid-styled-jsx: 0.23.x
     styled-jsx: 3.3 - 4
   peerDependenciesMeta:
     cirrus-ui:
@@ -4147,14 +4147,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-plugin-jsx-dom-expressions@npm:~0.23.4":
-  version: 0.23.5
-  resolution: "babel-plugin-jsx-dom-expressions@npm:0.23.5"
+"babel-plugin-jsx-dom-expressions@npm:~0.24.0":
+  version: 0.24.0
+  resolution: "babel-plugin-jsx-dom-expressions@npm:0.24.0"
   dependencies:
     "@babel/helper-module-imports": ^7.10.4
     "@babel/plugin-syntax-jsx": ^7.10.4
     "@babel/types": ^7.11.5
-  checksum: 5fcac504f7db25d3cb9750ba2c3b0b9cc2ff3e31a9be879190eac086b51cb875f5ab28af199eabc8b3eca318b86682d9b6900386beb0678b86eea7e1d0987d05
+  checksum: 0a6e47ee119f720526395f0fd487b240ab2b47cb3b7c8d9088366ff3c123cf79db10315a0e83ef9d35093e38c7abaed60b7bfb645c8c73218404277f43b82ff3
   languageName: node
   linkType: hard
 
@@ -4213,12 +4213,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-preset-solid@npm:^0.22.7":
-  version: 0.22.7
-  resolution: "babel-preset-solid@npm:0.22.7"
+"babel-preset-solid@npm:^0.23.0":
+  version: 0.23.0
+  resolution: "babel-preset-solid@npm:0.23.0"
   dependencies:
-    babel-plugin-jsx-dom-expressions: ~0.23.4
-  checksum: b20456ef3fe25f54662ad2aac530278eec8eb0813686842a33a26b42b1dca4bc00e3ed488b5641df823334886214ae15dea3c206a89714a6ee40292e6a00af84
+    babel-plugin-jsx-dom-expressions: ~0.24.0
+  checksum: 98f0ccc330e0da682a26a5f96fb5c62c20a2d4e9d0f8dcf6cafe25b7a09914ec426632d4a302e6015ad216bb7bd79778ec26f434f4b31d3166884610ba75ae96
   languageName: node
   linkType: hard
 
@@ -7259,7 +7259,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": ^4.9.0
     "@typescript-eslint/parser": ^4.9.0
     babel-plugin-transform-remove-console: ^6.9.4
-    babel-preset-solid: ^0.22.7
+    babel-preset-solid: ^0.23.0
     clsx: ^1.1.1
     dotenv: ^8.2.0
     eslint-config-airbnb-typescript: ^12.0.0
@@ -7285,8 +7285,8 @@ __metadata:
     purgecss: ^3.0.0
     purgecss-from-js: ^1.0.0
     snowpack: ^2.17.1
-    solid-js: ^0.22.8
-    solid-styled-jsx: ^0.22.8
+    solid-js: ^0.23.0
+    solid-styled-jsx: ^0.23.0
     styled-jsx: ^3.3.2
     ts-jest: ^26.4.4
     ts-node: ^9.0.0
@@ -13992,22 +13992,22 @@ resolve@^1.18.1:
   languageName: node
   linkType: hard
 
-"solid-js@npm:^0.22.8":
-  version: 0.22.8
-  resolution: "solid-js@npm:0.22.8"
-  checksum: 7e2244bfc00ac43cd6339ce6daccdb227b0c518ce6926654191eeaa6bf5d7f9ff2b53692e5deff7168c5acc5e5b3912bbffb5871c087792dd47bac5b18c7fe25
+"solid-js@npm:^0.23.0":
+  version: 0.23.0
+  resolution: "solid-js@npm:0.23.0"
+  checksum: 1262286bb22558acc48d1e9e88bba1731067a015e278337692f038bcedb3045af11580a3a5525006e6eb59ba1fea69e64996ab0981d6f6e99d3dccc3ccbeb503
   languageName: node
   linkType: hard
 
-"solid-styled-jsx@npm:^0.22.8":
-  version: 0.22.8
-  resolution: "solid-styled-jsx@npm:0.22.8"
+"solid-styled-jsx@npm:^0.23.0":
+  version: 0.23.0
+  resolution: "solid-styled-jsx@npm:0.23.0"
   dependencies:
     babel-plugin-transform-rename-import: ^2.3.0
   peerDependencies:
     solid-js: ^0.22.0
     styled-jsx: ^3.2.5
-  checksum: f8fe21a0c46ad74c0a8dc7d7a4bac420df00dbed48d48c22aa6dd9e4f4d621647d71014113fefaba73eec5f1fcf9127bbb9d9e378f53fa4f7a98fd1f41924632
+  checksum: 037411e71e80a08bcd99654cb08768631ea8c5be99f5c41623240ab92d88766f3635819a86833428585821e890a55f8f6a8802e0ce14315866ddad7876c2a704
   languageName: node
   linkType: hard
 

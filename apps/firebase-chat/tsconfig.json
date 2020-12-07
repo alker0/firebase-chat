@@ -12,6 +12,7 @@
     "allowSyntheticDefaultImports": true,
 
     "jsx": "preserve",
+    "jsxImportSource": "solid-js",
 
     "baseUrl": "./",
     "paths": {
@@ -20,9 +21,6 @@
         "web_modules/.types/*",
         "node_modules/*",
         // "web_modules/*.js"
-      ],
-      "solid-js/*": [
-        "solid-js/types/*"
       ],
       "@lib/*": [
         "src/lib/*"
@@ -46,7 +44,6 @@
   },
   "include": [
     "./src/**/*",
-    "node_modules/solid-js/dist/types/render/jsx.d.ts",
   ],
   "exclude": [
     "node_modules"

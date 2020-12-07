@@ -25,6 +25,7 @@ import {
   SetStateFunction,
   State,
   untrack,
+  JSX,
 } from 'solid-js';
 
 const cn: Clsx<Cirrus> = clsx;
@@ -56,6 +57,7 @@ const InputField = BasicInputField.createComponent({
 });
 
 interface OuterBottomProps extends LoginBasicBottom.BottomWholeProps {
+  // eslint-disable-next-line react/no-unused-prop-types
   bottomComponent: Component<LoginBasicBottom.BottomWholeProps>;
 }
 

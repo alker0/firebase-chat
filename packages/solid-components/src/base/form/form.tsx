@@ -1,4 +1,4 @@
-import { assignProps, Component } from 'solid-js';
+import { assignProps, Component, JSX } from 'solid-js';
 import { DefaultComponents } from '../../../types/component-creator';
 
 type DefaultPropsMap = {

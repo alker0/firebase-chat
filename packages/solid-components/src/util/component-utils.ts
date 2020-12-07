@@ -1,3 +1,4 @@
+import { JSX } from 'solid-js';
 import { EventArgOf } from '../../types/component-utils';
 
 export const DO_NOTHING: (...args: any[]) => void = () => {};
