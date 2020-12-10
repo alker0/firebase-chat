@@ -2,10 +2,6 @@
 node_modules/
 web_modules/
 tmp/
-/build/
-/dist/
-/src/public/
-/eustia/cache/
 .env
 yarn-error.log
 database-debug.log
