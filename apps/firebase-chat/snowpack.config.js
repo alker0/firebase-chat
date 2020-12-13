@@ -37,7 +37,7 @@ module.exports = {
   ],
   mount: {
     web_modules: '/web_modules',
-    'src/public': '/',
+    'src/public': { url: '/', static: true },
     'src/templates': '/',
     'src/assets': '/assets',
     'src/assets/favicon': '/',
@@ -72,7 +72,6 @@ module.exports = {
     [SNOWPACK_PUBLIC_AUTH_EMULATOR_PATH]: `http://${FIREBASE_AUTH_EMULATOR_HOST}`,
   },
   devOptions: {
-    bundle: false,
     port: 8080,
   },
 };
