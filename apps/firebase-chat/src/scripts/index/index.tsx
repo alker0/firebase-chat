@@ -37,11 +37,11 @@ document.addEventListener('DOMContentLoaded', () => {
     import.meta.env.MODE !== 'production' &&
     import.meta.env.SNOWPACK_PUBLIC_AUTH_EMULATOR_PATH
   ) {
-    // auth.useEmulator(
-    //   `${import.meta.env.SNOWPACK_PUBLIC_HTTP_LOCAL_HOST}${
-    //     import.meta.env.SNOWPACK_PUBLIC_AUTH_EMULATOR_PATH
-    //   }`,
-    // );
+    auth.useEmulator(
+      `${import.meta.env.SNOWPACK_PUBLIC_HTTP_LOCAL_HOST}${
+        import.meta.env.SNOWPACK_PUBLIC_AUTH_EMULATOR_PATH
+      }`,
+    );
   }
 
   auth.onAuthStateChanged(sessionStateChangedHandler);
