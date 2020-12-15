@@ -1,5 +1,5 @@
 import { readFileSync } from 'fs';
-import { join as pathJoin, resolve as pathResolve } from 'path';
+import { join as pathJoin } from 'path';
 import { Worker } from 'worker_threads';
 import firebase from 'firebase';
 import {
@@ -7,7 +7,6 @@ import {
   initializeTestApp,
 } from '@firebase/rules-unit-testing';
 import { AppOptions } from '@firebase/rules-unit-testing/dist/src/api';
-import { RegisterOptions } from 'ts-node';
 import { RulesFactoryOptions } from './rules-factory';
 
 const cwd = process.cwd();

@@ -24,6 +24,7 @@ const whenCreate = ruleValue(`!${data.exists()}`);
 const whenDelete = ruleValue(`!${newData.exists()}`);
 const whenNotCreate = data.exists();
 const whenNotDelete = newData.exists();
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const whenUpdate = ruleValue(`${data.exists()} && ${newData.exists()}`);
 
 const newDataIsObject = ruleValue(
