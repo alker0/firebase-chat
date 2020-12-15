@@ -1,10 +1,4 @@
-const {
-  FIREBASE_AUTH_EMULATOR_HOST = '',
-  SNOWPACK_PUBLIC_AUTH_EMULATOR_PATH = '',
-} = require('dotenv').config().parsed ?? {};
-
 const packagesPath = '../../packages';
-const googleAPIs = 'www.googleapis.com';
 
 module.exports = {
   exclude: [
@@ -69,10 +63,6 @@ module.exports = {
     ],
   },
   install: ['solid-styled-jsx'],
-  proxy: {
-    [SNOWPACK_PUBLIC_AUTH_EMULATOR_PATH]: `http://${FIREBASE_AUTH_EMULATOR_HOST}`,
-    [`/${googleAPIs}`]: `https://${googleAPIs}`,
-  },
   devOptions: {
     port: 8080,
   },
