@@ -17,6 +17,11 @@ import {
   untrack,
   JSX,
 } from 'solid-js';
+import {
+  FirebaseAuth,
+  FirebaseDb,
+  FirebaseDbServerValue,
+} from './typings/firebase-sdk';
 
 const cn: Clsx<Cirrus> = clsx;
 
@@ -156,6 +161,9 @@ export declare module CreateRoom {
   export interface Context {
     redirectToSuccessUrl: () => void;
     redirectToFailedUrl: () => void;
+    auth: FirebaseAuth;
+    db: FirebaseDb;
+    dbServerValues: FirebaseDbServerValue;
   }
   export interface Props {}
 

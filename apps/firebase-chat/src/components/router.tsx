@@ -11,7 +11,11 @@ import { TopMenu as TopMenuCreator } from './top-menu';
 import { createLazyCompleteVerifyEmail } from './lazy/complete-verify-email';
 import { createLazyLoginForm } from './lazy/login-form';
 import { createLazyCreateRoom } from './lazy/create-room';
-import { FirebaseAuth } from './typings/firebase-sdk';
+import {
+  FirebaseAuth,
+  FirebaseDb,
+  FirebaseDbServerValue,
+} from './typings/firebase-sdk';
 
 const [routeSignal, sendRouteSignal] = createSignal('', true);
 
@@ -126,6 +130,9 @@ export const createRouter = (context: RouterContext) => {
   const CreateRoomComponent = createLazyCreateRoom({
     redirectToSuccessUrl: redirectToHome,
     redirectToFailedUrl: redirectToHome,
+    auth: context.auth,
+    db: context.db,
+    dbServerValues: context.dbServerValue,
   });
 
   return () => (
@@ -169,4 +176,6 @@ export const createRouter = (context: RouterContext) => {
 
 export interface RouterContext {
   auth: FirebaseAuth;
+  db: FirebaseDb;
+  dbServerValue: FirebaseDbServerValue;
 }

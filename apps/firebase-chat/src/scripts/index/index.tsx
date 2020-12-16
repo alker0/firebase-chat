@@ -32,6 +32,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
 
   const auth = firebaseSdk.auth();
+  const dbFunc = firebaseSdk.database;
+
 
   if (
     import.meta.env.MODE !== 'production' &&
@@ -39,6 +41,8 @@ document.addEventListener('DOMContentLoaded', () => {
   ) {
     auth.useEmulator(import.meta.env.SNOWPACK_PUBLIC_AUTH_EMULATOR_PATH);
   }
+
+  const db = dbFunc();
 
   auth.onAuthStateChanged(sessionStateChangedHandler);
 
@@ -98,7 +102,11 @@ document.addEventListener('DOMContentLoaded', () => {
     </ul>
   );
 
-  const Router = createRouter({ auth });
+  const Router = createRouter({
+    auth,
+    db,
+    dbServerValue: dbFunc.ServerValue,
+  });
 
   const mainTarget = document.getElementById('main-contents');
 
