@@ -9,11 +9,11 @@ const defaultWholeStyle = cn('input-control');
 
 type DefaultPropsMap = {
   submit: JSX.InputHTMLAttributes<HTMLInputElement>;
-  whole: JSX.HTMLAttributes<HTMLDivElement> & LoginBasicBottom.BottomWholeProps;
+  whole: JSX.HTMLAttributes<HTMLDivElement> & FormBasicBottom.BottomWholeProps;
 };
 
 const defaultContext: DefaultComponents<
-  LoginBasicBottom.Context,
+  FormBasicBottom.Context,
   DefaultPropsMap
 > = {
   whole: (props) => (
@@ -26,18 +26,18 @@ const defaultContext: DefaultComponents<
   ),
 };
 
-const defaultProps: Required<LoginBasicBottom.Props> = {
+const defaultProps: Required<FormBasicBottom.Props> = {
   ofWhole: {},
   ofSubmit: { children: 'Submit' },
 };
 
-export const LoginBasicBottom = {
+export const FormBasicBottom = {
   createComponent<
     T = DefaultPropsMap['submit'],
-    U extends LoginBasicBottom.BottomWholePropsOpts = DefaultPropsMap['whole']
+    U extends FormBasicBottom.BottomWholePropsOpts = DefaultPropsMap['whole']
   >(
-    contextArg: LoginBasicBottom.Context<T, U> = {},
-  ): Component<LoginBasicBottom.Props<T, U>> {
+    contextArg: FormBasicBottom.Context<T, U> = {},
+  ): Component<FormBasicBottom.Props<T, U>> {
     const context = assignProps({}, defaultContext, contextArg);
 
     return (propsArg) => {
@@ -55,9 +55,9 @@ export const LoginBasicBottom = {
   },
 };
 
-export const { createComponent } = LoginBasicBottom;
+export const { createComponent } = FormBasicBottom;
 
-export declare module LoginBasicBottom {
+export declare module FormBasicBottom {
   export interface Context<
     T = unknown,
     U extends BottomWholePropsOpts = BottomWholeProps

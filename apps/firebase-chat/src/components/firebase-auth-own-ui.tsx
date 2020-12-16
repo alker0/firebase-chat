@@ -1,7 +1,7 @@
 import { Form } from '@components/common/base/form/form';
 import { FormContainer } from '@components/common/base/form/form-container';
 import { BasicInputField } from '@components/common/cirrus/common/basic-input-field';
-import { LoginBasicBottom } from '@components/common/cirrus/domain/login-basic-bottom';
+import { FormBasicBottom } from '@components/common/cirrus/domain/form-basic-bottom';
 import { memoHandler } from '@components/common/util/component-utils';
 import { Cirrus } from '@alker/cirrus-types';
 import {
@@ -56,18 +56,18 @@ const InputField = BasicInputField.createComponent({
   fieldSize: 'small',
 });
 
-interface OuterBottomProps extends LoginBasicBottom.BottomWholeProps {
+interface OuterBottomProps extends FormBasicBottom.BottomWholeProps {
   // eslint-disable-next-line react/no-unused-prop-types
-  bottomComponent: Component<LoginBasicBottom.BottomWholeProps>;
+  bottomComponent: Component<FormBasicBottom.BottomWholeProps>;
 }
 
-interface InnerBottomProps extends LoginBasicBottom.BottomWholePropsOpts {
-  bottomComponent: Component<LoginBasicBottom.BottomWholeProps>;
+interface InnerBottomProps extends FormBasicBottom.BottomWholePropsOpts {
+  bottomComponent: Component<FormBasicBottom.BottomWholeProps>;
   ofSubmit: JSX.InputHTMLAttributes<HTMLInputElement>;
 }
 
 // button.animated.btn-info.outline
-const Bottom = LoginBasicBottom.createComponent({
+const Bottom = FormBasicBottom.createComponent({
   whole: (props: OuterBottomProps) => (
     <props.bottomComponent submitButton={props.submitButton} />
   ),
@@ -258,7 +258,7 @@ export declare module FirebaseAuthOwnUI {
     useFields: UseFieldsInfo;
     inputMode: () => T;
     clearSignal: () => unknown;
-    wholeOfBottom: Component<LoginBasicBottom.BottomWholeProps>;
+    wholeOfBottom: Component<FormBasicBottom.BottomWholeProps>;
     submitButtonProps?: (disableWhenLoggedIn: {
       disabled: boolean;
     }) => JSX.InputHTMLAttributes<HTMLInputElement>;

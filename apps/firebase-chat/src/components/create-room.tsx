@@ -1,7 +1,7 @@
 import { Form } from '@components/common/base/form/form';
 import { FormContainer } from '@components/common/base/form/form-container';
 import { BasicInputField } from '@components/common/cirrus/common/basic-input-field';
-import { LoginBasicBottom } from '@components/common/cirrus/domain/login-basic-bottom';
+import { FormBasicBottom } from '@components/common/cirrus/domain/form-basic-bottom';
 import { memoHandler } from '@components/common/util/component-utils';
 import { Cirrus } from '@alker/cirrus-types';
 import { EventArg, EventArgOf } from '@components/types/component-utils';
@@ -60,7 +60,7 @@ const InputField = BasicInputField.createComponent({
 });
 
 // button.animated.btn-info.outline
-const Bottom = LoginBasicBottom.createComponent();
+const Bottom = FormBasicBottom.createComponent();
 
 interface InputProps {
   getInputValue: CreateRoom.InputValueState['getter'];
