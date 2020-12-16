@@ -62,11 +62,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   auth.setPersistence(firebaseSdk.auth.Auth.Persistence.SESSION);
 
-  createRoot(() =>
-    createComputed(() =>
-      console.log('Is Logged In =>', sessionState.loginState.isLoggedIn),
-    ),
-  );
+  if (import.meta.env.MODE !== 'production') {
+    createRoot(() =>
+      createComputed(() =>
+        console.log('Is Logged In =>', sessionState.loginState.isLoggedIn),
+      ),
+    );
+  }
 
   const brandTarget = document.getElementById('header-brand-container');
 
