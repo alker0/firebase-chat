@@ -34,12 +34,26 @@ document.addEventListener('DOMContentLoaded', () => {
   const auth = firebaseSdk.auth();
   const dbFunc = firebaseSdk.database;
 
+  if (import.meta.env.MODE !== 'production') {
+    if (import.meta.env.SNOWPACK_PUBLIC_AUTH_EMULATOR_PATH) {
+      auth.useEmulator(import.meta.env.SNOWPACK_PUBLIC_AUTH_EMULATOR_PATH);
+    }
 
-  if (
-    import.meta.env.MODE !== 'production' &&
-    import.meta.env.SNOWPACK_PUBLIC_AUTH_EMULATOR_PATH
-  ) {
-    auth.useEmulator(import.meta.env.SNOWPACK_PUBLIC_AUTH_EMULATOR_PATH);
+    if (
+      import.meta.env.SNOWPACK_PUBLIC_DATABASE_EMULATOR_HOST &&
+      import.meta.env.SNOWPACK_PUBLIC_DATABASE_EMULATOR_PORT
+    ) {
+      dbFunc().useEmulator(
+        import.meta.env.SNOWPACK_PUBLIC_DATABASE_EMULATOR_HOST,
+        Number(import.meta.env.SNOWPACK_PUBLIC_DATABASE_EMULATOR_PORT),
+      );
+
+      dbFunc.enableLogging(true);
+
+      if (import.meta.env.SNOWPACK_PUBLIC_DATABASE_FORCE_WEBSOCKETS) {
+        (dbFunc as any).INTERNAL.forceWebSockets();
+      }
+    }
   }
 
   const db = dbFunc();
