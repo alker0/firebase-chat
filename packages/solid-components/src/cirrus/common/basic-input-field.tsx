@@ -45,12 +45,12 @@ export const BasicInputField = {
       return (
         <div
           {...props.ofWrapper}
-          class={`${cn('input-control')} ${props.ofWrapper.class}`}
+          class={cn('input-control', props.ofWrapper.class as Cirrus)}
         >
           <label
             children={props.labelText}
             {...props.ofLabel}
-            class={`${cn('text-info', sizedLabel)} ${props.ofLabel.class}`}
+            class={cn('text-info', sizedLabel, props.ofLabel.class as Cirrus)}
             htmlFor={
               props.ofInput.id ?? context.baseInputProps.id ?? props.inputId
             }
@@ -58,7 +58,7 @@ export const BasicInputField = {
           <input
             {...context.baseInputProps}
             {...props.ofInput}
-            class={`${cn(sizedInput)} ${props.ofInput.class}`}
+            class={cn(sizedInput, props.ofInput.class as Cirrus)}
             id={props.ofInput.id ?? context.baseInputProps.id ?? props.inputId}
           />
         </div>
