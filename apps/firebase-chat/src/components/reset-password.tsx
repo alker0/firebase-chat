@@ -1,4 +1,3 @@
-import { styleUtils } from '@components/common/util/style-utils';
 import { Cirrus } from '@alker/cirrus-types';
 import { loginMethodCreater } from '@components/common/util/input-field-utils';
 import clsx, { Clsx } from 'clsx';
@@ -9,8 +8,6 @@ import { FirebaseAuth } from './typings/firebase-sdk';
 const [clearSignal] = createSignal();
 
 const cn: Clsx<Cirrus> = clsx;
-
-const noSidePadding = styleUtils.noSidePadding().className as Cirrus;
 
 type AuthComponentProps = FirebaseAuthOwnUI.Props<unknown>;
 
@@ -72,9 +69,10 @@ export const CompleteVerifyEmail = {
 
       if (mode !== 'resetPassword') context.redirectToFailedUrl();
 
-      const [getInputValue, setInputValue] = createState<
-        FirebaseAuthOwnUI.InputValueScheme
-      >({
+      const [
+        getInputValue,
+        setInputValue,
+      ] = createState<FirebaseAuthOwnUI.InputValueScheme>({
         email: '',
         password: '',
         passConfirm: '',
@@ -103,7 +101,7 @@ export const CompleteVerifyEmail = {
           clearSignal={clearSignal}
           inputMode={() => null}
           wholeOfBottom={(props) => (
-            <div class={cn('row', 'input-control', noSidePadding)}>
+            <div class={cn('row', 'input-control', 'px-0')}>
               <props.submitButton />
             </div>
           )}
