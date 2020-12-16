@@ -7,6 +7,7 @@ import { Cirrus } from '@alker/cirrus-types';
 import { EventArg, EventArgOf } from '@components/types/component-utils';
 import { CallableSubmit } from '@components/common/util/input-field-utils';
 import { sessionState } from '@lib/solid-firebase-auth';
+import { isPermissionDeniedError } from '@lib/rtdb-utils';
 import clsx, { Clsx } from 'clsx';
 import {
   assignProps,
@@ -66,6 +67,54 @@ interface InputProps {
   setInputValue: CreateRoom.InputValueState['setter'];
 }
 
+const roomEntrances = 'room_entrances';
+const maxOwnRoomId = 3;
+
+async function createRoomIntoDb(
+  db: FirebaseDb,
+  dbServerValues: FirebaseDbServerValue,
+  uid: string,
+  getInputValue: CreateRoom.InputValueState['getter'],
+) {
+  const roomId = db.ref(roomEntrances).push().key;
+  const { roomName, password } = untrack(() => ({
+    roomName: getInputValue.roomName,
+    password: getInputValue.password,
+  }));
+
+  let succeeded = false;
+  let ownRoomId = 1;
+  for (; ownRoomId <= maxOwnRoomId; ownRoomId += 1) {
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      await db.ref().update({
+        [`rooms/${uid}/${ownRoomId}/public_info`]: {
+          room_id: roomId,
+        },
+        [`${roomEntrances}/${roomId}`]: {
+          owner_id: uid,
+          own_room_id: String(ownRoomId),
+          room_name: roomName,
+          members_count: 1,
+          created_at: dbServerValues.TIMESTAMP,
+        },
+        [`room_members_info/${roomId}/requesting/password`]: password,
+      });
+
+      succeeded = true;
+
+      break;
+    } catch (error) {
+      if (!isPermissionDeniedError(error)) throw error;
+    }
+  }
+  if (succeeded) {
+    return ownRoomId;
+  } else {
+    throw new Error('Failed to create room because permission denied');
+  }
+}
+
 export const CreateRoom = {
   createComponent: (context: CreateRoom.Context) => {
     const FormComponent = Form.createComponent({
@@ -116,7 +165,7 @@ export const CreateRoom = {
       ),
     });
 
-    function resultComponent() {
+    return () => {
       const [getInputValue, setInputValue] = createState<
         CreateRoom.InputValueState['scheme']
       >({
@@ -135,7 +184,30 @@ export const CreateRoom = {
           };
         }
 
-        return () => {};
+        return () => {
+          const {
+            auth: { currentUser },
+            db,
+            dbServerValues,
+          } = context;
+
+          if (currentUser) {
+            const { uid } = currentUser;
+            createRoomIntoDb(db, dbServerValues, uid, getInputValue)
+              .then(() => {
+                console.log('Success to create room');
+
+                setTimeout(context.redirectToSuccessUrl, 5000);
+              })
+              .catch((error) => {
+                console.error(error);
+
+                setInputValue('errorMessage', 'Failed to create room');
+              });
+          }
+
+          return false;
+        };
       });
 
       return (
@@ -151,9 +223,7 @@ export const CreateRoom = {
           }}
         />
       );
-    }
-
-    return resultComponent;
+    };
   },
 };
 
