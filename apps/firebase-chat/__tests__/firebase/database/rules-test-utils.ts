@@ -15,7 +15,7 @@ interface VoidFunction {
   (): void;
 }
 
-function DO_NOTHING() {}
+function doNothing() {}
 
 const rulesOfDatabaseJson = readFileSync(pathJoin(cwd, 'database.rules.json'), {
   encoding: 'utf-8',
@@ -30,7 +30,7 @@ interface ErrorWithCode extends Error {
 
 export function isErrorWithCode(error: unknown): error is ErrorWithCode {
   return (
-    error &&
+    Boolean(error) &&
     typeof error === 'object' &&
     Object.prototype.hasOwnProperty.call(error, 'message') &&
     Object.prototype.hasOwnProperty.call(error, 'code')
@@ -240,7 +240,7 @@ export function createSampleRulesFactory(options: RulesFactoryOptions) {
 export async function* seriesPromiseGenerator() {
   let prevPromise = Promise.resolve();
   function createPromiseWithResolve() {
-    let resultResolve = DO_NOTHING;
+    let resultResolve = doNothing;
     const resultPromise = new Promise<undefined>((resolve) => {
       resultResolve = resolve as VoidFunction;
     });
