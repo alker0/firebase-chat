@@ -2,15 +2,25 @@ import { FirebaseDb, FirebaseDbServerValue } from '@typings/firebase-sdk';
 import { roomEntrances } from './variables';
 import { isPermissionDeniedError } from './utils';
 
-export function createRoomIntoDb(
-  db: FirebaseDb,
-  dbServerValues: FirebaseDbServerValue,
-  uid: string,
-  roomName: string,
-  password: string,
-  ownRoomId: string,
-  roomId: string,
-) {
+export interface CreateRoomRunnerArgs {
+  db: FirebaseDb;
+  dbServerValues: FirebaseDbServerValue;
+  uid: string;
+  roomName: string;
+  password: string;
+  ownRoomId: string;
+  roomId: string;
+}
+
+export function createRoomIntoDb({
+  db,
+  dbServerValues,
+  uid,
+  roomName,
+  password,
+  ownRoomId,
+  roomId,
+}: CreateRoomRunnerArgs) {
   return db.ref().update({
     [`rooms/${uid}/${ownRoomId}/public_info`]: {
       room_id: roomId,

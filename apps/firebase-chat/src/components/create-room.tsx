@@ -12,6 +12,7 @@ import { sessionState } from '@lib/solid-firebase-auth';
 import { roomEntrances } from '@lib/rtdb/variables';
 import {
   createRoomIntoDb,
+  CreateRoomRunnerArgs,
   createRoomWithRetry,
   ownRoomsIsFilled,
 } from '@lib/rtdb/create-room';
@@ -97,9 +98,11 @@ interface MessageState
 const maxOwnRoomCount = 3;
 
 async function createRoomAndUpdateLinkButton(
-  db: FirebaseDb,
-  dbServerValues: FirebaseDbServerValue,
-  uid: string,
+  {
+    db,
+    dbServerValues,
+    uid,
+  }: Pick<CreateRoomRunnerArgs, 'db' | 'dbServerValues' | 'uid'>,
   getInputValue: InputValueState['getter'],
   setInputValue: InputValueState['setter'],
   setBottomProps: SetStateFunction<BottomProps>,
@@ -135,15 +138,15 @@ async function createRoomAndUpdateLinkButton(
   try {
     const { succeeded, ownRoomId } = await createRoomWithRetry(
       (ownRoomIdArg) =>
-        createRoomIntoDb(
+        createRoomIntoDb({
           db,
           dbServerValues,
           uid,
           roomName,
           password,
-          ownRoomIdArg,
+          ownRoomId: ownRoomIdArg,
           roomId,
-        ),
+        }),
       maxOwnRoomCount,
     );
 
@@ -286,9 +289,11 @@ export const CreateRoom = {
 
           if (currentUser) {
             createRoomAndUpdateLinkButton(
-              db,
-              dbServerValues,
-              currentUser.uid,
+              {
+                db,
+                dbServerValues,
+                uid: currentUser.uid,
+              },
               getInputValue,
               setInputValue,
               setBottomProps,
