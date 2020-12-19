@@ -128,11 +128,35 @@ export const createRouter = (context: RouterContext) => {
   });
 
   const CreateRoomComponent = createLazyCreateRoom({
-    redirectToSuccessUrl: redirectToHome,
     redirectToFailedUrl: redirectToHome,
     auth: context.auth,
     db: context.db,
     dbServerValues: context.dbServerValue,
+    linkBurronView: {
+      created: (ownRoomId) => {
+        return {
+          text: 'Go to your new chat room',
+          onClick: () => {
+            const { currentUser } = context.auth;
+            if (currentUser) {
+              movePageFromPath(
+                `${routingPaths.chat}/${currentUser.uid}/${ownRoomId}`,
+              );
+            } else {
+              redirectToHome();
+            }
+          },
+        };
+      },
+      alreadyFilled: {
+        text: 'Edit your chat rooms',
+        onClick: redirectToHome,
+      },
+      failed: {
+        text: 'Back to home page',
+        onClick: redirectToHome,
+      },
+    },
   });
 
   return () => (

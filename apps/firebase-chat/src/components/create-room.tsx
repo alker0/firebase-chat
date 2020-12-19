@@ -1,13 +1,20 @@
 import { Form } from '@components/common/base/form/form';
 import { FormContainer } from '@components/common/base/form/form-container';
 import { BasicInputField } from '@components/common/cirrus/common/basic-input-field';
-import { FormBasicBottom } from '@components/common/cirrus/domain/form-basic-bottom';
-import { memoHandler } from '@components/common/util/component-utils';
+import {
+  memoHandler,
+  buttonize,
+} from '@components/common/util/component-utils';
 import { Cirrus } from '@alker/cirrus-types';
 import { EventArg, EventArgOf } from '@components/types/component-utils';
 import { CallableSubmit } from '@components/common/util/input-field-utils';
 import { sessionState } from '@lib/solid-firebase-auth';
-import { isPermissionDeniedError } from '@lib/rtdb-utils';
+import { roomEntrances } from '@lib/rtdb/variables';
+import {
+  createRoomIntoDb,
+  createRoomWithRetry,
+  ownRoomsIsFilled,
+} from '@lib/rtdb/create-room';
 import clsx, { Clsx } from 'clsx';
 import {
   assignProps,
@@ -17,6 +24,7 @@ import {
   State,
   untrack,
   JSX,
+  batch,
 } from 'solid-js';
 import {
   FirebaseAuth,
@@ -55,65 +63,23 @@ const Container = FormContainer.createComponent({
   },
 });
 
+interface BottomProps {
+  readonly linkButtonHide: boolean;
+  linkButtonColorStyle: Cirrus;
+  linkButtonText: string;
+  linkButtonAction: () => void;
+}
+
 const InputField = BasicInputField.createComponent({
   fieldSize: 'small',
 });
-
-// button.animated.btn-info.outline
-const Bottom = FormBasicBottom.createComponent();
 
 interface InputProps {
   getInputValue: CreateRoom.InputValueState['getter'];
   setInputValue: CreateRoom.InputValueState['setter'];
 }
 
-const roomEntrances = 'room_entrances';
-const maxOwnRoomId = 3;
-
-async function createRoomIntoDb(
-  db: FirebaseDb,
-  dbServerValues: FirebaseDbServerValue,
-  uid: string,
-  getInputValue: CreateRoom.InputValueState['getter'],
-) {
-  const roomId = db.ref(roomEntrances).push().key;
-  const { roomName, password } = untrack(() => ({
-    roomName: getInputValue.roomName,
-    password: getInputValue.password,
-  }));
-
-  let succeeded = false;
-  let ownRoomId = 1;
-  for (; ownRoomId <= maxOwnRoomId; ownRoomId += 1) {
-    try {
-      // eslint-disable-next-line no-await-in-loop
-      await db.ref().update({
-        [`rooms/${uid}/${ownRoomId}/public_info`]: {
-          room_id: roomId,
-        },
-        [`${roomEntrances}/${roomId}`]: {
-          owner_id: uid,
-          own_room_id: String(ownRoomId),
-          room_name: roomName,
-          members_count: 1,
-          created_at: dbServerValues.TIMESTAMP,
-        },
-        [`room_members_info/${roomId}/requesting/password`]: password,
-      });
-
-      succeeded = true;
-
-      break;
-    } catch (error) {
-      if (!isPermissionDeniedError(error)) throw error;
-    }
-  }
-  if (succeeded) {
-    return ownRoomId;
-  } else {
-    throw new Error('Failed to create room because permission denied');
-  }
-}
+const maxOwnRoomCount = 3;
 
 export const CreateRoom = {
   createComponent: (context: CreateRoom.Context) => {
@@ -155,13 +121,24 @@ export const CreateRoom = {
           />
         </>
       ),
-      bottomContents: () => (
-        <Bottom
-          ofSubmit={{
-            disabled: !sessionState.loginState.isLoggedIn,
-            class: cn('animated', 'btn-primary'),
-          }}
-        />
+      bottomContents: (props: BottomProps) => (
+        <>
+          <input
+            type="submit"
+            disabled={!sessionState.loginState.isLoggedIn}
+            class={cn('animated', 'btn-primary')}
+          />
+          <button
+            class={cn(
+              'btn-animated',
+              props.linkButtonColorStyle,
+              props.linkButtonHide && 'u-none',
+            )}
+            {...buttonize(props.linkButtonAction)}
+          >
+            {props.linkButtonText}
+          </button>
+        </>
       ),
     });
 
@@ -173,6 +150,16 @@ export const CreateRoom = {
         password: '',
         infoMessage: '',
         errorMessage: '',
+      });
+
+      const [getBottomProps, setBottomProps] = createState<BottomProps>({
+        linkButtonColorStyle: 'btn-link',
+        get linkButtonHide(): boolean {
+          // eslint-disable-next-line react/no-this-in-sfc
+          return !this.linkButtonText;
+        },
+        linkButtonText: '',
+        linkButtonAction: () => {},
       });
 
       const onSubmit: () => CallableSubmit = createMemo(() => {
@@ -193,17 +180,92 @@ export const CreateRoom = {
 
           if (currentUser) {
             const { uid } = currentUser;
-            createRoomIntoDb(db, dbServerValues, uid, getInputValue)
-              .then(() => {
-                console.log('Success to create room');
 
-                setTimeout(context.redirectToSuccessUrl, 5000);
-              })
-              .catch((error) => {
-                console.error(error);
+            const { roomName, password } = untrack(() => ({
+              roomName: getInputValue.roomName,
+              password: getInputValue.password,
+            }));
 
-                setInputValue('errorMessage', 'Failed to create room');
-              });
+            const roomId = db.ref(roomEntrances).push().key!;
+
+            batch(() => {
+              createRoomWithRetry(async (ownRoomId) => {
+                createRoomIntoDb(
+                  db,
+                  dbServerValues,
+                  uid,
+                  roomName,
+                  password,
+                  ownRoomId,
+                  roomId,
+                );
+              }, maxOwnRoomCount)
+                .then(({ succeeded, ownRoomId }) => {
+                  if (succeeded) {
+                    setInputValue({
+                      infoMessage: 'Your new chat room is created',
+                      errorMessage: '',
+                    });
+
+                    const {
+                      text: linkButtonText,
+                      onClick: linkButtonAction,
+                    } = context.linkBurronView.created(ownRoomId);
+
+                    setBottomProps({
+                      linkButtonColorStyle: 'btn-info',
+                      linkButtonText,
+                      linkButtonAction,
+                    });
+                    console.log(linkButtonText);
+                  } else {
+                    ownRoomsIsFilled(db, uid, maxOwnRoomCount).then(
+                      (isFilled) => {
+                        if (isFilled) {
+                          setInputValue({
+                            infoMessage: '',
+                            errorMessage: `You can create only ${maxOwnRoomCount} rooms`,
+                          });
+
+                          const {
+                            text: linkButtonText,
+                            onClick: linkButtonAction,
+                          } = context.linkBurronView.alreadyFilled;
+
+                          setBottomProps({
+                            linkButtonColorStyle: 'btn-warning',
+                            linkButtonText,
+                            linkButtonAction,
+                          });
+                        } else {
+                          throw new Error(
+                            'Permission denied with the unknown reasons',
+                          );
+                        }
+                      },
+                    );
+                  }
+                })
+                .catch((error) => {
+                  console.error(error);
+
+                  setInputValue({
+                    infoMessage: '',
+                    errorMessage: 'Failed to create room',
+                  });
+
+                  const {
+                    text: linkButtonText,
+                    onClick: linkButtonAction,
+                  } = context.linkBurronView.failed;
+
+                  setBottomProps({
+                    linkButtonColorStyle: 'btn-error',
+                    linkButtonText,
+                    linkButtonAction,
+                  });
+                });
+            });
           }
 
           return false;
@@ -221,6 +283,7 @@ export const CreateRoom = {
             getInputValue,
             setInputValue,
           }}
+          ofBottomContents={getBottomProps}
         />
       );
     };
@@ -229,8 +292,12 @@ export const CreateRoom = {
 
 export declare module CreateRoom {
   export interface Context {
-    redirectToSuccessUrl: () => void;
     redirectToFailedUrl: () => void;
+    linkBurronView: {
+      created: (ownRoomId: string) => LinkButtonView;
+      alreadyFilled: LinkButtonView;
+      failed: LinkButtonView;
+    };
     auth: FirebaseAuth;
     db: FirebaseDb;
     dbServerValues: FirebaseDbServerValue;
@@ -248,10 +315,8 @@ export declare module CreateRoom {
     setter: SetStateFunction<InputValueState['scheme']>;
   }
 
-  export type InputValueScheme = InputValueState['scheme'];
-
-  export type InputValueAccessor = [
-    InputValueState['getter'],
-    InputValueState['setter'],
-  ];
+  export interface LinkButtonView {
+    text: string;
+    onClick: () => void;
+  }
 }
