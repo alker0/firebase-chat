@@ -74,12 +74,117 @@ const InputField = BasicInputField.createComponent({
   fieldSize: 'small',
 });
 
+interface InputValueState {
+  scheme: {
+    roomName: string;
+    password: string;
+    infoMessage: string;
+    errorMessage: string;
+  };
+  getter: State<InputValueState>['scheme'];
+  setter: SetStateFunction<InputValueState['scheme']>;
+}
+
 interface InputProps {
-  getInputValue: CreateRoom.InputValueState['getter'];
-  setInputValue: CreateRoom.InputValueState['setter'];
+  getInputValue: InputValueState['getter'];
+  setInputValue: InputValueState['setter'];
 }
 
 const maxOwnRoomCount = 3;
+
+async function createRoomAndUpdateLinkButton(
+  db: FirebaseDb,
+  dbServerValues: FirebaseDbServerValue,
+  uid: string,
+  getInputValue: InputValueState['getter'],
+  setInputValue: InputValueState['setter'],
+  setBottomProps: SetStateFunction<BottomProps>,
+  linkButtonView: CreateRoom.LinkButtonViewContext,
+) {
+  const { roomName, password } = untrack(() => ({
+    roomName: getInputValue.roomName,
+    password: getInputValue.password,
+  }));
+
+  const roomId = db.ref(roomEntrances).push().key!;
+
+  batch(() => {
+    createRoomWithRetry(
+      async (ownRoomId) =>
+        createRoomIntoDb(
+          db,
+          dbServerValues,
+          uid,
+          roomName,
+          password,
+          ownRoomId,
+          roomId,
+        ),
+      maxOwnRoomCount,
+    )
+      .then(({ succeeded, ownRoomId }) => {
+        if (succeeded) {
+          setInputValue({
+            infoMessage: 'Your new chat room is created',
+            errorMessage: '',
+          });
+
+          const {
+            text: linkButtonText,
+            onClick: linkButtonAction,
+          } = linkButtonView.created(ownRoomId);
+
+          setBottomProps({
+            linkButtonColorStyle: 'btn-info',
+            linkButtonText,
+            linkButtonAction,
+          });
+          console.log(linkButtonText);
+        } else {
+          ownRoomsIsFilled(db, uid, maxOwnRoomCount).then((isFilled) => {
+            if (isFilled) {
+              setInputValue({
+                infoMessage: '',
+                errorMessage: `You can create only ${maxOwnRoomCount} rooms`,
+              });
+
+              const {
+                text: linkButtonText,
+                onClick: linkButtonAction,
+              } = linkButtonView.alreadyFilled;
+
+              setBottomProps({
+                linkButtonColorStyle: 'btn-warning',
+                linkButtonText,
+                linkButtonAction,
+              });
+            } else {
+              throw new Error('Permission denied with the unknown reasons');
+            }
+          });
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+
+        setInputValue({
+          infoMessage: '',
+          errorMessage: 'Failed to create room',
+        });
+
+        const {
+          text: linkButtonText,
+          onClick: linkButtonAction,
+        } = linkButtonView.failed;
+
+        setBottomProps({
+          linkButtonColorStyle: 'btn-error',
+          linkButtonText,
+          linkButtonAction,
+        });
+      });
+  });
+}
 
 export const CreateRoom = {
   createComponent: (context: CreateRoom.Context) => {
@@ -144,7 +249,7 @@ export const CreateRoom = {
 
     return () => {
       const [getInputValue, setInputValue] = createState<
-        CreateRoom.InputValueState['scheme']
+        InputValueState['scheme']
       >({
         roomName: '',
         password: '',
@@ -179,93 +284,102 @@ export const CreateRoom = {
           } = context;
 
           if (currentUser) {
-            const { uid } = currentUser;
+            createRoomAndUpdateLinkButton(
+              db,
+              dbServerValues,
+              currentUser.uid,
+              getInputValue,
+              setInputValue,
+              setBottomProps,
+              context.linkButtonView,
+            );
+            //   const { uid } = currentUser;
 
-            const { roomName, password } = untrack(() => ({
-              roomName: getInputValue.roomName,
-              password: getInputValue.password,
-            }));
+            //   const { roomName, password } = untrack(() => ({
+            //     roomName: getInputValue.roomName,
+            //     password: getInputValue.password,
+            //   }));
 
-            const roomId = db.ref(roomEntrances).push().key!;
+            //   const roomId = db.ref(roomEntrances).push().key!;
 
-            batch(() => {
-              createRoomWithRetry(async (ownRoomId) => {
-                createRoomIntoDb(
-                  db,
-                  dbServerValues,
-                  uid,
-                  roomName,
-                  password,
-                  ownRoomId,
-                  roomId,
-                );
-              }, maxOwnRoomCount)
-                .then(({ succeeded, ownRoomId }) => {
-                  if (succeeded) {
-                    setInputValue({
-                      infoMessage: 'Your new chat room is created',
-                      errorMessage: '',
-                    });
+            //   batch(() => {
+            //     createRoomWithRetry(async (ownRoomId) => {
+            //       createRoomIntoDb(
+            //         db,
+            //         dbServerValues,
+            //         uid,
+            //         roomName,
+            //         password,
+            //         ownRoomId,
+            //         roomId,
+            //       );
+            //     }, maxOwnRoomCount)
+            //       .then(({ succeeded, ownRoomId }) => {
+            //         if (succeeded) {
+            //           setInputValue({
+            //             infoMessage: 'Your new chat room is created',
+            //             errorMessage: '',
+            //           });
 
-                    const {
-                      text: linkButtonText,
-                      onClick: linkButtonAction,
-                    } = context.linkBurronView.created(ownRoomId);
+            //           const {
+            //             text: linkButtonText,
+            //             onClick: linkButtonAction,
+            //           } = context.linkButtonView.created(ownRoomId);
 
-                    setBottomProps({
-                      linkButtonColorStyle: 'btn-info',
-                      linkButtonText,
-                      linkButtonAction,
-                    });
-                    console.log(linkButtonText);
-                  } else {
-                    ownRoomsIsFilled(db, uid, maxOwnRoomCount).then(
-                      (isFilled) => {
-                        if (isFilled) {
-                          setInputValue({
-                            infoMessage: '',
-                            errorMessage: `You can create only ${maxOwnRoomCount} rooms`,
-                          });
+            //           setBottomProps({
+            //             linkButtonColorStyle: 'btn-info',
+            //             linkButtonText,
+            //             linkButtonAction,
+            //           });
+            //           console.log(linkButtonText);
+            //         } else {
+            //           ownRoomsIsFilled(db, uid, maxOwnRoomCount).then(
+            //             (isFilled) => {
+            //               if (isFilled) {
+            //                 setInputValue({
+            //                   infoMessage: '',
+            //                   errorMessage: `You can create only ${maxOwnRoomCount} rooms`,
+            //                 });
 
-                          const {
-                            text: linkButtonText,
-                            onClick: linkButtonAction,
-                          } = context.linkBurronView.alreadyFilled;
+            //                 const {
+            //                   text: linkButtonText,
+            //                   onClick: linkButtonAction,
+            //                 } = context.linkButtonView.alreadyFilled;
 
-                          setBottomProps({
-                            linkButtonColorStyle: 'btn-warning',
-                            linkButtonText,
-                            linkButtonAction,
-                          });
-                        } else {
-                          throw new Error(
-                            'Permission denied with the unknown reasons',
-                          );
-                        }
-                      },
-                    );
-                  }
-                })
-                .catch((error) => {
-                  console.error(error);
+            //                 setBottomProps({
+            //                   linkButtonColorStyle: 'btn-warning',
+            //                   linkButtonText,
+            //                   linkButtonAction,
+            //                 });
+            //               } else {
+            //                 throw new Error(
+            //                   'Permission denied with the unknown reasons',
+            //                 );
+            //               }
+            //             },
+            //           );
+            //         }
+            //       })
+            //       .catch((error) => {
+            //         console.error(error);
 
-                  setInputValue({
-                    infoMessage: '',
-                    errorMessage: 'Failed to create room',
-                  });
+            //         setInputValue({
+            //           infoMessage: '',
+            //           errorMessage: 'Failed to create room',
+            //         });
 
-                  const {
-                    text: linkButtonText,
-                    onClick: linkButtonAction,
-                  } = context.linkBurronView.failed;
+            //         const {
+            //           text: linkButtonText,
+            //           onClick: linkButtonAction,
+            //         } = context.linkButtonView.failed;
 
-                  setBottomProps({
-                    linkButtonColorStyle: 'btn-error',
-                    linkButtonText,
-                    linkButtonAction,
-                  });
-                });
-            });
+            //         setBottomProps({
+            //           linkButtonColorStyle: 'btn-error',
+            //           linkButtonText,
+            //           linkButtonAction,
+            //         });
+            //       });
+            //   });
           }
 
           return false;
@@ -293,30 +407,21 @@ export const CreateRoom = {
 export declare module CreateRoom {
   export interface Context {
     redirectToFailedUrl: () => void;
-    linkBurronView: {
-      created: (ownRoomId: string) => LinkButtonView;
-      alreadyFilled: LinkButtonView;
-      failed: LinkButtonView;
-    };
+    linkButtonView: LinkButtonViewContext;
     auth: FirebaseAuth;
     db: FirebaseDb;
     dbServerValues: FirebaseDbServerValue;
   }
   export interface Props {}
 
-  export interface InputValueState {
-    scheme: {
-      roomName: string;
-      password: string;
-      infoMessage: string;
-      errorMessage: string;
-    };
-    getter: State<InputValueState>['scheme'];
-    setter: SetStateFunction<InputValueState['scheme']>;
-  }
-
   export interface LinkButtonView {
     text: string;
     onClick: () => void;
+  }
+
+  export interface LinkButtonViewContext {
+    created: (ownRoomId: string) => LinkButtonView;
+    alreadyFilled: LinkButtonView;
+    failed: LinkButtonView;
   }
 }

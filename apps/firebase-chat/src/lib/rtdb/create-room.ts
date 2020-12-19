@@ -11,18 +11,29 @@ export async function createRoomIntoDb(
   ownRoomId: string,
   roomId: string,
 ) {
-  await db.ref().update({
-    [`rooms/${uid}/${ownRoomId}/public_info`]: {
-      room_id: roomId,
-    },
-    [`${roomEntrances}/${roomId}`]: {
-      owner_id: uid,
-      own_room_id: String(ownRoomId),
-      room_name: roomName,
-      members_count: 1,
-      created_at: dbServerValues.TIMESTAMP,
-    },
-    [`room_members_info/${roomId}/requesting/password`]: password,
+  await new Promise<void>((resolve, reject) => {
+    db.ref().update(
+      {
+        [`rooms/${uid}/${ownRoomId}/public_info`]: {
+          room_id: roomId,
+        },
+        [`${roomEntrances}/${roomId}`]: {
+          owner_id: uid,
+          own_room_id: String(ownRoomId),
+          room_name: roomName,
+          members_count: 1,
+          created_at: dbServerValues.TIMESTAMP,
+        },
+        [`room_members_info/${roomId}/requesting/password`]: password,
+      },
+      (error) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve();
+        }
+      },
+    );
   });
 }
 

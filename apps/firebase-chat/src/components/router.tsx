@@ -132,7 +132,7 @@ export const createRouter = (context: RouterContext) => {
     auth: context.auth,
     db: context.db,
     dbServerValues: context.dbServerValue,
-    linkBurronView: {
+    linkButtonView: {
       created: (ownRoomId) => {
         return {
           text: 'Go to your new chat room',
