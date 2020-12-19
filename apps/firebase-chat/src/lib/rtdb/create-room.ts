@@ -2,7 +2,7 @@ import { FirebaseDb, FirebaseDbServerValue } from '@typings/firebase-sdk';
 import { roomEntrances } from './variables';
 import { isPermissionDeniedError } from './utils';
 
-export async function createRoomIntoDb(
+export function createRoomIntoDb(
   db: FirebaseDb,
   dbServerValues: FirebaseDbServerValue,
   uid: string,
@@ -11,29 +11,18 @@ export async function createRoomIntoDb(
   ownRoomId: string,
   roomId: string,
 ) {
-  await new Promise<void>((resolve, reject) => {
-    db.ref().update(
-      {
-        [`rooms/${uid}/${ownRoomId}/public_info`]: {
-          room_id: roomId,
-        },
-        [`${roomEntrances}/${roomId}`]: {
-          owner_id: uid,
-          own_room_id: String(ownRoomId),
-          room_name: roomName,
-          members_count: 1,
-          created_at: dbServerValues.TIMESTAMP,
-        },
-        [`room_members_info/${roomId}/requesting/password`]: password,
-      },
-      (error) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve();
-        }
-      },
-    );
+  return db.ref().update({
+    [`rooms/${uid}/${ownRoomId}/public_info`]: {
+      room_id: roomId,
+    },
+    [`${roomEntrances}/${roomId}`]: {
+      owner_id: uid,
+      own_room_id: String(ownRoomId),
+      room_name: roomName,
+      members_count: 1,
+      created_at: dbServerValues.TIMESTAMP,
+    },
+    [`room_members_info/${roomId}/requesting/password`]: password,
   });
 }
 
@@ -43,10 +32,12 @@ export async function createRoomWithRetry(
 ) {
   let succeeded = false;
   let ownRoomId = 1;
+  let ownRoomIdText = String(ownRoomId);
   for (; ownRoomId <= maxOwnRoomCount; ownRoomId += 1) {
+    ownRoomIdText = String(ownRoomId);
     try {
       // eslint-disable-next-line no-await-in-loop
-      await createRunner(String(ownRoomId));
+      await createRunner(ownRoomIdText);
 
       succeeded = true;
 
@@ -57,7 +48,7 @@ export async function createRoomWithRetry(
   }
   return {
     succeeded,
-    ownRoomId: String(ownRoomId),
+    ownRoomId: ownRoomIdText,
   };
 }
 
@@ -66,10 +57,11 @@ export async function ownRoomsIsFilled(
   uid: string,
   maxRoomCount: number,
 ) {
-  return db
+  const snapshot = await db
     .ref(roomEntrances)
     .orderByChild('owner_id')
     .equalTo(uid)
-    .once('value')
-    .then((snapshot) => maxRoomCount <= snapshot.numChildren());
+    .once('value');
+
+  return maxRoomCount <= snapshot.numChildren();
 }

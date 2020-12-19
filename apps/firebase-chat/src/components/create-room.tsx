@@ -66,8 +66,9 @@ const Container = FormContainer.createComponent({
 interface BottomProps {
   readonly linkButtonHide: boolean;
   linkButtonColorStyle: Cirrus;
-  linkButtonText: string;
-  linkButtonAction: () => void;
+  linkButtonView: CreateRoom.LinkButtonView;
+  readonly linkButtonText: string;
+  readonly linkButtonAction: () => void;
 }
 
 const InputField = BasicInputField.createComponent({
@@ -90,6 +91,9 @@ interface InputProps {
   setInputValue: InputValueState['setter'];
 }
 
+interface MessageState
+  extends Pick<InputValueState['scheme'], 'infoMessage' | 'errorMessage'> {}
+
 const maxOwnRoomCount = 3;
 
 async function createRoomAndUpdateLinkButton(
@@ -99,7 +103,7 @@ async function createRoomAndUpdateLinkButton(
   getInputValue: InputValueState['getter'],
   setInputValue: InputValueState['setter'],
   setBottomProps: SetStateFunction<BottomProps>,
-  linkButtonView: CreateRoom.LinkButtonViewContext,
+  linkButtonViewContext: CreateRoom.LinkButtonViewContext,
 ) {
   const { roomName, password } = untrack(() => ({
     roomName: getInputValue.roomName,
@@ -108,82 +112,71 @@ async function createRoomAndUpdateLinkButton(
 
   const roomId = db.ref(roomEntrances).push().key!;
 
-  batch(() => {
-    createRoomWithRetry(
-      async (ownRoomId) =>
+  function updateView({
+    infoMessage,
+    errorMessage,
+    linkButtonView,
+    linkButtonColorStyle,
+  }: MessageState &
+    Pick<BottomProps, 'linkButtonView' | 'linkButtonColorStyle'>) {
+    batch(() => {
+      setInputValue({
+        infoMessage,
+        errorMessage,
+      });
+
+      setBottomProps({
+        linkButtonColorStyle,
+        linkButtonView,
+      });
+    });
+  }
+
+  try {
+    const { succeeded, ownRoomId } = await createRoomWithRetry(
+      (ownRoomIdArg) =>
         createRoomIntoDb(
           db,
           dbServerValues,
           uid,
           roomName,
           password,
-          ownRoomId,
+          ownRoomIdArg,
           roomId,
         ),
       maxOwnRoomCount,
-    )
-      .then(({ succeeded, ownRoomId }) => {
-        if (succeeded) {
-          setInputValue({
-            infoMessage: 'Your new chat room is created',
-            errorMessage: '',
-          });
+    );
 
-          const {
-            text: linkButtonText,
-            onClick: linkButtonAction,
-          } = linkButtonView.created(ownRoomId);
-
-          setBottomProps({
-            linkButtonColorStyle: 'btn-info',
-            linkButtonText,
-            linkButtonAction,
-          });
-          console.log(linkButtonText);
-        } else {
-          ownRoomsIsFilled(db, uid, maxOwnRoomCount).then((isFilled) => {
-            if (isFilled) {
-              setInputValue({
-                infoMessage: '',
-                errorMessage: `You can create only ${maxOwnRoomCount} rooms`,
-              });
-
-              const {
-                text: linkButtonText,
-                onClick: linkButtonAction,
-              } = linkButtonView.alreadyFilled;
-
-              setBottomProps({
-                linkButtonColorStyle: 'btn-warning',
-                linkButtonText,
-                linkButtonAction,
-              });
-            } else {
-              throw new Error('Permission denied with the unknown reasons');
-            }
-          });
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-
-        setInputValue({
-          infoMessage: '',
-          errorMessage: 'Failed to create room',
-        });
-
-        const {
-          text: linkButtonText,
-          onClick: linkButtonAction,
-        } = linkButtonView.failed;
-
-        setBottomProps({
-          linkButtonColorStyle: 'btn-error',
-          linkButtonText,
-          linkButtonAction,
-        });
+    if (succeeded) {
+      updateView({
+        infoMessage: 'Your new chat room is created',
+        errorMessage: '',
+        linkButtonView: linkButtonViewContext.created(ownRoomId),
+        linkButtonColorStyle: 'btn-info',
       });
-  });
+    } else {
+      const isFilled = await ownRoomsIsFilled(db, uid, maxOwnRoomCount);
+      if (isFilled) {
+        updateView({
+          infoMessage: '',
+          errorMessage: `You can create only ${maxOwnRoomCount} rooms`,
+          linkButtonView: linkButtonViewContext.alreadyFilled,
+          linkButtonColorStyle: 'btn-warning',
+        });
+      } else {
+        throw new Error('Permission denied with the unknown reasons');
+      }
+    }
+  } catch (error) {
+    console.error(error);
+
+    updateView({
+      infoMessage: '',
+      errorMessage: 'Failed to create room',
+      linkButtonView: linkButtonViewContext.failed,
+      linkButtonColorStyle: 'btn-error',
+    });
+  }
 }
 
 export const CreateRoom = {
@@ -261,10 +254,18 @@ export const CreateRoom = {
         linkButtonColorStyle: 'btn-link',
         get linkButtonHide(): boolean {
           // eslint-disable-next-line react/no-this-in-sfc
-          return !this.linkButtonText;
+          return !(this as BottomProps).linkButtonText;
         },
-        linkButtonText: '',
-        linkButtonAction: () => {},
+        linkButtonView: {
+          text: '',
+          onClick: () => {},
+        },
+        get linkButtonText() {
+          return (this as BottomProps).linkButtonView.text;
+        },
+        get linkButtonAction() {
+          return (this as BottomProps).linkButtonView.onClick;
+        },
       });
 
       const onSubmit: () => CallableSubmit = createMemo(() => {
@@ -293,93 +294,6 @@ export const CreateRoom = {
               setBottomProps,
               context.linkButtonView,
             );
-            //   const { uid } = currentUser;
-
-            //   const { roomName, password } = untrack(() => ({
-            //     roomName: getInputValue.roomName,
-            //     password: getInputValue.password,
-            //   }));
-
-            //   const roomId = db.ref(roomEntrances).push().key!;
-
-            //   batch(() => {
-            //     createRoomWithRetry(async (ownRoomId) => {
-            //       createRoomIntoDb(
-            //         db,
-            //         dbServerValues,
-            //         uid,
-            //         roomName,
-            //         password,
-            //         ownRoomId,
-            //         roomId,
-            //       );
-            //     }, maxOwnRoomCount)
-            //       .then(({ succeeded, ownRoomId }) => {
-            //         if (succeeded) {
-            //           setInputValue({
-            //             infoMessage: 'Your new chat room is created',
-            //             errorMessage: '',
-            //           });
-
-            //           const {
-            //             text: linkButtonText,
-            //             onClick: linkButtonAction,
-            //           } = context.linkButtonView.created(ownRoomId);
-
-            //           setBottomProps({
-            //             linkButtonColorStyle: 'btn-info',
-            //             linkButtonText,
-            //             linkButtonAction,
-            //           });
-            //           console.log(linkButtonText);
-            //         } else {
-            //           ownRoomsIsFilled(db, uid, maxOwnRoomCount).then(
-            //             (isFilled) => {
-            //               if (isFilled) {
-            //                 setInputValue({
-            //                   infoMessage: '',
-            //                   errorMessage: `You can create only ${maxOwnRoomCount} rooms`,
-            //                 });
-
-            //                 const {
-            //                   text: linkButtonText,
-            //                   onClick: linkButtonAction,
-            //                 } = context.linkButtonView.alreadyFilled;
-
-            //                 setBottomProps({
-            //                   linkButtonColorStyle: 'btn-warning',
-            //                   linkButtonText,
-            //                   linkButtonAction,
-            //                 });
-            //               } else {
-            //                 throw new Error(
-            //                   'Permission denied with the unknown reasons',
-            //                 );
-            //               }
-            //             },
-            //           );
-            //         }
-            //       })
-            //       .catch((error) => {
-            //         console.error(error);
-
-            //         setInputValue({
-            //           infoMessage: '',
-            //           errorMessage: 'Failed to create room',
-            //         });
-
-            //         const {
-            //           text: linkButtonText,
-            //           onClick: linkButtonAction,
-            //         } = context.linkButtonView.failed;
-
-            //         setBottomProps({
-            //           linkButtonColorStyle: 'btn-error',
-            //           linkButtonText,
-            //           linkButtonAction,
-            //         });
-            //       });
-            //   });
           }
 
           return false;
