@@ -1,7 +1,7 @@
-import type FirebaseType from 'firebase';
 import { createState, createRoot } from 'solid-js';
+import { FirebaseUser } from '@typings/firebase-sdk';
 
-export type UserState = FirebaseType.User | null;
+export type UserState = FirebaseUser | null;
 
 export interface SesstionState {
   currentUser: UserState;
