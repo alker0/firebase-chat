@@ -187,7 +187,7 @@ export const FirebaseAuthOwnUI = {
       const [getInputValue, setInputValue] = props.getInputValueAccessor();
 
       const onSubmit: () => CallableSubmit = createMemo(() => {
-        if (untrack(() => sessionState.loginState.isLoggedIn)) {
+        if (untrack(() => sessionState.isLoggedIn)) {
           return (e: EventArgOf<CallableSubmit>) => {
             e.preventDefault();
             console.log('Already Logged In');
@@ -234,7 +234,7 @@ export const FirebaseAuthOwnUI = {
           ofBottomContents={{
             bottomComponent: props.wholeOfBottom,
             ofSubmit: props.submitButtonProps({
-              disabled: sessionState.loginState.isLoggedIn,
+              disabled: sessionState.isLoggedIn,
             }),
           }}
         />

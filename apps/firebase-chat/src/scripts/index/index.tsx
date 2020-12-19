@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (import.meta.env.MODE !== 'production') {
     createRoot(() =>
       createComputed(() =>
-        console.log('Is Logged In =>', sessionState.loginState.isLoggedIn),
+        console.log('Is Logged In =>', sessionState.isLoggedIn),
       ),
     );
   }

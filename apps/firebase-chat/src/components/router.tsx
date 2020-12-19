@@ -45,7 +45,7 @@ export const routingPaths = {
 };
 
 const getSessionButtonHandler = (auth: FirebaseAuth) => () => {
-  if (sessionState.loginState.isLoggedIn) {
+  if (sessionState.isLoggedIn) {
     auth.signOut();
   } else {
     movePageFromPath(routingPaths.login);
@@ -92,7 +92,7 @@ export const createRouter = (context: RouterContext) => {
       <h1 class={cn('offset-center')}>Welcome To Talker</h1>
     ),
     getSessionButtonText: () =>
-      sessionState.loginState.isLoggedIn ? 'Sign Out' : 'Sign Up',
+      sessionState.isLoggedIn ? 'Sign Out' : 'Sign Up',
     onSessionButtonClick: getSessionButtonHandler(context.auth),
     leftButtonText: 'Search Room',
     onLeftButtonClick: () => movePageFromPath(routingPaths.searchRoom),
@@ -174,7 +174,7 @@ export const createRouter = (context: RouterContext) => {
         {
           matcher: () => fullPath().startsWith(routingPaths.login),
           getComponent: () =>
-            untrack(() => !sessionState.loginState.isLoggedIn) ? (
+            untrack(() => !sessionState.isLoggedIn) ? (
               <LoginFormComponent />
             ) : (
               <Redirect url={routingPaths.home} />

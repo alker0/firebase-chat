@@ -125,7 +125,7 @@ export const CreateRoom = {
         <>
           <input
             type="submit"
-            disabled={!sessionState.loginState.isLoggedIn}
+            disabled={!sessionState.isLoggedIn}
             class={cn('animated', 'btn-primary')}
           />
           <button
@@ -163,7 +163,7 @@ export const CreateRoom = {
       });
 
       const onSubmit: () => CallableSubmit = createMemo(() => {
-        if (untrack(() => !sessionState.loginState.isLoggedIn)) {
+        if (untrack(() => !sessionState.isLoggedIn)) {
           return (e: EventArgOf<CallableSubmit>) => {
             e.preventDefault();
             console.log('Is Not Logged In');
