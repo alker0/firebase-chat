@@ -41,9 +41,9 @@ export async function createRoomWithRetry(
   maxOwnRoomCount: number,
 ) {
   let succeeded = false;
-  let ownRoomId = 1;
+  let ownRoomId = 0;
   let ownRoomIdText = String(ownRoomId);
-  for (; ownRoomId <= maxOwnRoomCount; ownRoomId += 1) {
+  for (; ownRoomId < maxOwnRoomCount; ownRoomId += 1) {
     ownRoomIdText = String(ownRoomId);
     try {
       // eslint-disable-next-line no-await-in-loop
@@ -71,6 +71,7 @@ export async function ownRoomsIsFilled(
     .ref(roomEntrances)
     .orderByChild('owner_id')
     .equalTo(uid)
+    .limitToFirst(maxRoomCount)
     .once('value');
 
   return maxRoomCount <= snapshot.numChildren();
