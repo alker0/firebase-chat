@@ -81,9 +81,7 @@ interface ContainerProps {
   children?: JSX.HTMLAttributes<HTMLElement>['children'];
 }
 
-interface InputProps {
-  getInputValue: FirebaseAuthOwnUI.InputValueState['getter'];
-  setInputValue: FirebaseAuthOwnUI.InputValueState['setter'];
+interface InputProps extends FirebaseAuthOwnUI.FormStateAccessor {
   useFields: {
     email: boolean;
     password: boolean;
@@ -97,8 +95,8 @@ export const defaultContext: Required<FirebaseAuthOwnUI.Context> = {
 };
 
 const defaultProps: Required<OnlyOptional<FirebaseAuthOwnUI.Props<unknown>>> = {
-  getInputValueAccessor: () =>
-    createState<FirebaseAuthOwnUI.InputValueState['scheme']>({
+  createFormState: () =>
+    createState<FirebaseAuthOwnUI.FormState['scheme']>({
       email: '',
       password: '',
       passConfirm: '',
@@ -117,10 +115,10 @@ export const FirebaseAuthOwnUI = {
       inputFields: (props: InputProps) => (
         <>
           <div class={cn('u-text-center', 'text-info')}>
-            {props.getInputValue.infoMessage}
+            {props.formState.infoMessage}
           </div>
           <div class={cn('u-text-center', 'text-danger')}>
-            {props.getInputValue.errorMessage}
+            {props.formState.errorMessage}
           </div>
           <InputField
             labelText="Email:"
@@ -130,9 +128,9 @@ export const FirebaseAuthOwnUI = {
               type: 'text',
               required: true,
               pattern: inputRegexSource.email,
-              value: props.getInputValue.email,
+              value: props.formState.email,
               onChange: (e: EventArg<HTMLInputElement>) =>
-                props.setInputValue('email', e.target.value),
+                props.setFormState('email', e.target.value),
             }}
           />
           {props.useFields.password && (
@@ -144,9 +142,9 @@ export const FirebaseAuthOwnUI = {
                 type: 'password',
                 required: true,
                 pattern: context.passwordRegex.source,
-                value: props.getInputValue.password,
+                value: props.formState.password,
                 onChange: (e: EventArg<HTMLInputElement>) =>
-                  props.setInputValue('password', e.target.value),
+                  props.setFormState('password', e.target.value),
               }}
             />
           )}
@@ -159,9 +157,9 @@ export const FirebaseAuthOwnUI = {
                 type: 'password',
                 required: true,
                 pattern: context.passwordRegex.source,
-                value: props.getInputValue.passConfirm,
+                value: props.formState.passConfirm,
                 onChange: (e: EventArg<HTMLInputElement>) =>
-                  props.setInputValue('passConfirm', e.target.value),
+                  props.setFormState('passConfirm', e.target.value),
               }}
             />
           )}
@@ -184,7 +182,7 @@ export const FirebaseAuthOwnUI = {
     function resultComponent<T>(propsArg: FirebaseAuthOwnUI.Props<T>) {
       const props = assignProps({}, defaultProps, propsArg);
 
-      const [getInputValue, setInputValue] = props.getInputValueAccessor();
+      const [formState, setFormState] = props.createFormState();
 
       const onSubmit: () => CallableSubmit = createMemo(() => {
         if (untrack(() => sessionState.isLoggedIn)) {
@@ -204,7 +202,7 @@ export const FirebaseAuthOwnUI = {
 
       createComputed(() => {
         props.clearSignal();
-        setInputValue(['password', 'passConfirm', 'errorMessage'], '');
+        setFormState(['password', 'passConfirm', 'errorMessage'], '');
       });
 
       return (
@@ -227,8 +225,8 @@ export const FirebaseAuthOwnUI = {
             },
           }}
           ofInputFields={{
-            getInputValue,
-            setInputValue,
+            formState,
+            setFormState,
             useFields: props.useFields,
           }}
           ofBottomContents={{
@@ -253,7 +251,7 @@ export declare module FirebaseAuthOwnUI {
     }>;
   }
   export interface Props<T> {
-    getInputValueAccessor?: () => InputValueAccessor;
+    createFormState?: () => FormStateAccessorTuple;
     redirectToSuccessUrl: () => void;
     useFields: UseFieldsInfo;
     inputMode: () => T;
@@ -275,7 +273,7 @@ export declare module FirebaseAuthOwnUI {
     passConfirm: boolean;
   }
 
-  export interface InputValueState {
+  export interface FormState {
     scheme: {
       email: string;
       password: string;
@@ -283,14 +281,19 @@ export declare module FirebaseAuthOwnUI {
       infoMessage: string;
       errorMessage: string;
     };
-    getter: State<InputValueState>['scheme'];
-    setter: SetStateFunction<InputValueState['scheme']>;
+    getter: State<FormState>['scheme'];
+    setter: SetStateFunction<FormState['scheme']>;
   }
 
-  export type InputValueScheme = InputValueState['scheme'];
+  export type FormStateScheme = FormState['scheme'];
 
-  export type InputValueAccessor = [
-    InputValueState['getter'],
-    InputValueState['setter'],
+  export type FormStateAccessorTuple = [
+    FormState['getter'],
+    FormState['setter'],
   ];
+
+  export interface FormStateAccessor {
+    formState: FormState['getter'];
+    setFormState: FormState['setter'];
+  }
 }

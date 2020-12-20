@@ -21,9 +21,6 @@ const cn: Clsx<Cirrus> = clsx;
 
 type AuthComponentProps = FirebaseAuthOwnUI.Props<unknown>;
 
-type InputValueGetter = FirebaseAuthOwnUI.InputValueState['getter'];
-type InputValueSetter = FirebaseAuthOwnUI.InputValueState['setter'];
-
 const getEmailValueFromCookie = (cookieKeyOfEmail: string) => {
   const [, emailValue] = document.cookie
     .split('; ')
@@ -45,21 +42,23 @@ const getSignInMethods = async (auth: FirebaseAuth, emailValue: string) => {
   }
 };
 
-const getSubmitAction = (
-  auth: FirebaseAuth,
-  getInputValue: InputValueGetter,
-  setInputValue: InputValueSetter,
-  cookieKeyOfEmail: string,
-  getNeedPassword: () => boolean | undefined,
-  redirectToSuccessUrl: () => void,
-): AuthComponentProps['submitAction'] => ({ passwordRegex }) => {
+const getSubmitAction = ({
+  auth,
+  cookieKeyOfEmail,
+  getNeedPassword,
+  redirectToSuccessUrl,
+  formState,
+  setFormState,
+}: CompleteVerifyEmail.SubmitActionArgs): AuthComponentProps['submitAction'] => ({
+  passwordRegex,
+}) => {
   return loginMethodCreater({
     errorMessageHandler: (errorMessage) =>
-      setInputValue('errorMessage', errorMessage),
+      setFormState('errorMessage', errorMessage),
     freezeValue: () => ({
-      email: getInputValue.email,
-      password: getInputValue.password,
-      passConfirm: getInputValue.passConfirm,
+      email: formState.email,
+      password: formState.password,
+      passConfirm: formState.passConfirm,
       needPassword: getNeedPassword(),
     }),
     methodRunner: ({ email, password, passConfirm, needPassword }) => ({
@@ -96,7 +95,7 @@ const getSubmitAction = (
           })
           .catch((error) => {
             console.log(error.code);
-            setInputValue('errorMessage', error.message);
+            setFormState('errorMessage', error.message);
           });
       },
     }),
@@ -118,13 +117,16 @@ export const CompleteVerifyEmail = {
 
       const cookieEmailValue = getEmailValueFromCookie(cookieKeyOfEmail);
 
-      const [needPassword, loadNeedPassword] = createResource(true);
+      const [getNeedPassword, loadNeedPassword] = createResource(true);
 
-      const useFields = createMemo(() => ({
-        email: true,
-        password: Boolean(needPassword()),
-        passConfirm: Boolean(needPassword()),
-      }));
+      const useFields = createMemo(() => {
+        const needPassword = Boolean(getNeedPassword());
+        return {
+          email: true,
+          password: needPassword,
+          passConfirm: needPassword,
+        };
+      });
 
       loadNeedPassword(async () => {
         try {
@@ -153,9 +155,9 @@ export const CompleteVerifyEmail = {
       });
 
       const [
-        getInputValue,
-        setInputValue,
-      ] = createState<FirebaseAuthOwnUI.InputValueScheme>({
+        formState,
+        setFormState,
+      ] = createState<FirebaseAuthOwnUI.FormStateScheme>({
         email: cookieEmailValue,
         password: '',
         passConfirm: '',
@@ -163,18 +165,18 @@ export const CompleteVerifyEmail = {
         errorMessage: '',
       });
 
-      const submitAction = getSubmitAction(
-        context.auth,
-        getInputValue,
-        setInputValue,
+      const submitAction = getSubmitAction({
+        auth: context.auth,
         cookieKeyOfEmail,
-        needPassword,
-        context.redirectToSuccessUrl,
-      );
+        redirectToSuccessUrl: context.redirectToSuccessUrl,
+        getNeedPassword,
+        formState,
+        setFormState,
+      });
 
       return (
         <context.authComponent
-          getInputValueAccessor={() => [getInputValue, setInputValue]}
+          createFormState={() => [formState, setFormState]}
           clearSignal={clearSignal}
           inputMode={() => null}
           wholeOfBottom={(props) => (
@@ -196,12 +198,19 @@ export const CompleteVerifyEmail = {
 };
 
 export declare module CompleteVerifyEmail {
-  export interface Context {
-    auth: FirebaseAuth;
+  export interface Context
+    extends Pick<SubmitActionArgs, 'auth' | 'redirectToSuccessUrl'> {
     authComponent: Component<AuthComponentProps>;
-    redirectToSuccessUrl: () => void;
     redirectToFailedUrl: () => void;
     cookieKeyOfEmail?: string;
   }
   export interface Props {}
+
+  export interface SubmitActionArgs
+    extends FirebaseAuthOwnUI.FormStateAccessor {
+    auth: FirebaseAuth;
+    cookieKeyOfEmail: string;
+    getNeedPassword: () => boolean | undefined;
+    redirectToSuccessUrl: () => void;
+  }
 }

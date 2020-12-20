@@ -11,22 +11,21 @@ const cn: Clsx<Cirrus> = clsx;
 
 type AuthComponentProps = FirebaseAuthOwnUI.Props<unknown>;
 
-type InputValueGetter = FirebaseAuthOwnUI.InputValueState['getter'];
-type InputValueSetter = FirebaseAuthOwnUI.InputValueState['setter'];
-
-const getSubmitAction = (
-  auth: FirebaseAuth,
-  getInputValue: InputValueGetter,
-  setInputValue: InputValueSetter,
-  actionCode: string,
-  emailPromise: Promise<string>,
-): AuthComponentProps['submitAction'] => ({ passwordRegex }) => {
+const getSubmitAction = ({
+  auth,
+  actionCode,
+  emailPromise,
+  formState,
+  setFormState,
+}: ResetPassword.SubmitActionArgs): AuthComponentProps['submitAction'] => ({
+  passwordRegex,
+}) => {
   return loginMethodCreater({
     errorMessageHandler: (errorMessage) =>
-      setInputValue('errorMessage', errorMessage),
+      setFormState('errorMessage', errorMessage),
     freezeValue: () => ({
-      password: getInputValue.password,
-      passConfirm: getInputValue.passConfirm,
+      password: formState.password,
+      passConfirm: formState.passConfirm,
     }),
     methodRunner: ({ password, passConfirm }) => ({
       validations: [
@@ -48,7 +47,7 @@ const getSubmitAction = (
           auth.signInWithEmailAndPassword(email, password);
         } catch (error) {
           console.log(error.code);
-          setInputValue('errorMessage', error.message);
+          setFormState('errorMessage', error.message);
         }
       },
     }),
@@ -60,19 +59,19 @@ const getActionInfoFromCurrentUrl = () => {
   return [searchParams.get('mode') ?? '', searchParams.get('oobCode') ?? ''];
 };
 
-export const CompleteVerifyEmail = {
+export const ResetPassword = {
   createComponent: (
-    context: CompleteVerifyEmail.Context,
-  ): Component<CompleteVerifyEmail.Props> => {
+    context: ResetPassword.Context,
+  ): Component<ResetPassword.Props> => {
     return () => {
-      const [mode, code] = getActionInfoFromCurrentUrl();
+      const [mode, actionCode] = getActionInfoFromCurrentUrl();
 
       if (mode !== 'resetPassword') context.redirectToFailedUrl();
 
       const [
-        getInputValue,
-        setInputValue,
-      ] = createState<FirebaseAuthOwnUI.InputValueScheme>({
+        formState,
+        setFormState,
+      ] = createState<FirebaseAuthOwnUI.FormStateScheme>({
         email: '',
         password: '',
         passConfirm: '',
@@ -81,23 +80,23 @@ export const CompleteVerifyEmail = {
       });
 
       const emailPromise = context.auth
-        .verifyPasswordResetCode(code)
+        .verifyPasswordResetCode(actionCode)
         .catch(() => {
           context.redirectToFailedUrl();
           return '';
         });
 
-      const submitAction = getSubmitAction(
-        context.auth,
-        getInputValue,
-        setInputValue,
-        code,
+      const submitAction = getSubmitAction({
+        auth: context.auth,
+        formState,
+        setFormState,
+        actionCode,
         emailPromise,
-      );
+      });
 
       return (
         <context.authComponent
-          getInputValueAccessor={() => [getInputValue, setInputValue]}
+          createFormState={() => [formState, setFormState]}
           clearSignal={clearSignal}
           inputMode={() => null}
           wholeOfBottom={(props) => (
@@ -122,7 +121,7 @@ export const CompleteVerifyEmail = {
   },
 };
 
-export declare module CompleteVerifyEmail {
+export declare module ResetPassword {
   export interface Context {
     auth: FirebaseAuth;
     authComponent: Component<AuthComponentProps>;
@@ -131,4 +130,11 @@ export declare module CompleteVerifyEmail {
     cookieKeyOfEmail?: string;
   }
   export interface Props {}
+
+  export interface SubmitActionArgs
+    extends FirebaseAuthOwnUI.FormStateAccessor {
+    auth: FirebaseAuth;
+    actionCode: string;
+    emailPromise: Promise<string>;
+  }
 }

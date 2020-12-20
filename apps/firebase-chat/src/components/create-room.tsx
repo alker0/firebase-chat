@@ -76,24 +76,26 @@ const InputField = BasicInputField.createComponent({
   fieldSize: 'small',
 });
 
-interface InputValueState {
+interface FormState {
   scheme: {
     roomName: string;
     password: string;
     infoMessage: string;
     errorMessage: string;
   };
-  getter: State<InputValueState>['scheme'];
-  setter: SetStateFunction<InputValueState['scheme']>;
+  getter: State<FormState>['scheme'];
+  setter: SetStateFunction<FormState['scheme']>;
 }
 
-interface InputProps {
-  getInputValue: InputValueState['getter'];
-  setInputValue: InputValueState['setter'];
+interface FormStateAccessors {
+  formState: FormState['getter'];
+  setFormState: FormState['setter'];
 }
+
+interface InputProps extends FormStateAccessors {}
 
 interface MessageState
-  extends Pick<InputValueState['scheme'], 'infoMessage' | 'errorMessage'> {}
+  extends Pick<FormState['scheme'], 'infoMessage' | 'errorMessage'> {}
 
 const maxOwnRoomCount = 3;
 
@@ -102,15 +104,16 @@ async function createRoomAndUpdateLinkButton(
     db,
     dbServerValues,
     uid,
-  }: Pick<CreateRoomRunnerArgs, 'db' | 'dbServerValues' | 'uid'>,
-  getInputValue: InputValueState['getter'],
-  setInputValue: InputValueState['setter'],
+    formState,
+    setFormState,
+  }: Pick<CreateRoomRunnerArgs, 'db' | 'dbServerValues' | 'uid'> &
+    FormStateAccessors,
   setBottomProps: SetStateFunction<BottomProps>,
   linkButtonViewContext: CreateRoom.LinkButtonViewContext,
 ) {
   const { roomName, password } = untrack(() => ({
-    roomName: getInputValue.roomName,
-    password: getInputValue.password,
+    roomName: formState.roomName,
+    password: formState.password,
   }));
 
   const roomId = db.ref(roomEntrances).push().key!;
@@ -123,7 +126,7 @@ async function createRoomAndUpdateLinkButton(
   }: MessageState &
     Pick<BottomProps, 'linkButtonView' | 'linkButtonColorStyle'>) {
     batch(() => {
-      setInputValue({
+      setFormState({
         infoMessage,
         errorMessage,
       });
@@ -189,10 +192,10 @@ export const CreateRoom = {
       inputFields: (props: InputProps) => (
         <>
           <div class={cn('u-text-center', 'text-info')}>
-            {props.getInputValue.infoMessage}
+            {props.formState.infoMessage}
           </div>
           <div class={cn('u-text-center', 'text-danger')}>
-            {props.getInputValue.errorMessage}
+            {props.formState.errorMessage}
           </div>
           <InputField
             labelText="Room Name:"
@@ -202,9 +205,9 @@ export const CreateRoom = {
               type: 'text',
               required: true,
               pattern: `^.{1,${roomNameMaxLength - 1}}$`,
-              value: props.getInputValue.roomName,
+              value: props.formState.roomName,
               onChange: (e: EventArg<HTMLInputElement>) =>
-                props.setInputValue('roomName', e.target.value),
+                props.setFormState('roomName', e.target.value),
             }}
           />
           <InputField
@@ -215,9 +218,9 @@ export const CreateRoom = {
               type: 'text',
               required: false,
               pattern: `^.{0,${passwordMaxLength - 1}}$`,
-              value: props.getInputValue.password,
+              value: props.formState.password,
               onChange: (e: EventArg<HTMLInputElement>) =>
-                props.setInputValue('password', e.target.value),
+                props.setFormState('password', e.target.value),
             }}
           />
         </>
@@ -244,9 +247,7 @@ export const CreateRoom = {
     });
 
     return () => {
-      const [getInputValue, setInputValue] = createState<
-        InputValueState['scheme']
-      >({
+      const [formState, setFormState] = createState<FormState['scheme']>({
         roomName: '',
         password: '',
         infoMessage: '',
@@ -293,9 +294,9 @@ export const CreateRoom = {
                 db,
                 dbServerValues,
                 uid: currentUser.uid,
+                formState,
+                setFormState,
               },
-              getInputValue,
-              setInputValue,
               setBottomProps,
               context.linkButtonView,
             );
@@ -313,8 +314,8 @@ export const CreateRoom = {
             },
           }}
           ofInputFields={{
-            getInputValue,
-            setInputValue,
+            formState,
+            setFormState,
           }}
           ofBottomContents={getBottomProps}
         />
