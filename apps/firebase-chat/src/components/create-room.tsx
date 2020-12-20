@@ -1,7 +1,7 @@
 import { Form } from '@components/common/base/form/form';
 import { FormContainer } from '@components/common/base/form/form-container';
 import { BasicInputField } from '@components/common/cirrus/common/basic-input-field';
-import { buttonize } from '@components/common/util/component-utils';
+import { buttonize, DO_NOTHING } from '@components/common/util/component-utils';
 import { Cirrus } from '@alker/cirrus-types';
 import { EventArg, EventArgOf } from '@components/types/component-utils';
 import { CallableSubmit } from '@components/common/util/input-field-utils';
@@ -41,7 +41,7 @@ interface ContainerProps {
 }
 
 const defaultContainerProps: Required<ContainerProps> = {
-  onSubmit: () => {},
+  onSubmit: DO_NOTHING,
   children: '',
 };
 
