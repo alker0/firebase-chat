@@ -356,7 +356,7 @@ export const getTalkerRules = () =>
           ],
         ],
       ],
-      [indexOn]: ['created_at'],
+      [indexOn]: ['owner_id', 'created_at'],
       $room_id: {
         [write]: [
           [
