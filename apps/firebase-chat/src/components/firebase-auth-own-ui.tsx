@@ -2,7 +2,6 @@ import { Form } from '@components/common/base/form/form';
 import { FormContainer } from '@components/common/base/form/form-container';
 import { BasicInputField } from '@components/common/cirrus/common/basic-input-field';
 import { FormBasicBottom } from '@components/common/cirrus/domain/form-basic-bottom';
-import { memoHandler } from '@components/common/util/component-utils';
 import { Cirrus } from '@alker/cirrus-types';
 import {
   EventArg,
@@ -210,7 +209,9 @@ export const FirebaseAuthOwnUI = {
           ofContainer={{
             containerProps: {
               ofForm: {
-                onSubmit: memoHandler(onSubmit),
+                get onSubmit() {
+                  return onSubmit();
+                },
                 class: cn('content', 'frame'),
               },
               ofInternalContainer: {

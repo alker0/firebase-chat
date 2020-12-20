@@ -29,17 +29,3 @@ export function buttonize<T extends HTMLElement>(
     tabIndex,
   };
 }
-
-export function memoHandler<
-  T extends () => JSX.EventHandlerUnion<unknown, Event>
->(handleFn: T) {
-  const handlerName = handleFn.name;
-  return {
-    [handlerName]: (e: EventArgOf<T>) => {
-      const handler = handleFn();
-      return typeof handler === 'function'
-        ? handler(e)
-        : handler[0](handler[1], e);
-    },
-  }[handlerName];
-}

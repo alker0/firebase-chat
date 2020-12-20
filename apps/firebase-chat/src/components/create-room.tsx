@@ -1,10 +1,7 @@
 import { Form } from '@components/common/base/form/form';
 import { FormContainer } from '@components/common/base/form/form-container';
 import { BasicInputField } from '@components/common/cirrus/common/basic-input-field';
-import {
-  memoHandler,
-  buttonize,
-} from '@components/common/util/component-utils';
+import { buttonize } from '@components/common/util/component-utils';
 import { Cirrus } from '@alker/cirrus-types';
 import { EventArg, EventArgOf } from '@components/types/component-utils';
 import { CallableSubmit } from '@components/common/util/input-field-utils';
@@ -258,7 +255,7 @@ export const CreateRoom = {
         linkButtonColorStyle: 'btn-link',
         get linkButtonHide(): boolean {
           // eslint-disable-next-line react/no-this-in-sfc
-          return !(this as BottomProps).linkButtonText;
+          return !(this as BottomProps).linkButtonView.text;
         },
         linkButtonView: {
           text: '',
@@ -310,7 +307,9 @@ export const CreateRoom = {
         <FormComponent
           ofContainer={{
             containerProps: {
-              onSubmit: memoHandler(onSubmit),
+              get onSubmit() {
+                return onSubmit();
+              },
             },
           }}
           ofInputFields={{
