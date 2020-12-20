@@ -8,8 +8,8 @@ import {
   routingPaths,
   movePageFromPath,
 } from '@components/project/router';
-import { createComputed, createRoot, For } from 'solid-js';
-import { render } from 'solid-js/web';
+import { createComputed, createRoot } from 'solid-js';
+import { render, For } from 'solid-js/web';
 import { buttonize } from '@components/common/util/component-utils';
 
 const dropDownTarget = document.getElementById('header-menu');

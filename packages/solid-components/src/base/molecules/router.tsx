@@ -1,5 +1,5 @@
-import { assignProps, Match, Suspense, Switch, JSX, on } from 'solid-js';
-import { Dynamic } from 'solid-js/web';
+import { assignProps, JSX, on } from 'solid-js';
+import { Dynamic, Match, Suspense, Switch } from 'solid-js/web';
 import { ComponentCreater } from '../../../types/component-creator';
 
 const defaultContext: Router.DefaultContext = {
