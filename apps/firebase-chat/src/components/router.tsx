@@ -168,7 +168,7 @@ export const createRouter = (context: RouterContext) => {
           getComponent: () => <TopMenu />,
         },
         {
-          matcher: routingPaths.chat,
+          matcher: () => fullPath().startsWith(routingPaths.chat),
           getComponent: () => <div>Chat Page</div>,
         },
         {
