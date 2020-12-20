@@ -82,7 +82,7 @@ const cn: Clsx<Cirrus> = clsx;
 export const createRouter = (context: RouterContext) => {
   const routerContext: PathMatchRouter.Context = {
     loadingElement: () => <div>Loading...</div>,
-    unmatchElement: () => <div>Any Pages Not Found</div>,
+    unmatchElement: () => <div>Any Pages Are Not Matched</div>,
   };
 
   const RouteComponent = PathMatchRouter.createComponent(routerContext);
