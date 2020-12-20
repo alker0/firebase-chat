@@ -34,9 +34,6 @@
       "@components/project/*": [
         "src/components/*"
       ],
-      "@typings/*": [
-        "src/typings/*"
-      ]
     },
 
     "noEmit": true,

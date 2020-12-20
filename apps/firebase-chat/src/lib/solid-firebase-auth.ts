@@ -1,5 +1,5 @@
 import { createState, createRoot } from 'solid-js';
-import { FirebaseUser } from '@typings/firebase-sdk';
+import { FirebaseUser } from '../typings/firebase-sdk';
 
 export type UserState = FirebaseUser | null;
 

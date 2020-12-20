@@ -1,4 +1,4 @@
-import { FirebaseDb, FirebaseDbServerValue } from '@typings/firebase-sdk';
+import { FirebaseDb, FirebaseDbServerValue } from '../../typings/firebase-sdk';
 import { roomEntrances } from './variables';
 import { isPermissionDeniedError } from './utils';
 
