@@ -163,20 +163,24 @@ const getAnchorArea = (
     </div>
   );
 
-  const componentMemo = createMemo(() => {
-    switch (getLoginMode()) {
-      case SignUpMode:
-        return viewNothing;
-      case SignInWithPasswordMode:
-        return whenSignInWithPassword;
-      case SignInWithVerifyEmailMode:
-        return whenSignInWithEmailVerify;
-      case ResetPasswordMode:
-        return whenResetPassword;
-      default:
-        return viewNothing;
-    }
-  });
+  const componentMemo = createMemo(
+    () => {
+      switch (getLoginMode()) {
+        case SignUpMode:
+          return viewNothing;
+        case SignInWithPasswordMode:
+          return whenSignInWithPassword;
+        case SignInWithVerifyEmailMode:
+          return whenSignInWithEmailVerify;
+        case ResetPasswordMode:
+          return whenResetPassword;
+        default:
+          return viewNothing;
+      }
+    },
+    viewNothing,
+    true,
+  );
 
   return {
     get Memo() {
@@ -202,19 +206,23 @@ const getUseFields = (getLoginMode: () => LoginMode) => {
     passConfirm: false,
   };
 
-  return createMemo(() => {
-    switch (getLoginMode()) {
-      case SignInWithPasswordMode:
-        return withPassword;
-      case SignUpMode:
-      case SignInWithVerifyEmailMode:
-        return onlyEmail;
-      case ResetPasswordMode:
-        return onlyEmail;
-      default:
-        return useNothing;
-    }
-  });
+  return createMemo(
+    () => {
+      switch (getLoginMode()) {
+        case SignInWithPasswordMode:
+          return withPassword;
+        case SignUpMode:
+        case SignInWithVerifyEmailMode:
+          return onlyEmail;
+        case ResetPasswordMode:
+          return onlyEmail;
+        default:
+          return useNothing;
+      }
+    },
+    withPassword,
+    true,
+  );
 };
 
 const getSubmitAction = ({
@@ -229,18 +237,11 @@ const getSubmitAction = ({
   const errorMessageHandler = (errorMessage: string) =>
     setFormState('errorMessage', errorMessage);
 
-  type FreezeWithPassword = {
-    email: string;
-    password: string;
-  };
-
-  type FreezeOnlyEmail = Pick<FreezeWithPassword, 'email'>;
-
-  const freezeOnlyEmail = (): FreezeOnlyEmail => ({
+  const freezeOnlyEmail = () => ({
     email: formState.email,
   });
 
-  const freezeWithPassword = (): FreezeWithPassword => ({
+  const freezeWithPassword = () => ({
     email: formState.email,
     password: formState.password,
   });
