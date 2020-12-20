@@ -20,7 +20,7 @@ export type RequiredSwitch<
 > = {} extends OnlyRequired<T> ? { [K in U]?: T } : { [K in U]: T };
 
 export type NativeHandlerOf<
-  T extends JSX.EventHandlerUnion<unknown, unknown> | undefined
+  T extends JSX.EventHandlerUnion<any, any> | undefined
 > = NonNullable<T> extends JSX.EventHandlerUnion<infer V, infer W>
   ? JSX.EventHandler<V, W>
   : never;
