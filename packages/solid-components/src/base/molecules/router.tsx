@@ -1,11 +1,4 @@
-import {
-  createMemo,
-  assignProps,
-  Match,
-  Suspense,
-  Switch,
-  JSX,
-} from 'solid-js';
+import { assignProps, Match, Suspense, Switch, JSX, on } from 'solid-js';
 import { Dynamic } from 'solid-js/web';
 import { ComponentCreater } from '../../../types/component-creator';
 
@@ -27,8 +20,7 @@ export const Router: ComponentCreater<Router.Context, Router.Props> = {
         </Switch>
       );
 
-      const getRouteComponent = createMemo(() => {
-        props.routeSignal();
+      const getRouteComponent = on(props.routeSignal, () => {
         return routeComponent;
       });
 
@@ -55,7 +47,7 @@ export declare module Router {
   }
 
   export interface Props {
-    routeSignal: () => any;
+    routeSignal: () => unknown;
     routingTable: RoutingInfo[];
   }
 }
