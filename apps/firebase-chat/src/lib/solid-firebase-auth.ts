@@ -1,15 +1,18 @@
-import type FirebaseType from 'firebase';
 import { createState, createRoot } from 'solid-js';
+import { FirebaseUser } from '../typings/firebase-sdk';
 
-export type UserState = FirebaseType.User | null;
+export type UserState = FirebaseUser | null;
+
+export interface SesstionState {
+  currentUser: UserState;
+  readonly isLoggedIn: boolean;
+}
 
 export const [sessionState, setSessionState] = createRoot(() => {
-  const sessionStateAccessor = createState({
+  const sessionStateAccessor = createState<SesstionState>({
     currentUser: null as UserState,
-    loginState: {
-      get isLoggedIn(): boolean {
-        return Boolean(sessionStateAccessor[0].currentUser);
-      },
+    get isLoggedIn(): boolean {
+      return Boolean((this as SesstionState).currentUser);
     },
   });
   return sessionStateAccessor;

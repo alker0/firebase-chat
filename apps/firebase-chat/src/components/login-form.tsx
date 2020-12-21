@@ -62,9 +62,6 @@ type LoginMode =
 
 type AuthComponentProps = FirebaseAuthOwnUI.Props<LoginMode>;
 
-type InputValueGetter = FirebaseAuthOwnUI.InputValueState['getter'];
-type InputValueSetter = FirebaseAuthOwnUI.InputValueState['setter'];
-
 const toggleLinkClass = cn('underline', linkStyle) as Cirrus;
 
 const getLoginModeFromText = (modeText: string | null): LoginMode => {
@@ -166,20 +163,24 @@ const getAnchorArea = (
     </div>
   );
 
-  const componentMemo = createMemo(() => {
-    switch (getLoginMode()) {
-      case SignUpMode:
-        return viewNothing;
-      case SignInWithPasswordMode:
-        return whenSignInWithPassword;
-      case SignInWithVerifyEmailMode:
-        return whenSignInWithEmailVerify;
-      case ResetPasswordMode:
-        return whenResetPassword;
-      default:
-        return viewNothing;
-    }
-  });
+  const componentMemo = createMemo(
+    () => {
+      switch (getLoginMode()) {
+        case SignUpMode:
+          return viewNothing;
+        case SignInWithPasswordMode:
+          return whenSignInWithPassword;
+        case SignInWithVerifyEmailMode:
+          return whenSignInWithEmailVerify;
+        case ResetPasswordMode:
+          return whenResetPassword;
+        default:
+          return viewNothing;
+      }
+    },
+    viewNothing,
+    true,
+  );
 
   return {
     get Memo() {
@@ -205,47 +206,44 @@ const getUseFields = (getLoginMode: () => LoginMode) => {
     passConfirm: false,
   };
 
-  return createMemo(() => {
-    switch (getLoginMode()) {
-      case SignInWithPasswordMode:
-        return withPassword;
-      case SignUpMode:
-      case SignInWithVerifyEmailMode:
-        return onlyEmail;
-      case ResetPasswordMode:
-        return onlyEmail;
-      default:
-        return useNothing;
-    }
-  });
+  return createMemo(
+    () => {
+      switch (getLoginMode()) {
+        case SignInWithPasswordMode:
+          return withPassword;
+        case SignUpMode:
+        case SignInWithVerifyEmailMode:
+          return onlyEmail;
+        case ResetPasswordMode:
+          return onlyEmail;
+        default:
+          return useNothing;
+      }
+    },
+    withPassword,
+    true,
+  );
 };
 
-const getSubmitAction = (
-  auth: FirebaseAuth,
-  getInputValue: InputValueGetter,
-  setInputValue: InputValueSetter,
-  verifyEmailLinkUrl: string,
-  resetEmailLinkUrl: string,
-  cookieKeyOfEmail: string,
-  emailCookieAge: number = 180,
-): AuthComponentProps['submitAction'] => {
+const getSubmitAction = ({
+  auth,
+  verifyEmailLinkUrl,
+  resetEmailLinkUrl,
+  cookieKeyOfEmail,
+  emailCookieAge = 180,
+  formState,
+  setFormState,
+}: LoginForm.SubmitActionArgs): AuthComponentProps['submitAction'] => {
   const errorMessageHandler = (errorMessage: string) =>
-    setInputValue('errorMessage', errorMessage);
+    setFormState('errorMessage', errorMessage);
 
-  type FreezeWithPassword = {
-    email: string;
-    password: string;
-  };
-
-  type FreezeOnlyEmail = Pick<FreezeWithPassword, 'email'>;
-
-  const freezeOnlyEmail = (): FreezeOnlyEmail => ({
-    email: getInputValue.email,
+  const freezeOnlyEmail = () => ({
+    email: formState.email,
   });
 
-  const freezeWithPassword = (): FreezeWithPassword => ({
-    email: getInputValue.email,
-    password: getInputValue.password,
+  const freezeWithPassword = () => ({
+    email: formState.email,
+    password: formState.password,
   });
 
   const emailValidation = (email: string) => ({
@@ -271,7 +269,7 @@ const getSubmitAction = (
               auth
                 .sendSignInLinkToEmail(email, actionCodeSettings)
                 .then(() => {
-                  setInputValue(
+                  setFormState(
                     'infoMessage',
                     'Check your inbox for completing login',
                   );
@@ -310,7 +308,7 @@ const getSubmitAction = (
                   redirectToSuccessUrl();
                 })
                 .catch((err) => {
-                  setInputValue('errorMessage', err.message);
+                  setFormState('errorMessage', err.message);
                   console.log(err.code);
                 });
             },
@@ -330,16 +328,16 @@ const getSubmitAction = (
               };
 
               auth
-                .sendPasswordResetEmail(getInputValue.email, actionCodeSettings)
+                .sendPasswordResetEmail(formState.email, actionCodeSettings)
                 .then(() => {
-                  setInputValue(
+                  setFormState(
                     'infoMessage',
                     'Check your inbox for a password reset email.',
                   );
                 })
                 .catch((error) => {
                   console.log(error.code);
-                  setInputValue('errorMessage', error.message);
+                  setFormState('errorMessage', error.message);
                 });
             },
           }),
@@ -364,9 +362,9 @@ export const LoginForm = {
 
     return () => {
       const [
-        getInputValue,
-        setInputValue,
-      ] = createState<FirebaseAuthOwnUI.InputValueScheme>({
+        formState,
+        setFormState,
+      ] = createState<FirebaseAuthOwnUI.FormStateScheme>({
         email: '',
         password: '',
         passConfirm: '',
@@ -386,7 +384,7 @@ export const LoginForm = {
 
       createComputed(() => {
         loginMode();
-        setInputValue('infoMessage', '');
+        setFormState('infoMessage', '');
       });
 
       const useFields = getUseFields(loginMode);
@@ -398,19 +396,19 @@ export const LoginForm = {
 
       const AnchorArea = getAnchorArea(loginMode, setLoginMode);
 
-      const submitAction = getSubmitAction(
-        context.auth,
-        getInputValue,
-        setInputValue,
-        context.verifyEmailLinkUrl,
-        context.resetEmailLinkUrl,
-        context.cookieKeyOfEmail,
-        context.emailCookieAge,
-      );
+      const submitAction = getSubmitAction({
+        auth: context.auth,
+        verifyEmailLinkUrl: context.verifyEmailLinkUrl,
+        resetEmailLinkUrl: context.resetEmailLinkUrl,
+        cookieKeyOfEmail: context.cookieKeyOfEmail,
+        emailCookieAge: context.emailCookieAge,
+        formState,
+        setFormState,
+      });
 
       return (
         <context.authComponent
-          getInputValueAccessor={() => [getInputValue, setInputValue]}
+          createFormState={() => [formState, setFormState]}
           clearSignal={loginMode}
           inputMode={loginMode}
           wholeOfBottom={(props) => (
@@ -438,15 +436,25 @@ export const LoginForm = {
 };
 
 export declare module LoginForm {
-  export interface Context {
-    auth: FirebaseAuth;
+  export interface Context
+    extends Pick<
+      SubmitActionArgs,
+      'auth' | 'verifyEmailLinkUrl' | 'resetEmailLinkUrl'
+    > {
     authComponent: Component<AuthComponentProps>;
     redirectToSuccessUrl: () => void;
-    verifyEmailLinkUrl: string;
-    resetEmailLinkUrl: string;
     defaultLoginModeParamKey?: string;
     cookieKeyOfEmail?: string;
     emailCookieAge?: number;
   }
   export interface Props {}
+
+  export interface SubmitActionArgs
+    extends FirebaseAuthOwnUI.FormStateAccessor {
+    auth: FirebaseAuth;
+    verifyEmailLinkUrl: string;
+    resetEmailLinkUrl: string;
+    cookieKeyOfEmail: string;
+    emailCookieAge: number;
+  }
 }

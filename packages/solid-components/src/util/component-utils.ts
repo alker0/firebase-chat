@@ -1,3 +1,4 @@
+import { JSX } from 'solid-js';
 import { EventArgOf } from '../../types/component-utils';
 
 export const DO_NOTHING: (...args: any[]) => void = () => {};
@@ -27,18 +28,4 @@ export function buttonize<T extends HTMLElement>(
     role,
     tabIndex,
   };
-}
-
-export function memoHandler<
-  T extends () => JSX.EventHandlerUnion<unknown, Event>
->(handleFn: T) {
-  const handlerName = handleFn.name;
-  return {
-    [handlerName]: (e: EventArgOf<T>) => {
-      const handler = handleFn();
-      return typeof handler === 'function'
-        ? handler(e)
-        : handler[0](handler[1], e);
-    },
-  }[handlerName];
 }

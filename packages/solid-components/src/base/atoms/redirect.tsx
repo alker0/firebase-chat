@@ -1,4 +1,4 @@
-import { Component, createComputed } from 'solid-js';
+import { Component, createComputed, JSX } from 'solid-js';
 
 export const Redirect = {
   createComponent(context: Redirect.Context): Component<Redirect.Props> {

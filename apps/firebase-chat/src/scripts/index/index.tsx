@@ -1,4 +1,3 @@
-import 'solid-styled-jsx';
 import { HeaderMenu } from '@components/project/header-menu';
 import {
   sessionState,
@@ -9,8 +8,8 @@ import {
   routingPaths,
   movePageFromPath,
 } from '@components/project/router';
-import { createComputed, createRoot, For } from 'solid-js';
-import { render } from 'solid-js/web';
+import { createComputed, createRoot } from 'solid-js';
+import { render, For } from 'solid-js/web';
 import { buttonize } from '@components/common/util/component-utils';
 
 const dropDownTarget = document.getElementById('header-menu');
@@ -21,6 +20,7 @@ if (dropDownTarget) {
 
 document.addEventListener('DOMContentLoaded', () => {
   const firebaseSdk = firebase.default;
+
   if (
     import.meta.env.MODE === 'production' &&
     import.meta.env.SNOWPACK_PUBLIC_USE_FIREBASE_ANALYTICS
@@ -32,16 +32,43 @@ document.addEventListener('DOMContentLoaded', () => {
   // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
 
   const auth = firebaseSdk.auth();
+  const dbFunc = firebaseSdk.database;
+
+  if (import.meta.env.MODE !== 'production') {
+    if (import.meta.env.SNOWPACK_PUBLIC_AUTH_EMULATOR_PATH) {
+      auth.useEmulator(import.meta.env.SNOWPACK_PUBLIC_AUTH_EMULATOR_PATH);
+    }
+
+    if (
+      import.meta.env.SNOWPACK_PUBLIC_DATABASE_EMULATOR_HOST &&
+      import.meta.env.SNOWPACK_PUBLIC_DATABASE_EMULATOR_PORT
+    ) {
+      dbFunc().useEmulator(
+        import.meta.env.SNOWPACK_PUBLIC_DATABASE_EMULATOR_HOST,
+        Number(import.meta.env.SNOWPACK_PUBLIC_DATABASE_EMULATOR_PORT),
+      );
+
+      dbFunc.enableLogging(true);
+
+      if (import.meta.env.SNOWPACK_PUBLIC_DATABASE_FORCE_WEBSOCKETS) {
+        (dbFunc as any).INTERNAL.forceWebSockets();
+      }
+    }
+  }
+
+  const db = dbFunc();
 
   auth.onAuthStateChanged(sessionStateChangedHandler);
 
   auth.setPersistence(firebaseSdk.auth.Auth.Persistence.SESSION);
 
-  createRoot(() =>
-    createComputed(() =>
-      console.log('Is Logged In =>', sessionState.loginState.isLoggedIn),
-    ),
-  );
+  if (import.meta.env.MODE !== 'production') {
+    createRoot(() =>
+      createComputed(() =>
+        console.log('Is Logged In =>', sessionState.isLoggedIn),
+      ),
+    );
+  }
 
   const brandTarget = document.getElementById('header-brand-container');
 
@@ -91,7 +118,11 @@ document.addEventListener('DOMContentLoaded', () => {
     </ul>
   );
 
-  const Router = createRouter({ auth });
+  const Router = createRouter({
+    auth,
+    db,
+    dbServerValue: dbFunc.ServerValue,
+  });
 
   const mainTarget = document.getElementById('main-contents');
 

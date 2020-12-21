@@ -1,8 +1,7 @@
 import clsx, { Clsx } from 'clsx';
 import { Cirrus } from '@alker/cirrus-types';
-import { assignProps, Component } from 'solid-js';
+import { assignProps, Component, JSX } from 'solid-js';
 import { sizeSuffixMap } from '../../util/cirrus-utils';
-import { SizedFormItem } from '../../../types/cirrus-form';
 
 const cn: Clsx<Cirrus> = clsx;
 
@@ -19,8 +18,18 @@ const defaultProps: Required<BasicInputField.Props> = {
   labelText: '',
 };
 
-const wrapperStyle = cn('input-control');
-const labelStyle = cn('text-info');
+function getSizedFieldClassName(
+  fieldSize: BasicInputField.Context['fieldSize'],
+) {
+  if (fieldSize) {
+    return [
+      `label${sizeSuffixMap[fieldSize]}`,
+      `input${sizeSuffixMap[fieldSize]}`,
+    ] as const;
+  } else {
+    return ['label', false] as const;
+  }
+}
 
 export const BasicInputField = {
   createComponent(
@@ -28,12 +37,7 @@ export const BasicInputField = {
   ): Component<BasicInputField.Props> {
     const context = assignProps({}, defaultContext, contextArg);
 
-    const [sizedLabel, sizedInput] = (['label', 'input'] as const).map(
-      (item) => {
-        if (!context.fieldSize) return item;
-        return `${item}${sizeSuffixMap[context.fieldSize]}` as SizedFormItem;
-      },
-    );
+    const [sizedLabel, sizedInput] = getSizedFieldClassName(context.fieldSize);
 
     return (propsArg) => {
       const props = assignProps({}, defaultProps, propsArg);
@@ -41,12 +45,12 @@ export const BasicInputField = {
       return (
         <div
           {...props.ofWrapper}
-          class={clsx(wrapperStyle, props.ofWrapper.class)}
+          class={cn('input-control', props.ofWrapper.class as Cirrus)}
         >
           <label
             children={props.labelText}
             {...props.ofLabel}
-            class={clsx(labelStyle, sizedLabel, props.ofLabel.class)}
+            class={cn('text-info', sizedLabel, props.ofLabel.class as Cirrus)}
             htmlFor={
               props.ofInput.id ?? context.baseInputProps.id ?? props.inputId
             }
@@ -54,7 +58,7 @@ export const BasicInputField = {
           <input
             {...context.baseInputProps}
             {...props.ofInput}
-            class={clsx(sizedInput, props.ofInput.class)}
+            class={cn(sizedInput, props.ofInput.class as Cirrus)}
             id={props.ofInput.id ?? context.baseInputProps.id ?? props.inputId}
           />
         </div>

@@ -86,24 +86,4 @@ export const styleUtils = {
         }
       `,
     ),
-  noSideMargin: () =>
-    styleUtils.registerAndGet(
-      'noSideMargin',
-      () => css.resolve`
-        * {
-          margin-left: 0;
-          margin-right: 0;
-        }
-      `,
-    ),
-  noSidePadding: () =>
-    styleUtils.registerAndGet(
-      'noSidePadding',
-      () => css.resolve`
-        * {
-          padding-left: 0;
-          padding-right: 0;
-        }
-      `,
-    ),
 };

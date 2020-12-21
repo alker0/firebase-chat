@@ -8,7 +8,6 @@ export type SizedFormItem = Extract<
   | 'label-xlarge'
   | 'input-xsmall'
   | 'input-small'
-  | 'input'
   | 'input-large'
   | 'input-xlarge'
   | 'btn-xsmall'

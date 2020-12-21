@@ -5,7 +5,7 @@ import {
 } from '@components/common/util/component-utils';
 import { Cirrus } from '@alker/cirrus-types';
 import clsx, { Clsx } from 'clsx';
-import { assignProps, Component } from 'solid-js';
+import { assignProps, Component, JSX } from 'solid-js';
 
 const cn: Clsx<Cirrus> = clsx;
 

@@ -10,7 +10,12 @@ import { createLazyAuthUI } from './lazy/firebase-auth-own-ui';
 import { TopMenu as TopMenuCreator } from './top-menu';
 import { createLazyCompleteVerifyEmail } from './lazy/complete-verify-email';
 import { createLazyLoginForm } from './lazy/login-form';
-import { FirebaseAuth } from './typings/firebase-sdk';
+import { createLazyCreateRoom } from './lazy/create-room';
+import {
+  FirebaseAuth,
+  FirebaseDb,
+  FirebaseDbServerValue,
+} from './typings/firebase-sdk';
 
 const [routeSignal, sendRouteSignal] = createSignal('', true);
 
@@ -40,7 +45,7 @@ export const routingPaths = {
 };
 
 const getSessionButtonHandler = (auth: FirebaseAuth) => () => {
-  if (sessionState.loginState.isLoggedIn) {
+  if (sessionState.isLoggedIn) {
     auth.signOut();
   } else {
     movePageFromPath(routingPaths.login);
@@ -77,7 +82,7 @@ const cn: Clsx<Cirrus> = clsx;
 export const createRouter = (context: RouterContext) => {
   const routerContext: PathMatchRouter.Context = {
     loadingElement: () => <div>Loading...</div>,
-    unmatchElement: () => <div>Any Pages Not Found</div>,
+    unmatchElement: () => <div>Any Pages Are Not Matched</div>,
   };
 
   const RouteComponent = PathMatchRouter.createComponent(routerContext);
@@ -87,7 +92,7 @@ export const createRouter = (context: RouterContext) => {
       <h1 class={cn('offset-center')}>Welcome To Talker</h1>
     ),
     getSessionButtonText: () =>
-      sessionState.loginState.isLoggedIn ? 'Sign Out' : 'Sign Up',
+      sessionState.isLoggedIn ? 'Sign Out' : 'Sign Up',
     onSessionButtonClick: getSessionButtonHandler(context.auth),
     leftButtonText: 'Search Room',
     onLeftButtonClick: () => movePageFromPath(routingPaths.searchRoom),
@@ -122,6 +127,38 @@ export const createRouter = (context: RouterContext) => {
     redirectToFailedUrl: redirectToHome,
   });
 
+  const CreateRoomComponent = createLazyCreateRoom({
+    redirectToFailedUrl: redirectToHome,
+    auth: context.auth,
+    db: context.db,
+    dbServerValues: context.dbServerValue,
+    linkButtonView: {
+      created: (ownRoomId) => {
+        return {
+          text: 'Go to your new chat room',
+          onClick: () => {
+            const { currentUser } = context.auth;
+            if (currentUser) {
+              movePageFromPath(
+                `${routingPaths.chat}/${currentUser.uid}/${ownRoomId}`,
+              );
+            } else {
+              redirectToHome();
+            }
+          },
+        };
+      },
+      alreadyFilled: {
+        text: 'Edit your chat rooms',
+        onClick: redirectToHome,
+      },
+      failed: {
+        text: 'Back to home page',
+        onClick: redirectToHome,
+      },
+    },
+  });
+
   return () => (
     <RouteComponent
       routeSignal={routeSignal}
@@ -131,13 +168,13 @@ export const createRouter = (context: RouterContext) => {
           getComponent: () => <TopMenu />,
         },
         {
-          matcher: routingPaths.chat,
+          matcher: () => fullPath().startsWith(routingPaths.chat),
           getComponent: () => <div>Chat Page</div>,
         },
         {
           matcher: () => fullPath().startsWith(routingPaths.login),
           getComponent: () =>
-            untrack(() => !sessionState.loginState.isLoggedIn) ? (
+            untrack(() => !sessionState.isLoggedIn) ? (
               <LoginFormComponent />
             ) : (
               <Redirect url={routingPaths.home} />
@@ -154,7 +191,7 @@ export const createRouter = (context: RouterContext) => {
         },
         {
           matcher: routingPaths.createRoom,
-          getComponent: () => <div>Create Room Page</div>,
+          getComponent: () => <CreateRoomComponent />,
         },
       ]}
     />
@@ -163,4 +200,6 @@ export const createRouter = (context: RouterContext) => {
 
 export interface RouterContext {
   auth: FirebaseAuth;
+  db: FirebaseDb;
+  dbServerValue: FirebaseDbServerValue;
 }

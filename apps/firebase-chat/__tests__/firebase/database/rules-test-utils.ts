@@ -1,5 +1,5 @@
 import { readFileSync } from 'fs';
-import { join as pathJoin, resolve as pathResolve } from 'path';
+import { join as pathJoin } from 'path';
 import { Worker } from 'worker_threads';
 import firebase from 'firebase';
 import {
@@ -7,7 +7,6 @@ import {
   initializeTestApp,
 } from '@firebase/rules-unit-testing';
 import { AppOptions } from '@firebase/rules-unit-testing/dist/src/api';
-import { RegisterOptions } from 'ts-node';
 import { RulesFactoryOptions } from './rules-factory';
 
 const cwd = process.cwd();
@@ -16,7 +15,7 @@ interface VoidFunction {
   (): void;
 }
 
-function DO_NOTHING() {}
+function doNothing() {}
 
 const rulesOfDatabaseJson = readFileSync(pathJoin(cwd, 'database.rules.json'), {
   encoding: 'utf-8',
@@ -31,7 +30,7 @@ interface ErrorWithCode extends Error {
 
 export function isErrorWithCode(error: unknown): error is ErrorWithCode {
   return (
-    error &&
+    Boolean(error) &&
     typeof error === 'object' &&
     Object.prototype.hasOwnProperty.call(error, 'message') &&
     Object.prototype.hasOwnProperty.call(error, 'code')
@@ -241,7 +240,7 @@ export function createSampleRulesFactory(options: RulesFactoryOptions) {
 export async function* seriesPromiseGenerator() {
   let prevPromise = Promise.resolve();
   function createPromiseWithResolve() {
-    let resultResolve = DO_NOTHING;
+    let resultResolve = doNothing;
     const resultPromise = new Promise<undefined>((resolve) => {
       resultResolve = resolve as VoidFunction;
     });

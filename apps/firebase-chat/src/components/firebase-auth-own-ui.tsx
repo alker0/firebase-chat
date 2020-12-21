@@ -1,8 +1,7 @@
 import { Form } from '@components/common/base/form/form';
 import { FormContainer } from '@components/common/base/form/form-container';
 import { BasicInputField } from '@components/common/cirrus/common/basic-input-field';
-import { LoginBasicBottom } from '@components/common/cirrus/domain/login-basic-bottom';
-import { memoHandler } from '@components/common/util/component-utils';
+import { FormBasicBottom } from '@components/common/cirrus/domain/form-basic-bottom';
 import { Cirrus } from '@alker/cirrus-types';
 import {
   EventArg,
@@ -25,6 +24,7 @@ import {
   SetStateFunction,
   State,
   untrack,
+  JSX,
 } from 'solid-js';
 
 const cn: Clsx<Cirrus> = clsx;
@@ -55,20 +55,18 @@ const InputField = BasicInputField.createComponent({
   fieldSize: 'small',
 });
 
-interface OuterBottomProps extends LoginBasicBottom.BottomWholeProps {
+interface OuterBottomProps extends FormBasicBottom.BottomWholeProps {
   // eslint-disable-next-line react/no-unused-prop-types
-  bottomComponent: Component<LoginBasicBottom.BottomWholeProps>;
+  bottomComponent: Component<FormBasicBottom.BottomWholeProps>;
 }
 
-interface InnerBottomProps extends LoginBasicBottom.BottomWholePropsOpts {
-  // eslint-disable-next-line react/no-unused-prop-types
-  bottomComponent: Component<LoginBasicBottom.BottomWholeProps>;
-  // eslint-disable-next-line react/no-unused-prop-types
+interface InnerBottomProps extends FormBasicBottom.BottomWholePropsOpts {
+  bottomComponent: Component<FormBasicBottom.BottomWholeProps>;
   ofSubmit: JSX.InputHTMLAttributes<HTMLInputElement>;
 }
 
 // button.animated.btn-info.outline
-const Bottom = LoginBasicBottom.createComponent({
+const Bottom = FormBasicBottom.createComponent({
   whole: (props: OuterBottomProps) => (
     <props.bottomComponent submitButton={props.submitButton} />
   ),
@@ -82,9 +80,7 @@ interface ContainerProps {
   children?: JSX.HTMLAttributes<HTMLElement>['children'];
 }
 
-interface InputProps {
-  getInputValue: FirebaseAuthOwnUI.InputValueState['getter'];
-  setInputValue: FirebaseAuthOwnUI.InputValueState['setter'];
+interface InputProps extends FirebaseAuthOwnUI.FormStateAccessor {
   useFields: {
     email: boolean;
     password: boolean;
@@ -98,8 +94,8 @@ export const defaultContext: Required<FirebaseAuthOwnUI.Context> = {
 };
 
 const defaultProps: Required<OnlyOptional<FirebaseAuthOwnUI.Props<unknown>>> = {
-  getInputValueAccessor: () =>
-    createState<FirebaseAuthOwnUI.InputValueState['scheme']>({
+  createFormState: () =>
+    createState<FirebaseAuthOwnUI.FormState['scheme']>({
       email: '',
       password: '',
       passConfirm: '',
@@ -118,10 +114,10 @@ export const FirebaseAuthOwnUI = {
       inputFields: (props: InputProps) => (
         <>
           <div class={cn('u-text-center', 'text-info')}>
-            {props.getInputValue.infoMessage}
+            {props.formState.infoMessage}
           </div>
           <div class={cn('u-text-center', 'text-danger')}>
-            {props.getInputValue.errorMessage}
+            {props.formState.errorMessage}
           </div>
           <InputField
             labelText="Email:"
@@ -131,9 +127,9 @@ export const FirebaseAuthOwnUI = {
               type: 'text',
               required: true,
               pattern: inputRegexSource.email,
-              value: props.getInputValue.email,
+              value: props.formState.email,
               onChange: (e: EventArg<HTMLInputElement>) =>
-                props.setInputValue('email', e.target.value),
+                props.setFormState('email', e.target.value),
             }}
           />
           {props.useFields.password && (
@@ -145,9 +141,9 @@ export const FirebaseAuthOwnUI = {
                 type: 'password',
                 required: true,
                 pattern: context.passwordRegex.source,
-                value: props.getInputValue.password,
+                value: props.formState.password,
                 onChange: (e: EventArg<HTMLInputElement>) =>
-                  props.setInputValue('password', e.target.value),
+                  props.setFormState('password', e.target.value),
               }}
             />
           )}
@@ -160,9 +156,9 @@ export const FirebaseAuthOwnUI = {
                 type: 'password',
                 required: true,
                 pattern: context.passwordRegex.source,
-                value: props.getInputValue.passConfirm,
+                value: props.formState.passConfirm,
                 onChange: (e: EventArg<HTMLInputElement>) =>
-                  props.setInputValue('passConfirm', e.target.value),
+                  props.setFormState('passConfirm', e.target.value),
               }}
             />
           )}
@@ -185,10 +181,10 @@ export const FirebaseAuthOwnUI = {
     function resultComponent<T>(propsArg: FirebaseAuthOwnUI.Props<T>) {
       const props = assignProps({}, defaultProps, propsArg);
 
-      const [getInputValue, setInputValue] = props.getInputValueAccessor();
+      const [formState, setFormState] = props.createFormState();
 
       const onSubmit: () => CallableSubmit = createMemo(() => {
-        if (untrack(() => sessionState.loginState.isLoggedIn)) {
+        if (untrack(() => sessionState.isLoggedIn)) {
           return (e: EventArgOf<CallableSubmit>) => {
             e.preventDefault();
             console.log('Already Logged In');
@@ -205,7 +201,7 @@ export const FirebaseAuthOwnUI = {
 
       createComputed(() => {
         props.clearSignal();
-        setInputValue(['password', 'passConfirm', 'errorMessage'], '');
+        setFormState(['password', 'passConfirm', 'errorMessage'], '');
       });
 
       return (
@@ -213,7 +209,9 @@ export const FirebaseAuthOwnUI = {
           ofContainer={{
             containerProps: {
               ofForm: {
-                onSubmit: memoHandler(onSubmit),
+                get onSubmit() {
+                  return onSubmit();
+                },
                 class: cn('content', 'frame'),
               },
               ofInternalContainer: {
@@ -228,14 +226,14 @@ export const FirebaseAuthOwnUI = {
             },
           }}
           ofInputFields={{
-            getInputValue,
-            setInputValue,
+            formState,
+            setFormState,
             useFields: props.useFields,
           }}
           ofBottomContents={{
             bottomComponent: props.wholeOfBottom,
             ofSubmit: props.submitButtonProps({
-              disabled: sessionState.loginState.isLoggedIn,
+              disabled: sessionState.isLoggedIn,
             }),
           }}
         />
@@ -254,12 +252,12 @@ export declare module FirebaseAuthOwnUI {
     }>;
   }
   export interface Props<T> {
-    getInputValueAccessor?: () => InputValueAccessor;
+    createFormState?: () => FormStateAccessorTuple;
     redirectToSuccessUrl: () => void;
     useFields: UseFieldsInfo;
     inputMode: () => T;
     clearSignal: () => unknown;
-    wholeOfBottom: Component<LoginBasicBottom.BottomWholeProps>;
+    wholeOfBottom: Component<FormBasicBottom.BottomWholeProps>;
     submitButtonProps?: (disableWhenLoggedIn: {
       disabled: boolean;
     }) => JSX.InputHTMLAttributes<HTMLInputElement>;
@@ -276,7 +274,7 @@ export declare module FirebaseAuthOwnUI {
     passConfirm: boolean;
   }
 
-  export interface InputValueState {
+  export interface FormState {
     scheme: {
       email: string;
       password: string;
@@ -284,14 +282,19 @@ export declare module FirebaseAuthOwnUI {
       infoMessage: string;
       errorMessage: string;
     };
-    getter: State<InputValueState>['scheme'];
-    setter: SetStateFunction<InputValueState['scheme']>;
+    getter: State<FormState>['scheme'];
+    setter: SetStateFunction<FormState['scheme']>;
   }
 
-  export type InputValueScheme = InputValueState['scheme'];
+  export type FormStateScheme = FormState['scheme'];
 
-  export type InputValueAccessor = [
-    InputValueState['getter'],
-    InputValueState['setter'],
+  export type FormStateAccessorTuple = [
+    FormState['getter'],
+    FormState['setter'],
   ];
+
+  export interface FormStateAccessor {
+    formState: FormState['getter'];
+    setFormState: FormState['setter'];
+  }
 }

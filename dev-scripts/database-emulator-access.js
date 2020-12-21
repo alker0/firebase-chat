@@ -14,7 +14,7 @@ if (args.length < 2) throw new Error('No declare targets');
 let httpMethod = 'GET';
 const endpointOfEnv = process.env.FIREBASE_DATABASE_EMULATOR_HOST?.split(':');
 let [host, port] =
-  endpointOfEnv.length === 2 ? endpointOfEnv : ['localhost', 9000];
+  endpointOfEnv?.length === 2 ? endpointOfEnv : ['localhost', 9000];
 let accessPath = '';
 const headersArray = [];
 let rulesFileArg = path.join(cwd, 'database.rules.json');

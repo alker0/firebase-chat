@@ -1,19 +1,21 @@
+const packagesPath = '../../packages';
+
 module.exports = {
   exclude: [
     '**/node_modules/**/*',
     '**/__test__/*',
     '**/*.@(spec|test).@(js|mjs)',
     '**/templates/@(layouts|partials)/**/*',
-    '**/styles/cdn/**/*',
     '**/typings/**/*',
     '**/types/**/*',
-    '../../packages/type-filtered-clsx/**/*',
-    '../../packages/styled-tsx/**/*',
+    `${packagesPath}/type-filtered-clsx/**/*`,
+    `${packagesPath}/styled-tsx/**/*`,
     '**/*.skip*',
     '**/.pnp.js',
     '**/.gitkeep',
   ],
   plugins: [
+    '@snowpack/plugin-dotenv',
     [
       '@snowpack/plugin-run-script',
       { cmd: 'tsc --noEmit', watch: '$1 --watch' },
@@ -30,8 +32,8 @@ module.exports = {
   ],
   mount: {
     web_modules: '/web_modules',
-    'src/public': '/',
-    // 'src/templates': '/',
+    'src/public': { url: '/', static: true },
+    'src/templates': '/',
     'src/assets': '/assets',
     'src/assets/favicon': '/',
     'src/styles': '/css',
@@ -39,17 +41,17 @@ module.exports = {
     'src/scripts/404': '/js',
     'src/lib': '/lib',
     'src/components': '/components',
-    '../../packages/solid-components/src': '/components',
+    [`${packagesPath}/solid-components/src`]: '/components',
   },
   alias: {
     '@lib': './src/lib',
     '@components/project': './src/components',
-    '@components/common': '../../packages/solid-components/src',
-    '@components/types': '../../packages/solid-components/types',
+    '@components/common': `${packagesPath}/solid-components/src`,
+    '@components/types': `${packagesPath}/solid-components/types`,
     '@web_modules': './web_modules',
-    '@alker/cirrus-types': '../../packages/cirrus-types',
-    '@alker/styled-tsx': '../../packages/styled-tsx',
-    '@alker/type-filtered-clsx': '../../packages/type-filtered-clsx',
+    '@alker/cirrus-types': `${packagesPath}/cirrus-types`,
+    '@alker/styled-tsx': `${packagesPath}/styled-tsx`,
+    '@alker/type-filtered-clsx': `${packagesPath}/type-filtered-clsx`,
   },
   installOptions: {
     installTypes: true,
@@ -60,9 +62,8 @@ module.exports = {
       'firebaseui',
     ],
   },
-  install: [],
+  install: ['solid-styled-jsx'],
   devOptions: {
-    bundle: false,
     port: 8080,
   },
 };

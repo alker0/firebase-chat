@@ -1,35 +1,26 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-
     "module": "CommonJS",
-
     "moduleResolution": "Node",
 
     "allowSyntheticDefaultImports": true,
 
     "baseUrl": "./",
     "paths": {
-      "*": [
-        "node_modules/@types/*",
-        "node_modules/*",
-      ],
     },
 
+    "noEmit": true,
     "skipLibCheck": true,
-
     "allowJs": true,
 
-    "noEmit": true,
-
-    "strictNullChecks": true,
-
-    "noImplicitAny": true,
+    "strict": true,
   },
 
   "include": [
     "./plugins/**/*.js",
-    "./*.config.js"
+    "./*.config.js",
+    "./*rc.js",
   ],
 
   "exclude": [

@@ -1,4 +1,4 @@
-import { createLazyComponent } from '@components/common/util/lazy-component-creater';
+import { createLazyComponent } from '@components/common/util/lazy-component-creator';
 import { CompleteVerifyEmail } from '../complete-verify-email';
 
 export const createLazyCompleteVerifyEmail = (

@@ -1,5 +1,5 @@
-import { assignProps, Component } from 'solid-js';
-import { DefaultComponents } from '../../../types/component-creater';
+import { assignProps, Component, JSX } from 'solid-js';
+import { DefaultComponents } from '../../../types/component-creator';
 
 type DefaultPropsMap = {
   wrapper: JSX.HTMLAttributes<HTMLDivElement>;
@@ -11,10 +11,9 @@ const defaultContext: DefaultComponents<InputField.Context, DefaultPropsMap> = {
   contents: (props) => <div {...props} />,
 };
 
-const defaultProps: Required<Pick<
-  InputField.Props,
-  'ofWrapper' | 'ofContents'
->> = {
+const defaultProps: Required<
+  Pick<InputField.Props, 'ofWrapper' | 'ofContents'>
+> = {
   ofWrapper: {},
   ofContents: {},
 };

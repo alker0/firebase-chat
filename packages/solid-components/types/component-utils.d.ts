@@ -1,3 +1,9 @@
+import { JSX } from 'solid-js';
+
+export type OnlyRequired<T extends object> = {
+  [K in keyof T]: T[K] extends undefined ? never : T[K];
+};
+
 export type OnlyOptional<T extends object> = Pick<
   T,
   Exclude<
@@ -8,8 +14,13 @@ export type OnlyOptional<T extends object> = Pick<
   >
 >;
 
+export type RequiredSwitch<
+  T extends object,
+  U extends string
+> = {} extends OnlyRequired<T> ? { [K in U]?: T } : { [K in U]: T };
+
 export type NativeHandlerOf<
-  T extends JSX.EventHandlerUnion<unknown, unknown> | undefined
+  T extends JSX.EventHandlerUnion<any, any> | undefined
 > = NonNullable<T> extends JSX.EventHandlerUnion<infer V, infer W>
   ? JSX.EventHandler<V, W>
   : never;

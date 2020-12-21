@@ -1,5 +1,6 @@
-import { assignProps, Component } from 'solid-js';
-import { DefaultComponents } from '../../../types/component-creater';
+import { assignProps, Component, JSX } from 'solid-js';
+import { RequiredSwitch } from '../../../types/component-utils';
+import { DefaultComponents } from '../../../types/component-creator';
 
 type DefaultPropsMap = {
   container: JSX.HTMLAttributes<HTMLElement>;
@@ -21,9 +22,9 @@ const defaultProps: Required<Form.Props> = {
 
 export const Form = {
   createComponent<
-    T = DefaultPropsMap['container'],
-    U = DefaultPropsMap['inputFields'],
-    V = DefaultPropsMap['bottomContents']
+    T extends object = DefaultPropsMap['container'],
+    U extends object = DefaultPropsMap['inputFields'],
+    V extends object = DefaultPropsMap['bottomContents']
   >(contextArg?: Form.Context<T, U, V>): Component<Form.Props<T, U, V>> {
     const context = assignProps({}, defaultContext, contextArg); // as Required<typeof contextArg>
 
@@ -46,9 +47,11 @@ export declare module Form {
     bottomContents?: Component<V>;
   }
 
-  export interface Props<T = unknown, U = unknown, V = unknown> {
-    ofContainer?: T;
-    ofInputFields?: U;
-    ofBottomContents?: V;
-  }
+  export type Props<
+    T extends object = {},
+    U extends object = {},
+    V extends object = {}
+  > = RequiredSwitch<T, 'ofContainer'> &
+    RequiredSwitch<U, 'ofInputFields'> &
+    RequiredSwitch<V, 'ofBottomContents'>;
 }
