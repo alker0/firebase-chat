@@ -16,7 +16,6 @@ let [host, port] =
   endpointOfEnv?.length === 2 ? endpointOfEnv : ['localhost', 9000];
 let accessPath = '';
 const headersArray = [];
-let rulesFileArg = path.join(cwd, 'database.rules.json');
 
 let postDataPromise = Promise.resolve('');
 while (args.length) {
@@ -67,12 +66,6 @@ while (args.length) {
     case '--port':
       port = args.shift();
       if (!port) throw new Error('--port <port> required');
-      break;
-    case '-r':
-    case '--rules-file':
-      rulesFileArg = args.shift();
-      if (!rulesFileArg)
-        throw new Error('--rules-file <rules-file-path> required');
       break;
     default:
       break;
