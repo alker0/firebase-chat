@@ -16,6 +16,7 @@ let [host, port] =
   endpointOfEnv?.length === 2 ? endpointOfEnv : ['localhost', 9000];
 let accessPath = '';
 const headersArray = [];
+let dbName = '';
 
 let postDataPromise = Promise.resolve('');
 while (args.length) {
@@ -58,6 +59,11 @@ while (args.length) {
       httpMethod = args.shift();
       if (!httpMethod) throw new Error('--method <http-method> required');
       break;
+    case '-n':
+    case '--db-name':
+      dbName = args.shift();
+      if (!dbName) throw new Error('--db-name <database-name> required');
+      break;
     case '-p':
     case '--path':
       accessPath = args.shift();
@@ -72,7 +78,20 @@ while (args.length) {
   }
 }
 
-const url = `http://${host}:${port}${accessPath}`;
+let fixedAccessPath = accessPath;
+if (dbName) {
+  const originalDbNameParam = accessPath.match(RegExp(`[?&](ns=[^&]*)`))?.[1];
+  const dbNameParam = `ns=${dbName}`;
+  if (originalDbNameParam) {
+    fixedAccessPath = accessPath.replace(originalDbNameParam, dbNameParam);
+  } else {
+    fixedAccessPath = `${accessPath}${
+      accessPath.includes('?') ? '&' : '?'
+    }${dbNameParam}`;
+  }
+}
+
+const url = `http://${host}:${port}${fixedAccessPath}`;
 
 const headers = headersArray.reduce((resultHeaders, headersText) => {
   return {
