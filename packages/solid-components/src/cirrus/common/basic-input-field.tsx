@@ -1,6 +1,6 @@
 import clsx, { Clsx } from 'clsx';
 import { Cirrus } from '@alker/cirrus-types';
-import { assignProps, Component, JSX } from 'solid-js';
+import { assignProps, Component, createMemo, JSX } from 'solid-js';
 import { sizeSuffixMap } from '../../util/cirrus-utils';
 
 const cn: Clsx<Cirrus> = clsx;
@@ -42,6 +42,10 @@ export const BasicInputField = {
     return (propsArg) => {
       const props = assignProps({}, defaultProps, propsArg);
 
+      const fieldId = createMemo(() => {
+        return props.ofInput.id ?? context.baseInputProps.id ?? props.inputId;
+      });
+
       return (
         <div
           {...props.ofWrapper}
@@ -51,15 +55,13 @@ export const BasicInputField = {
             children={props.labelText}
             {...props.ofLabel}
             class={cn('text-info', sizedLabel, props.ofLabel.class as Cirrus)}
-            htmlFor={
-              props.ofInput.id ?? context.baseInputProps.id ?? props.inputId
-            }
+            htmlFor={fieldId()}
           />
           <input
             {...context.baseInputProps}
             {...props.ofInput}
             class={cn(sizedInput, props.ofInput.class as Cirrus)}
-            id={props.ofInput.id ?? context.baseInputProps.id ?? props.inputId}
+            id={fieldId()}
           />
         </div>
       );
