@@ -55,7 +55,7 @@ const membersCount = ruleValue('members_count', {
   isStringLiteral: true,
 });
 const maxMembersCount = ruleValue('100000');
-const entranceQueryLimit = ruleValue('10');
+const entrancesQueryLimit = ruleValue('10');
 const passwordMaxLength = ruleValue('20');
 const roomNameMaxLength = ruleValue('20');
 const ownRoomCountLimit = 3;
@@ -312,7 +312,7 @@ export const getTalkerRules = () =>
             '&&',
             `${query.equalTo} === ${auth.uid}`,
             '&&',
-            `${query.limitToFirst} <= ${entranceQueryLimit}`,
+            `${query.limitToFirst} <= ${entrancesQueryLimit}`,
           ],
           '||',
           [
@@ -322,7 +322,7 @@ export const getTalkerRules = () =>
             '&&',
             `${query.endAt} !== null`,
             '&&',
-            `${query.limitToFirst} <= ${entranceQueryLimit}`,
+            `${query.limitToFirst} <= ${entrancesQueryLimit}`,
           ],
           '||',
           [
@@ -335,9 +335,9 @@ export const getTalkerRules = () =>
             [
               `${query.limitToFirst} === null`,
               '?',
-              `${query.limitToLast} <= ${entranceQueryLimit}`,
+              `${query.limitToLast} <= ${entrancesQueryLimit}`,
               ':',
-              `${query.limitToFirst} <= ${entranceQueryLimit}`,
+              `${query.limitToFirst} <= ${entrancesQueryLimit}`,
             ],
           ],
           '||',
@@ -349,9 +349,9 @@ export const getTalkerRules = () =>
             [
               `${query.limitToFirst} === null`,
               '?',
-              `${query.limitToLast} <= ${entranceQueryLimit}`,
+              `${query.limitToLast} <= ${entrancesQueryLimit}`,
               ':',
-              `${query.limitToFirst} <= ${entranceQueryLimit}`,
+              `${query.limitToFirst} <= ${entrancesQueryLimit}`,
             ],
           ],
         ],
