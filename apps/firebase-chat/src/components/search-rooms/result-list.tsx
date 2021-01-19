@@ -48,7 +48,7 @@ export function createSearchResultListComponent(
     const [disposeMemo, resultsMemo] = createRoot((...dispose) => {
       const presentMemo = createMemo(
         () => {
-          return Boolean(searchResultsState[resultsKey].resultsList.length);
+          return Boolean(searchResultsState[resultsKey].resultList.length);
         },
         false,
         (prev, next) => !prev && !next,
@@ -57,7 +57,7 @@ export function createSearchResultListComponent(
         dispose[0],
         createMemo(() => {
           const searchResultList = untrack(
-            () => searchResultsState[resultsKey].resultsList,
+            () => searchResultsState[resultsKey].resultList,
           );
 
           console.log(

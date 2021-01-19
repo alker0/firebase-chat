@@ -58,7 +58,7 @@ export function searchRoomsByCreatedTime(
 
 export interface ResultsInfoBase<T> {
   pageCount: number;
-  resultsList: T[];
+  resultList: T[];
 }
 
 export interface ExecuteSearchOption<T> {
@@ -83,7 +83,7 @@ export function executeSearchRooms<T>({
   resultHandleFn(
     searchRunner(previous).then((resultInfo) => ({
       pageCount: targetPage,
-      resultsList: (isNextPage ? previous.resultsList : []).concat(resultInfo),
+      resultList: (isNextPage ? previous.resultList : []).concat(resultInfo),
     })),
   );
 }

@@ -137,7 +137,7 @@ export function createSearchByNameFn(
       executeFn({
         targetKey: 'byName',
         searchRunner: (prev) => {
-          const prevLast = getLastElement(prev.resultsList);
+          const prevLast = getLastElement(prev.resultList);
           return searchRoomsByName(option.db, targetName, prevLast?.roomId);
         },
         skipCondition: () => isSameName,
@@ -158,7 +158,7 @@ export function searchByMembersCount(
   executeFn({
     targetKey: 'byMembersCount',
     searchRunner: (prev) => {
-      const prevLast = getLastElement(prev.resultsList);
+      const prevLast = getLastElement(prev.resultList);
       return searchRoomsByMembersCount(
         option.db,
         prevLast
@@ -184,7 +184,7 @@ export function searchByCreatedTime(
   executeFn({
     targetKey: 'byCreatedTime',
     searchRunner: (prev) => {
-      const prevLast = getLastElement(prev.resultsList);
+      const prevLast = getLastElement(prev.resultList);
       return searchRoomsByCreatedTime(
         option.db,
         prevLast

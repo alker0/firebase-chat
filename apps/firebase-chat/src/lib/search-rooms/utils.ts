@@ -19,7 +19,7 @@ import {
 
 export const initialResultsInfo: ResultsInfo = {
   pageCount: 0,
-  resultsList: [],
+  resultList: [],
 };
 
 export const searchResultsKeyArray = [
