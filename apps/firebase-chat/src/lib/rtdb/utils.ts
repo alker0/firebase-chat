@@ -1,3 +1,5 @@
+import type firebase from 'firebase';
+
 export const permDeniedCode = 'PERMISSION_DENIED';
 export const permDeniedMsg = 'PERMISSION_DENIED: Permission denied';
 
@@ -25,4 +27,27 @@ export function isPermissionDeniedError(
   } else {
     return false;
   }
+}
+
+interface Snapshot extends firebase.database.DataSnapshot {}
+
+export interface ArrayFromSnapshotOption {
+  descending?: boolean;
+  onNoChild?: () => void;
+}
+
+export function arrayFromSnapshot<T>(
+  snapshot: Snapshot,
+  pickElementFn: (childSnapshot: Snapshot) => T,
+  options: ArrayFromSnapshotOption = {},
+) {
+  const resultList: T[] = [];
+  if (snapshot.hasChildren()) {
+    snapshot.forEach((data) => {
+      resultList[options.descending ? 'unshift' : 'push'](pickElementFn(data));
+    });
+  } else {
+    options.onNoChild?.();
+  }
+  return resultList;
 }
