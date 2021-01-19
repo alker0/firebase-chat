@@ -1,4 +1,4 @@
-import type firebaseType from 'firebase';
+import firebaseType from 'firebase';
 
 declare global {
   const firebase: firebaseType;

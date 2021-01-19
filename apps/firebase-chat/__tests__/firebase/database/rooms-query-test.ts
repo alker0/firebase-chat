@@ -145,7 +145,7 @@ export function roomsQueryTest() {
           ).resolves.toStrictEqual(expectedObject.entranceOfUser),
           expect(
             getOnceVal(
-              userDb
+              anonymousDb
                 .ref(roomEntranceRoot)
                 .orderByChild('members_count')
                 .startAt(2)
@@ -171,7 +171,7 @@ export function roomsQueryTest() {
           ).resolves.toStrictEqual(expectedObject.entranceOfUser),
           expect(
             getOnceVal(
-              userDb
+              anonymousDb
                 .ref(roomEntranceRoot)
                 .orderByChild('created_at')
                 .endAt(Date.now())

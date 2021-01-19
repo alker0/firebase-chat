@@ -189,54 +189,6 @@ export function createSampleRulesFactory(options: RulesFactoryOptions) {
   };
 }
 
-// type PromiseResolveArg<T> = T | PromiseLike<T>;
-// type PromiseResolveFunction<T> = (value: PromiseResolveArg<T>) => void;
-// type PromiseRejectFunction = (reason: unknown) => void;
-// interface SendHandleFn {
-//   <T = unknown>(
-//     value: T,
-//     resolve: PromiseResolveFunction<T>,
-//     reject: PromiseRejectFunction,
-//   ): void;
-// }
-
-// function defaultSendHandleFunction<T = unknown>(
-//   value: T,
-//   resolve: PromiseResolveFunction<T>,
-//   reject: PromiseRejectFunction,
-// ) {
-//   if (value) {
-//     resolve(value);
-//   } else {
-//     reject(new Error('falsy value is sent'));
-//   }
-// }
-
-// export function createPromiseInfoCreator(
-//   defaultSendHandleFn: SendHandleFn = defaultSendHandleFunction,
-// ) {
-//   return function createPromiseInfo<T = unknown>(
-//     sendHandleFn: (
-//       value: T,
-//       resolve: PromiseResolveFunction<T>,
-//       reject: PromiseRejectFunction,
-//     ) => void = defaultSendHandleFn,
-//   ) {
-//     let resolve: PromiseResolveFunction<T> = () => {};
-//     let reject: PromiseRejectFunction = () => {};
-//     const promise = new Promise<unknown>((resolveFn, rejectFn) => {
-//       resolve = resolveFn;
-//       reject = rejectFn;
-//     }).catch(console.error);
-//     return {
-//       promise,
-//       resolve,
-//       reject,
-//       send: (value: T) => sendHandleFn(value, resolve, reject),
-//     };
-//   };
-// }
-
 export async function* seriesPromiseGenerator() {
   let prevPromise = Promise.resolve();
   function createPromiseWithResolve() {
@@ -343,13 +295,6 @@ export const emailVerifiedAuth = {
     email_verified: true,
   },
 };
-
-// export function hasOwnProperty(
-//   target: unknown,
-//   key: string,
-// ): key is keyof typeof target {
-//   return Object.prototype.hasOwnProperty.call(target, key);
-// }
 
 export type DateOffsetUnit =
   | 'milli'

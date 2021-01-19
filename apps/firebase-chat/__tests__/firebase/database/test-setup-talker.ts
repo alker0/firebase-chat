@@ -165,10 +165,7 @@ export const fixInfoParts: Record<
   nonDenied: (rootKeyMap) => [[rootKeyMap['key-room_members/denied']], null],
 };
 
-export const serverValue = {
-  increment: firebaseDb.ServerValue.increment,
-  TIMESTAMP: firebaseDb.ServerValue.TIMESTAMP,
-};
+export const serverValue = firebaseDb.ServerValue;
 
 export const sampleValueOfTalker = {
   ...defaultSampleOfTalker,

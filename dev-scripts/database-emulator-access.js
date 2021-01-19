@@ -1,7 +1,6 @@
 const { promises: fs } = require('fs');
 const path = require('path');
 const http = require('http');
-require('dotenv').config();
 
 const cwd = process.cwd();
 
@@ -17,7 +16,7 @@ let [host, port] =
   endpointOfEnv?.length === 2 ? endpointOfEnv : ['localhost', 9000];
 let accessPath = '';
 const headersArray = [];
-let rulesFileArg = path.join(cwd, 'database.rules.json');
+let dbName = '';
 
 let postDataPromise = Promise.resolve('');
 while (args.length) {
@@ -60,6 +59,11 @@ while (args.length) {
       httpMethod = args.shift();
       if (!httpMethod) throw new Error('--method <http-method> required');
       break;
+    case '-n':
+    case '--db-name':
+      dbName = args.shift();
+      if (!dbName) throw new Error('--db-name <database-name> required');
+      break;
     case '-p':
     case '--path':
       accessPath = args.shift();
@@ -69,18 +73,25 @@ while (args.length) {
       port = args.shift();
       if (!port) throw new Error('--port <port> required');
       break;
-    case '-r':
-    case '--rules-file':
-      rulesFileArg = args.shift();
-      if (!rulesFileArg)
-        throw new Error('--rules-file <rules-file-path> required');
-      break;
     default:
       break;
   }
 }
 
-const url = `http://${host}:${port}${accessPath}`;
+let fixedAccessPath = accessPath;
+if (dbName) {
+  const originalDbNameParam = accessPath.match(RegExp(`[?&](ns=[^&]*)`))?.[1];
+  const dbNameParam = `ns=${dbName}`;
+  if (originalDbNameParam) {
+    fixedAccessPath = accessPath.replace(originalDbNameParam, dbNameParam);
+  } else {
+    fixedAccessPath = `${accessPath}${
+      accessPath.includes('?') ? '&' : '?'
+    }${dbNameParam}`;
+  }
+}
+
+const url = `http://${host}:${port}${fixedAccessPath}`;
 
 const headers = headersArray.reduce((resultHeaders, headersText) => {
   return {

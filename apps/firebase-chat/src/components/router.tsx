@@ -11,6 +11,7 @@ import { TopMenu as TopMenuCreator } from './top-menu';
 import { createLazyCompleteVerifyEmail } from './lazy/complete-verify-email';
 import { createLazyLoginForm } from './lazy/login-form';
 import { createLazyCreateRoom } from './lazy/create-room';
+import { createLazySearchRooms } from './lazy/search-rooms';
 import {
   FirebaseAuth,
   FirebaseDb,
@@ -40,7 +41,7 @@ export const routingPaths = {
   login: '/login',
   completeVerifyEmail: '/complete-verify-email',
   resetPassword: '/reset-password',
-  searchRoom: '/search-room',
+  searchRooms: '/search-rooms',
   createRoom: '/create-room',
 };
 
@@ -94,8 +95,8 @@ export const createRouter = (context: RouterContext) => {
     getSessionButtonText: () =>
       sessionState.isLoggedIn ? 'Sign Out' : 'Sign Up',
     onSessionButtonClick: getSessionButtonHandler(context.auth),
-    leftButtonText: 'Search Room',
-    onLeftButtonClick: () => movePageFromPath(routingPaths.searchRoom),
+    leftButtonText: 'Search Rooms',
+    onLeftButtonClick: () => movePageFromPath(routingPaths.searchRooms),
     rightButtonText: 'Create Room',
     onRightButtonClick: () => movePageFromPath(routingPaths.createRoom),
   });
@@ -159,6 +160,11 @@ export const createRouter = (context: RouterContext) => {
     },
   });
 
+  const SearchRoomsComponent = createLazySearchRooms({
+    auth: context.auth,
+    db: context.db,
+  });
+
   return () => (
     <RouteComponent
       routeSignal={routeSignal}
@@ -186,8 +192,8 @@ export const createRouter = (context: RouterContext) => {
           getComponent: () => <CompleteVerifyEmailComponent />,
         },
         {
-          matcher: routingPaths.searchRoom,
-          getComponent: () => <div>Search Room Page</div>,
+          matcher: routingPaths.searchRooms,
+          getComponent: () => <SearchRoomsComponent />,
         },
         {
           matcher: routingPaths.createRoom,

@@ -1,6 +1,6 @@
 import { FirebaseDb, FirebaseDbServerValue } from '../../typings/firebase-sdk';
-import { roomEntrances } from './variables';
-import { isPermissionDeniedError } from './utils';
+import { roomEntrances } from '../rtdb/variables';
+import { isPermissionDeniedError } from '../rtdb/utils';
 
 export interface CreateRoomRunnerArgs {
   db: FirebaseDb;

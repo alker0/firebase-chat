@@ -16,7 +16,9 @@
     "test:detect": "jest --verbose -i --detectOpenHandles",
     "citest": "CI=true jest --reporters=default --reporters=jest-github-action-reporter",
     "rtdb:build": "ts-node -sT ./dev-scripts/rtdb-rules-generate database.rules.json",
-    "rtdb:emulator:get:rule": "node ./dev-scripts/database-emulator-access -a -p '/.settings/rules.json?ns=talker-v1'",
+    "rtdb:emulator:get:data": "dotenv -- node ../../dev-scripts/database-emulator-access -a -n talker-v1 -p '/.json'",
+    "rtdb:emulator:delete:data": "dotenv -- node ../../dev-scripts/database-emulator-access -a -m 'DELETE' -n talker-v1 -p '/.json'",
+    "rtdb:emulator:get:rule": "node ../../dev-scripts/database-emulator-access -a -p '/.settings/rules.json?ns=talker-v1'",
     "rtdb:emulator:put:rule": "ts-node -sT ./dev-scripts/rtdb-rules-generate $HOME/bind/firebase-emulator/rules/talker-v1.rules.json"
   },
   "devDependencies": {
@@ -44,6 +46,7 @@
     "babel-plugin-transform-remove-console": "^6.9.4",
     "babel-preset-solid": "^0.23.4",
     "dotenv": "^8.2.0",
+    "dotenv-cli": "^4.0.0",
     "eslint-config-airbnb-typescript": "^12.0.0",
     "eslint-config-prettier": "^7.1.0",
     "eslint-plugin-import": "^2.22.1",
