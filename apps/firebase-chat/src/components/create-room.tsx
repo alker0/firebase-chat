@@ -12,7 +12,7 @@ import {
   CreateRoomRunnerArgs,
   createRoomWithRetry,
   ownRoomsIsFilled,
-} from '@lib/rtdb/create-room';
+} from '@lib/create-room/rtdb';
 import clsx, { Clsx } from 'clsx';
 import {
   assignProps,
