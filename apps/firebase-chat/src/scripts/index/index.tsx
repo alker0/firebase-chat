@@ -36,7 +36,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (import.meta.env.MODE !== 'production') {
     if (import.meta.env.SNOWPACK_PUBLIC_AUTH_EMULATOR_PATH) {
-      auth.useEmulator(import.meta.env.SNOWPACK_PUBLIC_AUTH_EMULATOR_PATH);
+      auth.useEmulator(
+        import.meta.env.SNOWPACK_PUBLIC_AUTH_EMULATOR_PATH,
+        // @ts-expect-error
+        { disableWarnings: true },
+      );
     }
 
     if (
