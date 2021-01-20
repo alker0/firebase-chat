@@ -6047,10 +6047,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv-expand@npm:^5.1.0":
+"dotenv-expand@npm:^5.1.0, dotenv-expand@npm:latest":
   version: 5.1.0
   resolution: "dotenv-expand@npm:5.1.0"
   checksum: b895c6220d345db8f58dca439d3bc65c2ee538659df570ed3fa8c99487df854afd6d1ddadf1e43a4091c9ed6166956e7db7bc5a05cf48fa812c0772e1f5cf860
+  languageName: node
+  linkType: hard
+
+"dotenv-with-expand@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "dotenv-with-expand@npm:1.0.1"
+  dependencies:
+    dotenv: latest
+    dotenv-expand: latest
+  checksum: 2efb721f5aee1e6eadbe0c563a384be8a47b9f14cf88344bc055e274961a62d9b295aafd55e2044c9238780ac24a22dfee9a9277d8c168cc7d57930911122507
   languageName: node
   linkType: hard
 
@@ -6061,7 +6071,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv@npm:^8.1.0, dotenv@npm:^8.2.0":
+"dotenv@npm:^8.1.0, dotenv@npm:^8.2.0, dotenv@npm:latest":
   version: 8.2.0
   resolution: "dotenv@npm:8.2.0"
   checksum: 16cb89cbd7b98b053899b8aba8c5044c8fb61a2db8a81fe70360b75035fce5fed53bd7a34d772be717d0880c0321122a4c09423f518025e1b52d96791521b1a7
@@ -7350,6 +7360,7 @@ __metadata:
     clsx: ^1.1.1
     dotenv: ^8.2.0
     dotenv-cli: ^4.0.0
+    dotenv-with-expand: ^1.0.1
     eslint-config-airbnb-typescript: ^12.0.0
     eslint-config-prettier: ^7.1.0
     eslint-plugin-import: ^2.22.1

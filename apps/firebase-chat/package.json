@@ -16,10 +16,10 @@
     "test:detect": "jest --verbose -i --detectOpenHandles",
     "citest": "CI=true jest --reporters=default --reporters=jest-github-action-reporter",
     "rtdb:build": "ts-node -sT ./dev-scripts/rtdb-rules-generate database.rules.json",
-    "rtdb:emulator:get:data": "dotenv -- node ../../dev-scripts/database-emulator-access -a -n talker-v1 -p '/.json'",
-    "rtdb:emulator:delete:data": "dotenv -- node ../../dev-scripts/database-emulator-access -a -m 'DELETE' -n talker-v1 -p '/.json'",
-    "rtdb:emulator:get:rule": "node ../../dev-scripts/database-emulator-access -a -p '/.settings/rules.json?ns=talker-v1'",
-    "rtdb:emulator:put:rule": "ts-node -sT ./dev-scripts/rtdb-rules-generate $HOME/bind/firebase-emulator/rules/talker-v1.rules.json"
+    "rtdb:emulator:get:data": "node -r dotenv-with-expand/config ../../dev-scripts/database-emulator-access -a -n talker-v1 -p '/.json'",
+    "rtdb:emulator:delete:data": "node -r dotenv-with-expand/config ../../dev-scripts/database-emulator-access -a -m 'DELETE' -n talker-v1 -p '/.json'",
+    "rtdb:emulator:get:rule": "node -r dotenv-with-expand/config ../../dev-scripts/database-emulator-access -a -p '/.settings/rules.json?ns=talker-v1'",
+    "rtdb:emulator:put:rule": "ts-node -sT -r dotenv-with-expand/config ./dev-scripts/rtdb-rules-generate"
   },
   "devDependencies": {
     "@alker/cirrus-types": "workspace:*",
@@ -47,6 +47,7 @@
     "babel-preset-solid": "^0.23.4",
     "dotenv": "^8.2.0",
     "dotenv-cli": "^4.0.0",
+    "dotenv-with-expand": "^1.0.1",
     "eslint-config-airbnb-typescript": "^12.0.0",
     "eslint-config-prettier": "^7.1.0",
     "eslint-plugin-import": "^2.22.1",
@@ -103,7 +104,7 @@
           "json"
         ],
         "setupFiles": [
-          "dotenv/config"
+          "dotenv-with-expand/config"
         ]
       },
       {
@@ -123,7 +124,7 @@
           "node"
         ],
         "setupFiles": [
-          "dotenv/config"
+          "dotenv-with-expand/config"
         ],
         "setupFilesAfterEnv": [
           "<rootDir>/__tests__/firebase/database/rules-custom-matchers.ts"
