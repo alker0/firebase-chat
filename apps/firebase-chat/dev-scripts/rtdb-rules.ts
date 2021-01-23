@@ -586,8 +586,12 @@ export const getTalkerRules = () =>
           },
         },
         accepted: {
+          [read]: [
+            `${auth.uid} === ${dataOwnerIdFromRoomId}`,
+            '||',
+            [query.orderByKey, '&&', `${query.equalTo} === ${auth.uid}`],
+          ],
           $user_id: {
-            [read]: `${auth.uid} === ${$userId}`,
             [write]: [
               whenDelete,
               '?',
@@ -705,7 +709,11 @@ export const getTalkerRules = () =>
           },
         },
         denied: {
-          [read]: `${auth.uid} === ${dataOwnerIdFromRoomId}`,
+          [read]: [
+            `${auth.uid} === ${dataOwnerIdFromRoomId}`,
+            '||',
+            [query.orderByKey, '&&', `${query.equalTo} === ${auth.uid}`],
+          ],
           [write]: `${auth.uid} === ${dataOwnerIdFromRoomId}`,
           [validate]: newDataIsObject,
           $user_id: {
