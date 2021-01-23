@@ -587,6 +587,7 @@ export const getTalkerRules = () =>
         },
         accepted: {
           $user_id: {
+            [read]: `${auth.uid} === ${$userId}`,
             [write]: [
               whenDelete,
               '?',
@@ -704,6 +705,7 @@ export const getTalkerRules = () =>
           },
         },
         denied: {
+          [read]: `${auth.uid} === ${dataOwnerIdFromRoomId}`,
           [write]: `${auth.uid} === ${dataOwnerIdFromRoomId}`,
           [validate]: newDataIsObject,
           $user_id: {
