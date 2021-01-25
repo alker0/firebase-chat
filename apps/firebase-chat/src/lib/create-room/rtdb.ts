@@ -1,5 +1,11 @@
 import { FirebaseDb, FirebaseDbServerValue } from '../../typings/firebase-sdk';
-import { RTDB_KEY_ROOM_ENTRANCES } from '../rtdb/variables';
+import {
+  RTDB_KEY_PASSWORD,
+  RTDB_KEY_REQUESTING,
+  RTDB_KEY_ROOM_ENTRANCES,
+  RTDB_KEY_ROOM_MEMBERS_INFO,
+  RTDB_QUERY_COUNT_LIMIT_OWN_ROOMS,
+} from '../rtdb/variables';
 import { isPermissionDeniedError } from '../rtdb/utils';
 
 export function getNewRoomKey(db: FirebaseDb) {
@@ -36,7 +42,7 @@ export function createRoomIntoDb({
       members_count: 1,
       created_at: dbServerValues.TIMESTAMP,
     },
-    [`room_members_info/${roomId}/requesting/password`]: password,
+    [`${RTDB_KEY_ROOM_MEMBERS_INFO}/${roomId}/${RTDB_KEY_REQUESTING}/${RTDB_KEY_PASSWORD}`]: password,
   });
 }
 
@@ -66,17 +72,13 @@ export async function createRoomWithRetry(
   };
 }
 
-export async function ownRoomsIsFilled(
-  db: FirebaseDb,
-  uid: string,
-  maxRoomCount: number,
-) {
+export async function ownRoomsIsFilled(db: FirebaseDb, uid: string) {
   const snapshot = await db
     .ref(RTDB_KEY_ROOM_ENTRANCES)
     .orderByChild('owner_id')
     .equalTo(uid)
-    .limitToFirst(maxRoomCount)
+    .limitToFirst(RTDB_QUERY_COUNT_LIMIT_OWN_ROOMS)
     .once('value');
 
-  return maxRoomCount <= snapshot.numChildren();
+  return RTDB_QUERY_COUNT_LIMIT_OWN_ROOMS <= snapshot.numChildren();
 }

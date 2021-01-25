@@ -24,6 +24,7 @@ import {
   JSX,
   batch,
 } from 'solid-js';
+import { RTDB_QUERY_COUNT_LIMIT_OWN_ROOMS } from '@lib/rtdb/variables';
 import {
   FirebaseAuth,
   FirebaseDb,
@@ -158,11 +159,11 @@ async function createRoomAndUpdateLinkButton(
         linkButtonColorStyle: 'btn-info',
       });
     } else {
-      const isFilled = await ownRoomsIsFilled(db, uid, maxOwnRoomCount);
+      const isFilled = await ownRoomsIsFilled(db, uid);
       if (isFilled) {
         updateView({
           infoMessage: '',
-          errorMessage: `You can create only ${maxOwnRoomCount} rooms`,
+          errorMessage: `You can create only ${RTDB_QUERY_COUNT_LIMIT_OWN_ROOMS} rooms`,
           linkButtonView: linkButtonViewContext.alreadyFilled,
           linkButtonColorStyle: 'btn-warning',
         });

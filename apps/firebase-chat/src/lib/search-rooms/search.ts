@@ -5,6 +5,11 @@ import {
   ResultsInfoBase,
   executeSearchRooms,
 } from './rtdb';
+import {
+  RTDB_KEY_CREATED_AT,
+  RTDB_KEY_ROOM_MEMBERS_COUNT,
+  RTDB_KEY_ROOM_NAME,
+} from '../rtdb/variables';
 import { arrayFromSnapshot as arrayFromSnapshotUtil } from '../rtdb/utils';
 import { FirebaseDb, FirebaseDbSnapshot } from '../../typings/firebase-sdk';
 
@@ -47,9 +52,9 @@ function arrayFromSnapshot(snapshot: FirebaseDbSnapshot, descending?: boolean) {
       const dataValues = data.val();
       return {
         roomId: data.key,
-        roomName: dataValues.room_name,
-        membersCount: dataValues.members_count,
-        createdTime: dataValues.created_at,
+        roomName: dataValues[RTDB_KEY_ROOM_NAME],
+        membersCount: dataValues[RTDB_KEY_ROOM_MEMBERS_COUNT],
+        createdTime: dataValues[RTDB_KEY_CREATED_AT],
       };
     },
     {

@@ -1,8 +1,11 @@
 import { FirebaseDb } from '../../typings/firebase-sdk';
 import {
-  roomEntrances,
-  entrancesQueryLimit,
-  maxRoomMembersCount,
+  RTDB_KEY_CREATED_AT,
+  RTDB_KEY_ROOM_ENTRANCES,
+  RTDB_KEY_ROOM_MEMBERS_COUNT,
+  RTDB_KEY_ROOM_NAME,
+  RTDB_QUERY_COUNT_LIMIT_ENTRANCES,
+  RTDB_QUERY_MAX_LIMIT_ROOM_MEMBERS_COUNT,
 } from '../rtdb/variables';
 
 export function searchRoomsByName(
@@ -11,11 +14,11 @@ export function searchRoomsByName(
   endAtKey?: string | null,
 ) {
   return db
-    .ref(roomEntrances)
-    .orderByChild('room_name')
+    .ref(RTDB_KEY_ROOM_ENTRANCES)
+    .orderByChild(RTDB_KEY_ROOM_NAME)
     .startAt(name)
     .endAt(`${name}\uf8ff`, endAtKey ?? undefined)
-    .limitToFirst(entrancesQueryLimit)
+    .limitToFirst(RTDB_QUERY_COUNT_LIMIT_ENTRANCES)
     .once('value');
 }
 
@@ -28,13 +31,13 @@ export function searchRoomsByMembersCount(
 ) {
   const endAtArg: [number, string | undefined] = endAtInfo
     ? [endAtInfo.count, endAtInfo.key ?? undefined]
-    : [maxRoomMembersCount, undefined];
+    : [RTDB_QUERY_MAX_LIMIT_ROOM_MEMBERS_COUNT, undefined];
   return db
-    .ref(roomEntrances)
-    .orderByChild('members_count')
+    .ref(RTDB_KEY_ROOM_ENTRANCES)
+    .orderByChild(RTDB_KEY_ROOM_MEMBERS_COUNT)
     .startAt(1)
     .endAt(...endAtArg)
-    .limitToLast(entrancesQueryLimit)
+    .limitToLast(RTDB_QUERY_COUNT_LIMIT_ENTRANCES)
     .once('value');
 }
 
@@ -49,10 +52,10 @@ export function searchRoomsByCreatedTime(
     ? [endAtInfo.time, endAtInfo.key ?? undefined]
     : [Date.now(), undefined];
   return db
-    .ref(roomEntrances)
-    .orderByChild('created_at')
+    .ref(RTDB_KEY_ROOM_ENTRANCES)
+    .orderByChild(RTDB_KEY_CREATED_AT)
     .endAt(...endAtArg)
-    .limitToLast(entrancesQueryLimit)
+    .limitToLast(RTDB_QUERY_COUNT_LIMIT_ENTRANCES)
     .once('value');
 }
 
