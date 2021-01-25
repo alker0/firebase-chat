@@ -2,6 +2,10 @@ import { FirebaseDb, FirebaseDbServerValue } from '../../typings/firebase-sdk';
 import { RTDB_KEY_ROOM_ENTRANCES } from '../rtdb/variables';
 import { isPermissionDeniedError } from '../rtdb/utils';
 
+export function getNewRoomKey(db: FirebaseDb) {
+  return db.ref(RTDB_KEY_ROOM_ENTRANCES).push().key!;
+}
+
 export interface CreateRoomRunnerArgs {
   db: FirebaseDb;
   dbServerValues: FirebaseDbServerValue;
