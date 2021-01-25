@@ -1,5 +1,5 @@
 import { FirebaseDb, FirebaseDbServerValue } from '../../typings/firebase-sdk';
-import { roomEntrances } from '../rtdb/variables';
+import { RTDB_KEY_ROOM_ENTRANCES } from '../rtdb/variables';
 import { isPermissionDeniedError } from '../rtdb/utils';
 
 export interface CreateRoomRunnerArgs {
@@ -25,7 +25,7 @@ export function createRoomIntoDb({
     [`rooms/${uid}/${ownRoomId}/public_info`]: {
       room_id: roomId,
     },
-    [`${roomEntrances}/${roomId}`]: {
+    [`${RTDB_KEY_ROOM_ENTRANCES}/${roomId}`]: {
       owner_id: uid,
       own_room_id: String(ownRoomId),
       room_name: roomName,
@@ -68,7 +68,7 @@ export async function ownRoomsIsFilled(
   maxRoomCount: number,
 ) {
   const snapshot = await db
-    .ref(roomEntrances)
+    .ref(RTDB_KEY_ROOM_ENTRANCES)
     .orderByChild('owner_id')
     .equalTo(uid)
     .limitToFirst(maxRoomCount)

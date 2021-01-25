@@ -6,7 +6,7 @@ import { Cirrus } from '@alker/cirrus-types';
 import { EventArg, EventArgOf } from '@components/types/component-utils';
 import { CallableSubmit } from '@components/common/util/input-field-utils';
 import { sessionState } from '@lib/solid-firebase-auth';
-import { roomEntrances } from '@lib/rtdb/variables';
+import { RTDB_KEY_ROOM_ENTRANCES } from '@lib/rtdb/variables';
 import {
   createRoomIntoDb,
   CreateRoomRunnerArgs,
@@ -113,7 +113,7 @@ async function createRoomAndUpdateLinkButton(
     password: formState.password,
   }));
 
-  const roomId = db.ref(roomEntrances).push().key!;
+  const roomId = db.ref(RTDB_KEY_ROOM_ENTRANCES).push().key!;
 
   function updateView({
     infoMessage,

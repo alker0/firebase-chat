@@ -1,5 +1,5 @@
-export const roomEntrances = 'room_entrances';
+export const RTDB_KEY_ROOM_ENTRANCES = 'room_entrances';
 
-export const entrancesQueryLimit = 10;
+export const RTDB_QUERY_COUNT_LIMIT_ENTRANCES = 10;
 
-export const maxRoomMembersCount = 100000;
+export const RTDB_QUERY_MAX_LIMIT_ROOM_MEMBERS_COUNT = 100000;
