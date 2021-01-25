@@ -21,11 +21,19 @@ export function isPermissionDeniedError(
 ): error is ErrorWithCode {
   if (isErrorWithCode(error)) {
     return (
-      error.message.toUpperCase().indexOf(permDeniedCode) >= 0 ||
-      error.code.replace('-', '_').toUpperCase() === permDeniedCode
+      error.code.replace('-', '_').toUpperCase() === permDeniedCode ||
+      error.message.toUpperCase().indexOf(permDeniedCode) >= 0
     );
   } else {
     return false;
+  }
+}
+
+export function logNonPermissionDeniedError(error: Error | null) {
+  if (error) {
+    if ((error as ErrorWithCode).code !== permDeniedCode) {
+      console.error(error);
+    }
   }
 }
 
