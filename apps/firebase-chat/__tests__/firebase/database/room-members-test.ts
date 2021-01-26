@@ -489,7 +489,7 @@ export function roomMembersTest() {
           endTest();
         }
       });
-      it('should run all members out of own room with reset members_count', async () => {
+      it('should kick all members out of own room with reset members_count', async () => {
         expect.assertions(1);
         const [settingUp, endTest] = await setupForExitTest();
         try {
@@ -504,7 +504,7 @@ export function roomMembersTest() {
           endTest();
         }
       });
-      it('should not run all members out of own room without reset members_count', async () => {
+      it('should not kick all members out of own room without reset members_count', async () => {
         expect.assertions(1);
         const [settingUp, endTest] = await setupForExitTest();
         try {
