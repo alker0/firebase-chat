@@ -558,6 +558,8 @@ export const getTalkerRules = () =>
               [
                 whenCreate,
                 '&&',
+                `${auth.uid} !== ${dataOwnerIdFromRoomId}`,
+                '&&',
                 `${$userId} === ${auth.uid}`,
                 '&&',
                 getEntranceRef('old', 'new', 'requesting').exists(),
