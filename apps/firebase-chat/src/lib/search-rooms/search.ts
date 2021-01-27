@@ -8,6 +8,8 @@ import {
 import {
   RTDB_KEY_CREATED_AT,
   RTDB_KEY_ROOM_MEMBERS_COUNT,
+  RTDB_KEY_OWNER_ID,
+  RTDB_KEY_OWN_ROOM_ID,
   RTDB_KEY_ROOM_NAME,
 } from '../rtdb/variables';
 import { arrayFromSnapshot as arrayFromSnapshotUtil } from '../rtdb/utils';
@@ -18,6 +20,8 @@ export type SearchResultsKey = 'byName' | 'byMembersCount' | 'byCreatedTime';
 
 export interface RoomRow {
   roomId: string | null;
+  ownerId: string;
+  ownRoomId: string;
   roomName: string;
   membersCount: number;
   createdTime: number;
@@ -52,6 +56,8 @@ function arrayFromSnapshot(snapshot: FirebaseDbSnapshot, descending?: boolean) {
       const dataValues = data.val();
       return {
         roomId: data.key,
+        ownerId: dataValues[RTDB_KEY_OWNER_ID],
+        ownRoomId: dataValues[RTDB_KEY_OWN_ROOM_ID],
         roomName: dataValues[RTDB_KEY_ROOM_NAME],
         membersCount: dataValues[RTDB_KEY_ROOM_MEMBERS_COUNT],
         createdTime: dataValues[RTDB_KEY_CREATED_AT],
