@@ -16,6 +16,7 @@ import {
   SearchResults,
   SearchResultsKey,
 } from './search';
+import { isEnterKey } from '../browser-utils';
 
 export const initialResultsInfo: ResultsInfo = {
   pageCount: 0,
@@ -103,7 +104,7 @@ export function createSearchByNameHandler(
     setLastTargetName,
   });
   return (event) => {
-    if (event.key ? event.key === 'Enter' : event.keyCode === 13) {
+    if (isEnterKey(event)) {
       searchFn(event.target.value);
     }
   };

@@ -5,7 +5,7 @@ import { Cirrus } from '@alker/cirrus-types';
 import { inputRegex } from '@components/common/util/input-field-utils';
 import { createSignal, untrack } from 'solid-js';
 import { sessionState } from '@lib/solid-firebase-auth';
-import { fullPath } from '@lib/routing-utils';
+import { fullPath } from '@lib/browser-utils';
 import { createLazyAuthUI } from './lazy/firebase-auth-own-ui';
 import { TopMenu as TopMenuCreator } from './top-menu';
 import { createLazyCompleteVerifyEmail } from './lazy/complete-verify-email';
