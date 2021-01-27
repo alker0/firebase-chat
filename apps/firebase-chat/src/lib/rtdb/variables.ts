@@ -15,3 +15,18 @@ export const RTDB_QUERY_COUNT_LIMIT_OWN_ROOMS = 3;
 export const RTDB_QUERY_COUNT_LIMIT_ENTRANCES = 10;
 
 export const RTDB_QUERY_MAX_LIMIT_ROOM_MEMBERS_COUNT = 100000;
+
+export interface RequestingDataSchema extends Record<string, string> {
+  password: string;
+}
+
+export type RoomMembersInfoKey =
+  | typeof RTDB_KEY_REQUESTING
+  | typeof RTDB_KEY_ACCEPTED
+  | typeof RTDB_KEY_DENIED;
+
+export interface RoomMembersInfoSchema {
+  [RTDB_KEY_REQUESTING]: Record<string, string>;
+  [RTDB_KEY_ACCEPTED]: Record<string, boolean>;
+  [RTDB_KEY_DENIED]: Record<string, boolean>;
+}
