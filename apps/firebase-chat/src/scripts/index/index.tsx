@@ -11,6 +11,7 @@ import {
 import { createComputed, createRoot } from 'solid-js';
 import { render, For } from 'solid-js/web';
 import { buttonize } from '@components/common/util/component-utils';
+import { logger } from '@lib/logger';
 
 const dropDownTarget = document.getElementById('header-menu');
 
@@ -67,11 +68,29 @@ document.addEventListener('DOMContentLoaded', () => {
   auth.setPersistence(firebaseSdk.auth.Auth.Persistence.SESSION);
 
   if (import.meta.env.MODE !== 'production') {
-    createRoot(() =>
-      createComputed(() =>
-        console.log('Is Logged In =>', sessionState.isLoggedIn),
-      ),
-    );
+    if (!import.meta.env.SNOWPACK_PUBLIC_LOG_DISABLE_LOGIN_STATE) {
+      createRoot(() =>
+        createComputed(() =>
+          logger.log('Login State', 'Is Logged In', sessionState.isLoggedIn),
+        ),
+      );
+    }
+    if (import.meta.env.SNOWPACK_PUBLIC_LOG_ENABLE_FOCUS_IN) {
+      document.body.addEventListener('focusin', (event) => {
+        logger.logMultiLines('Focus In', [
+          ['Previous', event.relatedTarget],
+          ['Current', event.target],
+        ]);
+      });
+    }
+    if (import.meta.env.SNOWPACK_PUBLIC_LOG_ENABLE_FOCUS_OUT) {
+      document.body.addEventListener('focusout', (event) => {
+        logger.logMultiLines('Focus Out', [
+          ['Previous', event.relatedTarget],
+          ['Current', event.target],
+        ]);
+      });
+    }
   }
 
   const brandTarget = document.getElementById('header-brand-container');

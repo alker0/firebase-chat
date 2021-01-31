@@ -6,6 +6,7 @@ import { inputRegex } from '@components/common/util/input-field-utils';
 import { createSignal, untrack } from 'solid-js';
 import { sessionState } from '@lib/solid-firebase-auth';
 import { fullPath } from '@lib/browser-utils';
+import { logger } from '@lib/logger';
 import { createLazyAuthUI } from './lazy/firebase-auth-own-ui';
 import { TopMenu as TopMenuCreator } from './top-menu';
 import { createLazyCompleteVerifyEmail } from './lazy/complete-verify-email';
@@ -24,7 +25,11 @@ const [routeSignal, sendRouteSignal] = createSignal(
 );
 
 window.addEventListener('popstate', () => {
-  console.log(window.location.href.replace(window.location.origin, ''));
+  logger.log(
+    'Location',
+    '',
+    window.location.href.replace(window.location.origin, ''),
+  );
 
   const prevWithoutHash = routeSignal().replace(/#[^?]+/, '');
   const currentWithoutHash = window.location.pathname.replace(
@@ -33,7 +38,11 @@ window.addEventListener('popstate', () => {
   );
 
   if (currentWithoutHash !== prevWithoutHash) {
-    console.log('[Location]:', routeSignal(), '->', window.location.pathname);
+    logger.logFn('Location', '', () => [
+      routeSignal(),
+      '->',
+      window.location.pathname,
+    ]);
     sendRouteSignal(window.location.pathname);
   }
 });

@@ -13,6 +13,7 @@ import {
   RTDB_KEY_ROOM_NAME,
 } from '../rtdb/variables';
 import { arrayFromSnapshot as arrayFromSnapshotUtil } from '../rtdb/utils';
+import { logger } from '../logger';
 import { FirebaseDb, FirebaseDbSnapshot } from '../../typings/firebase-sdk';
 
 // export type SearchResultsKey = `by${'Name' | 'MembersCount' | 'CreatedTime'}`;
@@ -65,9 +66,6 @@ function arrayFromSnapshot(snapshot: FirebaseDbSnapshot, descending?: boolean) {
     },
     {
       descending,
-      onNoChild: () => {
-        console.log('[Get Array]Not Has Children Value:', snapshot.val());
-      },
     },
   );
 }
@@ -86,13 +84,12 @@ export function createExecuteSearchFn(
 
       const prevResults = searchOption.getPreviousResults[executeArg.targetKey];
 
-      console.log(
-        '[Execute Search]Requested Page:',
-        requestedPage,
-        '/',
-        'Already Loaded Page:',
-        prevResults.pageCount,
-      );
+      if (!import.meta.env.SNOWPACK_PUBLIC_LOG_DISABLE_SEARCH_PAGE_NUMBER) {
+        logger.logMultiLinesFn('Search Page Number', () => [
+          ['Requested Page', requestedPage],
+          ['Already Loaded Page', prevResults.pageCount],
+        ]);
+      }
 
       executeSearchRooms({
         targetPage: requestedPage,

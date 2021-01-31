@@ -8,7 +8,6 @@ import {
   createSelector,
   createEffect,
   createComputed,
-  onCleanup,
   Suspense,
 } from 'solid-js';
 import { Switch, Match } from 'solid-js/web';
@@ -28,6 +27,7 @@ import {
   createSearchByNameHandler,
   createPageCountLogger,
 } from '../../lib/search-rooms/utils';
+import { logger } from '../../lib/logger';
 import { createLazyResultList } from './lazy/result-list';
 import { createLazyEnterModal, EnterModalContext } from './lazy/enter-modal';
 import {
@@ -48,7 +48,12 @@ function createImmidiateSearchersEffect(
   createEffect((prevMode?: SearchMode) => {
     const currentMode = getSearchMode();
 
-    console.log('[Searchers Effect]Mode:', prevMode, '->', currentMode);
+    logger.log(
+      'Searchers Effect',
+      'Mode',
+      ...(currentMode === prevMode ? [] : [prevMode, '->']),
+      currentMode,
+    );
 
     if (prevMode === currentMode) return currentMode;
 
@@ -134,7 +139,7 @@ export const SearchRooms = {
 
     return () => {
       if (import.meta.env.MODE !== 'production') {
-        onCleanup(createPageCountLogger(searchResults));
+        createPageCountLogger(searchResults);
       }
 
       createComputed(() => {

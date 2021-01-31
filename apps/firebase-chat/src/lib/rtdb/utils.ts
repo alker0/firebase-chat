@@ -8,6 +8,7 @@ import {
   RTDB_KEY_ROOM_MEMBERS_INFO,
   RoomMembersInfoKey,
 } from './variables';
+import { logger } from '../logger';
 
 export const permDeniedCode = 'PERMISSION_DENIED';
 export const permDeniedMsg = 'PERMISSION_DENIED: Permission denied';
@@ -85,21 +86,28 @@ interface Snapshot extends firebase.database.DataSnapshot {}
 
 export interface ArrayFromSnapshotOption {
   descending?: boolean;
-  onNoChild?: () => void;
+  onNoChildren?: () => void;
 }
 
 export function arrayFromSnapshot<T>(
   snapshot: Snapshot,
   pickElementFn: (childSnapshot: Snapshot) => T,
-  options: ArrayFromSnapshotOption = {},
+  { descending, onNoChildren }: ArrayFromSnapshotOption = {},
 ) {
   const resultList: T[] = [];
   if (snapshot.hasChildren()) {
     snapshot.forEach((data) => {
-      resultList[options.descending ? 'unshift' : 'push'](pickElementFn(data));
+      resultList[descending ? 'unshift' : 'push'](pickElementFn(data));
     });
   } else {
-    options.onNoChild?.();
+    if (!import.meta.env.SNOWPACK_PUBLIC_LOG_DISABLE_NO_CHILDREN_SNAPSHOT) {
+      logger.log(
+        'Array From Snapshot',
+        'Not Has Children Value',
+        snapshot.val(),
+      );
+    }
+    onNoChildren?.();
   }
   return resultList;
 }

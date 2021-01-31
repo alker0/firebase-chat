@@ -11,6 +11,7 @@ import {
   SearchResultsKey,
 } from '../../lib/search-rooms/search';
 import { getOldnessText } from '../../lib/search-rooms/utils';
+import { logger } from '../../lib/logger';
 
 const cn: Clsx<Cirrus> = clsx;
 
@@ -100,10 +101,16 @@ export function createSearchResultListComponent(
             () => searchResultsState[resultsKey].resultList,
           );
 
-          console.log(
-            '[Result List Component]Result Length:',
-            searchResultList.length,
-          );
+          if (
+            !import.meta.env
+              .SNOWPACK_PUBLIC_LOG_DISABLE_SEARCH_RESULT_LIST_LENGTH
+          ) {
+            logger.log(
+              'Result List Component',
+              'Result Length',
+              SearchResultList.length,
+            );
+          }
 
           const [firstResult, ...restResults] = searchResultList;
 
