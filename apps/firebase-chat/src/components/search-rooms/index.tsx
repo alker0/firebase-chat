@@ -76,7 +76,10 @@ const InputField = BasicInputField.createComponent({
 function createRefreshButton(sendRefreshSignal: () => void) {
   return function RefreshButton() {
     return (
-      <button class={cn('btn-animated', 'mb-0')} onClick={sendRefreshSignal}>
+      <button
+        class={cn('btn-animated', 'mb-0')}
+        onClick={() => sendRefreshSignal()}
+      >
         Refresh
       </button>
     );
