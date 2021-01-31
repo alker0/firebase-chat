@@ -18,11 +18,24 @@ import {
   FirebaseDbServerValue,
 } from './typings/firebase-sdk';
 
-const [routeSignal, sendRouteSignal] = createSignal('', true);
+const [routeSignal, sendRouteSignal] = createSignal(
+  window.location.pathname,
+  true,
+);
 
 window.addEventListener('popstate', () => {
   console.log(window.location.href.replace(window.location.origin, ''));
-  sendRouteSignal(window.location.pathname);
+
+  const prevWithoutHash = routeSignal().replace(/#[^?]+/, '');
+  const currentWithoutHash = window.location.pathname.replace(
+    window.location.hash,
+    '',
+  );
+
+  if (currentWithoutHash !== prevWithoutHash) {
+    console.log('[Location]:', routeSignal(), '->', window.location.pathname);
+    sendRouteSignal(window.location.pathname);
+  }
 });
 
 export const thisOriginUrl = (path: string) =>
@@ -163,6 +176,9 @@ export const createRouter = (context: RouterContext) => {
   const SearchRoomsComponent = createLazySearchRooms({
     auth: context.auth,
     db: context.db,
+    dbServerValue: context.dbServerValue,
+    redirectToChatPage: (ownerId, ownRoomId) =>
+      movePageFromPath(`${routingPaths.chat}/${ownerId}/${ownRoomId}`),
   });
 
   return () => (

@@ -9,8 +9,10 @@ import {
   createEffect,
   createComputed,
   onCleanup,
+  Suspense,
 } from 'solid-js';
 import { Switch, Match } from 'solid-js/web';
+import { ENTER_MODAL_ID } from '@lib/constants';
 import {
   SearchResults,
   SearchResultsKey,
@@ -18,6 +20,7 @@ import {
   searchByCreatedTime,
   createExecuteSearchFn,
   ExecuteSearchFunction,
+  RoomRow,
 } from '../../lib/search-rooms/search';
 import {
   initialResultsInfo,
@@ -25,8 +28,13 @@ import {
   createSearchByNameHandler,
   createPageCountLogger,
 } from '../../lib/search-rooms/utils';
-import { createSearchResultListComponent } from './result-list';
-import { FirebaseAuth, FirebaseDb } from '../typings/firebase-sdk';
+import { createLazyResultList } from './lazy/result-list';
+import { createLazyEnterModal, EnterModalContext } from './lazy/enter-modal';
+import {
+  FirebaseAuth,
+  FirebaseDb,
+  FirebaseDbServerValue,
+} from '../typings/firebase-sdk';
 
 const cn: Clsx<Cirrus> = clsx;
 
@@ -91,7 +99,36 @@ export const SearchRooms = {
       byCreatedTime: initialResultsInfo,
     });
 
-    const SearchResultList = createSearchResultListComponent(searchResults);
+    const [getSelectingRoomRow, setSelectingRoomRow] = createSignal<RoomRow>();
+
+    const SearchResultList = createLazyResultList({
+      searchResultsState: searchResults,
+      enterModalId: ENTER_MODAL_ID,
+      setSelectingRoomRow,
+    });
+
+    function SuspensedSearchResultList(
+      props: Parameters<typeof SearchResultList>[0],
+    ) {
+      return (
+        <Suspense fallback="Preparing...">
+          <SearchResultList {...props} />
+        </Suspense>
+      );
+    }
+
+    const { auth, db, dbServerValue, redirectToChatPage } = context;
+
+    const EnterModal = createLazyEnterModal({
+      auth,
+      db,
+      enterModelId: ENTER_MODAL_ID,
+      getSelectingRoomRow,
+      redirectToChatPage,
+      executeEnterOption: {
+        dbServerValue,
+      },
+    });
 
     const RefreshButton = createRefreshButton(sendRefreshSignal);
 
@@ -185,7 +222,7 @@ export const SearchRooms = {
                     </>
                   )}
                 />
-                <SearchResultList resultsKey="byName" />
+                <SuspensedSearchResultList resultsKey="byName" />
               </Match>
               <Match when={searchMode() === 'Members Count'}>
                 <div class={cn('level', 'mt-1')}>
@@ -197,7 +234,7 @@ export const SearchRooms = {
                   </div>
                 </div>
                 <div class={cn('divider', 'my-1')} />
-                <SearchResultList resultsKey="byMembersCount" />
+                <SuspensedSearchResultList resultsKey="byMembersCount" />
               </Match>
               <Match when={searchMode() === 'Created Time'}>
                 <div class={cn('level', 'mt-1')}>
@@ -209,10 +246,13 @@ export const SearchRooms = {
                   </div>
                 </div>
                 <div class={cn('divider', 'my-1')} />
-                <SearchResultList resultsKey="byCreatedTime" />
+                <SuspensedSearchResultList resultsKey="byCreatedTime" />
               </Match>
             </Switch>
           </div>
+          <Suspense fallback="">
+            <EnterModal />
+          </Suspense>
         </div>
       );
     };
@@ -223,6 +263,8 @@ export declare module SearchRooms {
   export interface Context {
     auth: FirebaseAuth;
     db: FirebaseDb;
+    dbServerValue: FirebaseDbServerValue;
+    redirectToChatPage: EnterModalContext['redirectToChatPage'];
   }
   export interface Props {}
 }

@@ -1,5 +1,8 @@
 import { Cirrus } from '@alker/cirrus-types';
+import { css } from 'styled-jsx/css';
 import clsx, { Clsx } from 'clsx';
+import { createDisposableStyle } from '@components/common/util/style-utils';
+import { NON_EXISTANT_DOM_ID } from '@lib/constants';
 import { createMemo, untrack, createRoot, onCleanup } from 'solid-js';
 import { For, Switch, Match, Suspense } from 'solid-js/web';
 import {
@@ -11,15 +14,44 @@ import { getOldnessText } from '../../lib/search-rooms/utils';
 
 const cn: Clsx<Cirrus> = clsx;
 
+const enterModalAnchorStyle = createDisposableStyle<Cirrus>(
+  () => css.resolve`
+    a {
+      display: block;
+    }
+  `,
+).className;
+
 interface AsyncSearchResults extends SearchResults {
   loading: Record<SearchResultsKey, boolean>;
 }
 
-function SearchResultRow(props: { roomRow: RoomRow }) {
+interface ResultRowProps {
+  roomRow: RoomRow;
+  enterModalId: string;
+  /* eslint-disable react/no-unused-prop-types */
+  setSelectingRoomRow: (roomRow: RoomRow) => void;
+  /* eslint-enable react/no-unused-prop-types */
+}
+
+function createRoomRowClickHandler(props: ResultRowProps) {
+  return function roomRowClickHandler() {
+    props.setSelectingRoomRow(props.roomRow);
+  };
+}
+
+function SearchResultRow(props: ResultRowProps) {
+  const roomRowClickHandler = createRoomRowClickHandler(props);
   return (
     <>
       <div class={cn('col')}>
-        <strong>{props.roomRow.roomName}</strong>
+        <a
+          href={`#${props.enterModalId}`}
+          class={cn(enterModalAnchorStyle)}
+          onClick={roomRowClickHandler}
+        >
+          <strong>{props.roomRow.roomName}</strong>
+        </a>
       </div>
       <div class={cn('col-2', 'offset-left')}>
         <span class={cn('mx-1')} role="img" aria-label="members-count">
@@ -40,10 +72,18 @@ function SearchResultRow(props: { roomRow: RoomRow }) {
 }
 
 export function createSearchResultListComponent(
-  searchResultsState: AsyncSearchResults,
+  context: SearchResultListContext,
 ) {
-  return function SearchResultList(props: { resultsKey: SearchResultsKey }) {
-    const { resultsKey } = props;
+  return function SearchResultList({
+    resultsKey,
+  }: {
+    resultsKey: SearchResultsKey;
+  }) {
+    const {
+      searchResultsState,
+      enterModalId = NON_EXISTANT_DOM_ID,
+      setSelectingRoomRow,
+    } = context;
 
     const [disposeMemo, resultsMemo] = createRoot((...dispose) => {
       const presentMemo = createMemo(
@@ -86,14 +126,22 @@ export function createSearchResultListComponent(
           </Match>
           <Match when={resultsMemo().isPresent}>
             <div class={cn('row', 'row--no-wrap')}>
-              <SearchResultRow roomRow={resultsMemo().firstResult} />
+              <SearchResultRow
+                roomRow={resultsMemo().firstResult}
+                enterModalId={enterModalId}
+                setSelectingRoomRow={setSelectingRoomRow}
+              />
             </div>
             <For each={resultsMemo().restResults}>
               {(roomRow) => (
                 <>
                   <div class={cn('divider', 'mx-1', 'my-0')} />
                   <div class={cn('row', 'row--no-wrap')}>
-                    <SearchResultRow roomRow={roomRow} />
+                    <SearchResultRow
+                      roomRow={roomRow}
+                      enterModalId={enterModalId}
+                      setSelectingRoomRow={setSelectingRoomRow}
+                    />
                   </div>
                 </>
               )}
@@ -103,4 +151,10 @@ export function createSearchResultListComponent(
       </Suspense>
     );
   };
+}
+
+export interface SearchResultListContext {
+  searchResultsState: AsyncSearchResults;
+  enterModalId?: string;
+  setSelectingRoomRow: (roomRow: RoomRow) => void;
 }
