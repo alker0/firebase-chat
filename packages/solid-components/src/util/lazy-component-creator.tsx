@@ -10,10 +10,10 @@ export function createLazyComponent<R, U>(
     default: () => <div />,
   });
 
-  let loader = async () => {
+  let loader = () => {
     loadRunner = importer().then((result) => ({ default: applier(result) }));
 
-    loader = async () => loadRunner;
+    loader = () => loadRunner;
 
     return loadRunner;
   };
