@@ -545,19 +545,15 @@ export const getTalkerRules = () =>
           },
           $user_id: {
             [write]: [
+              whenDelete,
+              '?',
               [
-                whenDelete,
-                '&&',
-                [
-                  `${auth.uid} === ${dataOwnerIdFromRoomId}`,
-                  '||',
-                  `${auth.uid} === ${$userId}`,
-                ],
+                `${auth.uid} === ${dataOwnerIdFromRoomId}`,
+                '||',
+                `${auth.uid} === ${$userId}`,
               ],
-              '||',
+              ':',
               [
-                whenCreate,
-                '&&',
                 `${auth.uid} !== ${dataOwnerIdFromRoomId}`,
                 '&&',
                 `${$userId} === ${auth.uid}`,
