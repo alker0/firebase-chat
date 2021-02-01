@@ -1,5 +1,7 @@
 import { createLazyComponent } from '@components/common/util/lazy-component-creator';
-import { SearchRooms } from '../search-rooms';
+import type { SearchRooms } from '../search-rooms';
+
+export type { SearchRooms };
 
 export const createLazySearchRooms = (context: SearchRooms.Context) => {
   return createLazyComponent(
