@@ -101,16 +101,11 @@ export function createSearchResultListComponent(
             () => searchResultsState[resultsKey].resultList,
           );
 
-          if (
-            !import.meta.env
-              .SNOWPACK_PUBLIC_LOG_DISABLE_SEARCH_RESULT_LIST_LENGTH
-          ) {
-            logger.log(
-              'Result List Component',
-              'Result Length',
-              SearchResultList.length,
-            );
-          }
+          logger.log(
+            { prefix: 'Result List Component' },
+            'Result Length',
+            SearchResultList.length,
+          );
 
           const [firstResult, ...restResults] = searchResultList;
 

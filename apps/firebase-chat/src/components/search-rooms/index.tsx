@@ -49,7 +49,7 @@ function createImmidiateSearchersEffect(
     const currentMode = getSearchMode();
 
     logger.log(
-      'Searchers Effect',
+      { prefix: 'Searchers Effect' },
       'Mode',
       ...(currentMode === prevMode ? [] : [prevMode, '->']),
       currentMode,

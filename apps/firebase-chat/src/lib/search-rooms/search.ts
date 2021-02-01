@@ -84,12 +84,10 @@ export function createExecuteSearchFn(
 
       const prevResults = searchOption.getPreviousResults[executeArg.targetKey];
 
-      if (!import.meta.env.SNOWPACK_PUBLIC_LOG_DISABLE_SEARCH_PAGE_NUMBER) {
-        logger.logMultiLinesFn('Search Page Number', () => [
-          ['Requested Page', requestedPage],
-          ['Already Loaded Page', prevResults.pageCount],
-        ]);
-      }
+      logger.logMultiLinesFn({ prefix: 'Search Page Number' }, () => [
+        ['Requested Page', requestedPage],
+        ['Already Loaded Page', prevResults.pageCount],
+      ]);
 
       executeSearchRooms({
         targetPage: requestedPage,

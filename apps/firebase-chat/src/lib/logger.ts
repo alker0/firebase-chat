@@ -1,48 +1,111 @@
-const isNotProduction = import.meta.env.MODE !== 'production';
+import { IS_NOT_PRODUCTION } from './constants';
 
 export type LogContentPair = [string, ...any[]];
 
 export type LogContentPairs = LogContentPair[];
 
-export const logger = {
-  log(prefix: string, name: string, ...contents: any[]) {
-    console.log(`[${prefix}]${name}:`, ...contents);
-  },
-  logMultiLines(
-    prefix: string,
-    contentPairs: LogContentPairs,
-    collapsed = false,
-  ) {
-    if (isNotProduction) {
-      if (collapsed) {
-        console.groupCollapsed(`[${prefix}]`);
-      } else {
-        console.group(`[${prefix}]`);
-      }
-      contentPairs.forEach(([name, ...contents]) =>
-        console.log(`${name}:`, ...contents),
+export interface LogOption {
+  prefix: string;
+  envKey?: string;
+  defaultDo?: boolean;
+  skipCheck?: boolean;
+}
+
+function getFixedPrefix(prefix: string) {
+  return prefix
+    .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+    .toLowerCase()
+    .replace(/[-: ]/g, '_');
+}
+
+function getFixedEnvKey(prefix: string, envKey?: string) {
+  return envKey ?? getFixedPrefix(prefix);
+}
+
+function includesInEnv(envName: unknown, targetKey: string) {
+  return String(envName).toLowerCase().split(':').includes(targetKey);
+}
+
+export function shouldLog(
+  prefix: string,
+  envKey?: string,
+  defaultDo = true,
+): boolean {
+  const fixedEnvKey = getFixedEnvKey(prefix, envKey);
+  return defaultDo
+    ? !includesInEnv(
+        import.meta.env.SNOWPACK_PUBLIC_LOG_DISABLE_PREFIX,
+        fixedEnvKey,
+      )
+    : includesInEnv(
+        import.meta.env.SNOWPACK_PUBLIC_LOG_ENABLE_PREFIX,
+        fixedEnvKey,
       );
-      console.groupEnd();
+}
+
+function groupStart(prefix: string, envKey: string) {
+  if (
+    includesInEnv(import.meta.env.SNOWPACK_PUBLIC_LOG_COLLAPSED_PREFIX, envKey)
+  ) {
+    console.groupCollapsed(prefix);
+  } else {
+    console.group(prefix);
+  }
+}
+
+export const logger = {
+  log(
+    { prefix, envKey, defaultDo, skipCheck }: LogOption,
+    name: string,
+    ...contents: any[]
+  ) {
+    if (
+      IS_NOT_PRODUCTION &&
+      (skipCheck || shouldLog(prefix, envKey, defaultDo))
+    ) {
+      console.log(`[${prefix}]${name}:`, ...contents);
     }
   },
-  logFn(prefix: string, name: string, contentsFn: () => any[]) {
-    console.log(`[${prefix}]${name}:`, ...contentsFn());
+  logMultiLines(
+    { prefix, envKey, defaultDo, skipCheck }: LogOption,
+    contentPairs: LogContentPairs,
+  ) {
+    if (IS_NOT_PRODUCTION) {
+      const fixedEnvKey = getFixedEnvKey(prefix, envKey);
+      if (skipCheck || shouldLog(prefix, fixedEnvKey, defaultDo)) {
+        groupStart(prefix, fixedEnvKey);
+        contentPairs.forEach(([name, ...contents]) =>
+          console.log(`${name}:`, ...contents),
+        );
+        console.groupEnd();
+      }
+    }
+  },
+  logFn(
+    { prefix, envKey, defaultDo, skipCheck }: LogOption,
+    name: string,
+    contentsFn: () => any[],
+  ) {
+    if (
+      IS_NOT_PRODUCTION &&
+      (skipCheck || shouldLog(prefix, envKey, defaultDo))
+    ) {
+      console.log(`[${prefix}]${name}:`, ...contentsFn());
+    }
   },
   logMultiLinesFn(
-    prefix: string,
+    { prefix, envKey, defaultDo, skipCheck }: LogOption,
     contentPairsFn: () => LogContentPairs,
-    collapsed = false,
   ) {
-    if (isNotProduction) {
-      if (collapsed) {
-        console.groupCollapsed(`[${prefix}]`);
-      } else {
-        console.group(`[${prefix}]`);
+    if (IS_NOT_PRODUCTION) {
+      const fixedEnvKey = getFixedEnvKey(prefix, envKey);
+      if (skipCheck || shouldLog(prefix, fixedEnvKey, defaultDo)) {
+        groupStart(prefix, fixedEnvKey);
+        contentPairsFn().forEach(([name, ...contents]) =>
+          console.log(`${name}:`, ...contents),
+        );
+        console.groupEnd();
       }
-      contentPairsFn().forEach(([name, ...contents]) =>
-        console.log(`${name}:`, ...contents),
-      );
-      console.groupEnd();
     }
   },
 };

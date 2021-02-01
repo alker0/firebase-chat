@@ -26,7 +26,7 @@ const [routeSignal, sendRouteSignal] = createSignal(
 
 window.addEventListener('popstate', () => {
   logger.log(
-    'Location',
+    { prefix: 'Location' },
     '',
     window.location.href.replace(window.location.origin, ''),
   );
@@ -38,7 +38,7 @@ window.addEventListener('popstate', () => {
   );
 
   if (currentWithoutHash !== prevWithoutHash) {
-    logger.logFn('Location', '', () => [
+    logger.logFn({ prefix: 'Location' }, '', () => [
       routeSignal(),
       '->',
       window.location.pathname,

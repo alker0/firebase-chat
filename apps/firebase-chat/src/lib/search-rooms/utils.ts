@@ -18,7 +18,7 @@ import {
   SearchResultsKey,
 } from './search';
 import { isEnterKey } from '../browser-utils';
-import { LogContentPairs, logger } from '../logger';
+import { LogContentPairs, logger, shouldLog } from '../logger';
 
 export const initialResultsInfo: ResultsInfo = {
   pageCount: 0,
@@ -68,9 +68,7 @@ export function createRefreshState(
 
       prevResolve();
 
-      if (import.meta.env.SNOWPACK_PUBLIC_LOG_SEARCH_RESULT_REFRESH) {
-        logger.log('On Refresh', 'Key', refreshKey || 'All Keys');
-      }
+      logger.log({ prefix: 'On Refresh' }, 'Key', refreshKey || 'All Keys');
 
       let refreshResolveFn = DO_NOTHING;
       const refreshPromise = new Promise<ResultsInfo>((resolve) => {
@@ -117,41 +115,46 @@ export function createSearchByNameHandler(
 }
 
 export function createPageCountLogger(searchResults: SearchResults) {
-  onCleanup(
-    createRoot((...dispose) => {
-      type PageCountObject = Record<SearchResultsKey, number>;
+  if (shouldLog('Page Count')) {
+    onCleanup(
+      createRoot((...dispose) => {
+        type PageCountObject = Record<SearchResultsKey, number>;
 
-      const pageCounts = createMemo(
-        () => {
-          return {
-            byName: searchResults.byName.pageCount,
-            byMembersCount: searchResults.byMembersCount.pageCount,
-            byCreatedTime: searchResults.byCreatedTime.pageCount,
-          };
-        },
-        {} as PageCountObject,
-        (prev, next) =>
-          searchResultsKeyArray.every((key) => prev[key] === next[key]),
-      );
+        const pageCounts = createMemo(
+          () => {
+            return {
+              byName: searchResults.byName.pageCount,
+              byMembersCount: searchResults.byMembersCount.pageCount,
+              byCreatedTime: searchResults.byCreatedTime.pageCount,
+            };
+          },
+          {} as PageCountObject,
+          (prev, next) =>
+            searchResultsKeyArray.every((key) => prev[key] === next[key]),
+        );
 
-      createComputed((prev = {} as PageCountObject) => {
-        const currentPageCount = pageCounts();
-        let logContents: LogContentPairs = [];
-        searchResultsKeyArray.forEach((key) => {
-          const prevCount = prev[key];
-          const currentCount = currentPageCount[key];
-          logContents = logContents.concat([
-            [
-              key,
-              ...(currentCount === prevCount ? [] : [prevCount, '->']),
-              currentCount,
-            ],
-          ]);
-        });
-        logger.logMultiLines('Page Count', logContents);
-        return currentPageCount;
-      }, {} as PageCountObject);
-      return dispose[0];
-    }),
-  );
+        createComputed((prev = {} as PageCountObject) => {
+          const currentPageCount = pageCounts();
+          let logContents: LogContentPairs = [];
+          searchResultsKeyArray.forEach((key) => {
+            const prevCount = prev[key];
+            const currentCount = currentPageCount[key];
+            logContents = logContents.concat([
+              [
+                key,
+                ...(currentCount === prevCount ? [] : [prevCount, '->']),
+                currentCount,
+              ],
+            ]);
+          });
+          logger.logMultiLines(
+            { prefix: 'Page Count', skipCheck: true },
+            logContents,
+          );
+          return currentPageCount;
+        }, {} as PageCountObject);
+        return dispose[0];
+      }),
+    );
+  }
 }

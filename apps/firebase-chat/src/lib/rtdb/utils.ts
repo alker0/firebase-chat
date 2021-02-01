@@ -100,13 +100,11 @@ export function arrayFromSnapshot<T>(
       resultList[descending ? 'unshift' : 'push'](pickElementFn(data));
     });
   } else {
-    if (!import.meta.env.SNOWPACK_PUBLIC_LOG_DISABLE_NO_CHILDREN_SNAPSHOT) {
-      logger.log(
-        'Array From Snapshot',
-        'Not Has Children Value',
-        snapshot.val(),
-      );
-    }
+    logger.log(
+      { prefix: 'Array From Snapshot' },
+      'Not Has Children Value',
+      snapshot.val(),
+    );
     onNoChildren?.();
   }
   return resultList;
