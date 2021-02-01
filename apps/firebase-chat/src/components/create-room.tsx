@@ -24,7 +24,11 @@ import {
   JSX,
   batch,
 } from 'solid-js';
-import { RTDB_QUERY_COUNT_LIMIT_OWN_ROOMS } from '@lib/rtdb/variables';
+import {
+  RTDB_DATA_LIMIT_OWN_ROOMS_MAX_COUNT,
+  RTDB_DATA_LIMIT_PASSWORD_MAX_LENGTH,
+  RTDB_DATA_LIMIT_ROOM_NAME_MAX_LENGTH,
+} from '@lib/rtdb/variables';
 import { DO_NOTHING } from '@lib/common-utils';
 import {
   FirebaseAuth,
@@ -33,9 +37,6 @@ import {
 } from './typings/firebase-sdk';
 
 const cn: Clsx<Cirrus> = clsx;
-
-const roomNameMaxLength = 20;
-const passwordMaxLength = 20;
 
 interface ContainerProps {
   onSubmit?: JSX.FormHTMLAttributes<HTMLFormElement>['onSubmit'];
@@ -96,8 +97,6 @@ interface InputProps extends FormStateAccessors {}
 interface MessageState
   extends Pick<FormState['scheme'], 'infoMessage' | 'errorMessage'> {}
 
-const maxOwnRoomCount = 3;
-
 async function createRoomAndUpdateLinkButton(
   {
     db,
@@ -149,7 +148,7 @@ async function createRoomAndUpdateLinkButton(
           ownRoomId: ownRoomIdArg,
           roomId,
         }),
-      maxOwnRoomCount,
+      RTDB_DATA_LIMIT_OWN_ROOMS_MAX_COUNT,
     );
 
     if (succeeded) {
@@ -164,7 +163,7 @@ async function createRoomAndUpdateLinkButton(
       if (isFilled) {
         updateView({
           infoMessage: '',
-          errorMessage: `You can create only ${RTDB_QUERY_COUNT_LIMIT_OWN_ROOMS} rooms`,
+          errorMessage: `You can create only ${RTDB_DATA_LIMIT_OWN_ROOMS_MAX_COUNT} rooms`,
           linkButtonView: linkButtonViewContext.alreadyFilled,
           linkButtonColorStyle: 'btn-warning',
         });
@@ -203,7 +202,7 @@ export const CreateRoom = {
               id: 'input-room-name',
               type: 'text',
               required: true,
-              pattern: `^.{1,${roomNameMaxLength - 1}}$`,
+              pattern: `^.{1,${RTDB_DATA_LIMIT_ROOM_NAME_MAX_LENGTH - 1}}$`,
               value: props.formState.roomName,
               onChange: (e: EventArg<HTMLInputElement>) =>
                 props.setFormState('roomName', e.target.value),
@@ -216,7 +215,7 @@ export const CreateRoom = {
               id: 'input-room-password',
               type: 'text',
               required: false,
-              pattern: `^.{0,${passwordMaxLength - 1}}$`,
+              pattern: `^.{0,${RTDB_DATA_LIMIT_PASSWORD_MAX_LENGTH - 1}}$`,
               value: props.formState.password,
               onChange: (e: EventArg<HTMLInputElement>) =>
                 props.setFormState('password', e.target.value),

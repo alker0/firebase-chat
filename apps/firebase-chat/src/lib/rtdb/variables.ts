@@ -11,10 +11,16 @@ export const RTDB_KEY_ACCEPTED = 'accepted';
 export const RTDB_KEY_DENIED = 'denied';
 export const RTDB_KEY_PASSWORD = 'password';
 
-export const RTDB_QUERY_COUNT_LIMIT_OWN_ROOMS = 3;
+export const RTDB_DATA_LIMIT_OWN_ROOMS_MAX_COUNT = 3;
+export const RTDB_DATA_LIMIT_PASSWORD_MAX_LENGTH = 20;
+export const RTDB_DATA_LIMIT_ROOM_NAME_MAX_LENGTH = 20;
+
+export const RTDB_DATA_LIMIT_ROOM_MEMBERS_MAX_COUNT = 100000;
+
+export const RTDB_QUERY_COUNT_LIMIT_OWN_ROOMS = RTDB_DATA_LIMIT_OWN_ROOMS_MAX_COUNT;
 export const RTDB_QUERY_COUNT_LIMIT_ENTRANCES = 10;
 
-export const RTDB_QUERY_MAX_LIMIT_ROOM_MEMBERS_COUNT = 100000;
+export const RTDB_QUERY_MAX_LIMIT_ROOM_MEMBERS_COUNT = RTDB_DATA_LIMIT_ROOM_MEMBERS_MAX_COUNT;
 
 export interface RequestingDataSchema extends Record<string, string> {
   password: string;
