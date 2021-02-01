@@ -76,48 +76,45 @@ export interface ExecuteSearchFunction {
 
 export function createExecuteSearchFn(
   searchOption: SearchBaseOption,
-  wrapperFn: (executeFn: () => void) => void = (executeFn) => executeFn(),
 ): ExecuteSearchFunction {
   return function executeSearch(executeArg: ExecuteSearchOption) {
-    wrapperFn(function executeSearchRunner() {
-      const requestedPage = searchOption.getRequestedPage();
+    const requestedPage = searchOption.getRequestedPage();
 
-      const prevResults = searchOption.getPreviousResults[executeArg.targetKey];
+    const prevResults = searchOption.getPreviousResults[executeArg.targetKey];
 
-      logger.logMultiLinesFn({ prefix: 'Search Page Number' }, () => [
-        ['Requested Page', requestedPage],
-        ['Already Loaded Page', prevResults.pageCount],
-      ]);
+    logger.logMultiLinesFn({ prefix: 'Search Page Number' }, () => [
+      ['Requested Page', requestedPage],
+      ['Already Loaded Page', prevResults.pageCount],
+    ]);
 
-      executeSearchRooms({
-        targetPage: requestedPage,
-        previous: prevResults,
-        searchRunner: async (prev) =>
-          arrayFromSnapshot(
-            await executeArg.searchRunner(prev),
-            executeArg.descending,
-          ),
-        resultHandleFn: (searchPromise) => {
-          searchOption.resultHandleFn(executeArg.targetKey, () =>
-            Promise.race([
-              searchOption.getRefreshPromise(),
-              (async () => {
-                try {
-                  const resultInfo = await searchPromise;
+    executeSearchRooms({
+      targetPage: requestedPage,
+      previous: prevResults,
+      searchRunner: async (prev) =>
+        arrayFromSnapshot(
+          await executeArg.searchRunner(prev),
+          executeArg.descending,
+        ),
+      resultHandleFn: (searchPromise) => {
+        searchOption.resultHandleFn(executeArg.targetKey, () =>
+          Promise.race([
+            searchOption.getRefreshPromise(),
+            (async () => {
+              try {
+                const resultInfo = await searchPromise;
 
-                  executeArg.onSuccess?.(resultInfo);
+                executeArg.onSuccess?.(resultInfo);
 
-                  return resultInfo;
-                } catch (error) {
-                  console.error(error);
-                  return prevResults;
-                }
-              })(),
-            ]),
-          );
-        },
-        skipCondition: executeArg.skipCondition,
-      });
+                return resultInfo;
+              } catch (error) {
+                console.error(error);
+                return prevResults;
+              }
+            })(),
+          ]),
+        );
+      },
+      skipCondition: executeArg.skipCondition,
     });
   };
 }
