@@ -1,4 +1,4 @@
-import { RTDB_KEY_PASSWORD, RequestingDataSchema } from '../rtdb/variables';
+import { RTDB_KEY_PASSWORD, RequestingDataSchema } from '../rtdb/constants';
 import {
   isPermissionDeniedError,
   getOnceValue,

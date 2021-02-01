@@ -11,7 +11,7 @@ import {
   RTDB_KEY_OWNER_ID,
   RTDB_KEY_OWN_ROOM_ID,
   RTDB_KEY_ROOM_NAME,
-} from '../rtdb/variables';
+} from '../rtdb/constants';
 import { arrayFromSnapshot as arrayFromSnapshotUtil } from '../rtdb/utils';
 import { getLastElement } from '../common-utils';
 import { logger } from '../logger';

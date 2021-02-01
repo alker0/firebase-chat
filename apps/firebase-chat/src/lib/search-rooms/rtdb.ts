@@ -5,7 +5,7 @@ import {
   RTDB_KEY_ROOM_NAME,
   RTDB_QUERY_COUNT_LIMIT_ENTRANCES,
   RTDB_QUERY_MAX_LIMIT_ROOM_MEMBERS_COUNT,
-} from '../rtdb/variables';
+} from '../rtdb/constants';
 import { FirebaseDb } from '../../typings/firebase-sdk';
 
 export function searchRoomsByName(

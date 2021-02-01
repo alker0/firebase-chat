@@ -7,7 +7,7 @@ import {
   RTDB_KEY_ROOM_MEMBERS_COUNT,
   RTDB_KEY_ROOM_MEMBERS_INFO,
   RoomMembersInfoKey,
-} from './variables';
+} from './constants';
 import { logger } from '../logger';
 
 export const permDeniedCode = 'PERMISSION_DENIED';

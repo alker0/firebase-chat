@@ -10,7 +10,7 @@ import {
   RTDB_DATA_LIMIT_OWN_ROOMS_MAX_COUNT,
   RTDB_DATA_LIMIT_PASSWORD_MAX_LENGTH,
   RTDB_DATA_LIMIT_ROOM_NAME_MAX_LENGTH,
-} from '@lib/rtdb/variables';
+} from '@lib/rtdb/constants';
 import {
   createRoomIntoDb,
   CreateRoomRunnerArgs,

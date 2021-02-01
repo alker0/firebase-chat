@@ -4,7 +4,7 @@ import {
   RTDB_KEY_ROOM_ENTRANCES,
   RTDB_KEY_ROOM_MEMBERS_INFO,
   RTDB_QUERY_COUNT_LIMIT_OWN_ROOMS,
-} from '../rtdb/variables';
+} from '../rtdb/constants';
 import { isPermissionDeniedError } from '../rtdb/utils';
 import { FirebaseDb, FirebaseDbServerValue } from '../../typings/firebase-sdk';
 
