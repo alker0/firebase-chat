@@ -1,7 +1,8 @@
 import { HeaderMenu } from '@components/common/cirrus/common/header-dropdown';
 import { createMemo } from 'solid-js';
 import { sessionState } from '@lib/solid-firebase-auth';
-import { buttonize, DO_NOTHING } from '@components/common/util/component-utils';
+import { DO_NOTHING } from '@lib/common-utils';
+import { buttonize } from '@components/common/util/component-utils';
 import clsx from 'clsx';
 import { Cirrus } from '@alker/cirrus-types';
 

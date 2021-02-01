@@ -5,11 +5,11 @@ import {
 import {
   buttonize,
   ClickHandle,
-  DO_NOTHING,
 } from '@components/common/util/component-utils';
 import { createMultiDisposableStyle } from '@components/common/util/style-utils';
 import { Cirrus } from '@alker/cirrus-types';
 import { ComponentMemo, OnlyOptional } from '@components/types/component-utils';
+import { DO_NOTHING } from '@lib/common-utils';
 import clsx, { Clsx } from 'clsx';
 import {
   assignProps,

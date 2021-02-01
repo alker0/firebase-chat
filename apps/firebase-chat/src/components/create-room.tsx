@@ -1,7 +1,7 @@
 import { Form } from '@components/common/base/form/form';
 import { FormContainer } from '@components/common/base/form/form-container';
 import { BasicInputField } from '@components/common/cirrus/common/basic-input-field';
-import { buttonize, DO_NOTHING } from '@components/common/util/component-utils';
+import { buttonize } from '@components/common/util/component-utils';
 import { Cirrus } from '@alker/cirrus-types';
 import { EventArg, EventArgOf } from '@components/types/component-utils';
 import { CallableSubmit } from '@components/common/util/input-field-utils';
@@ -25,6 +25,7 @@ import {
   batch,
 } from 'solid-js';
 import { RTDB_QUERY_COUNT_LIMIT_OWN_ROOMS } from '@lib/rtdb/variables';
+import { DO_NOTHING } from '@lib/common-utils';
 import {
   FirebaseAuth,
   FirebaseDb,
@@ -260,7 +261,7 @@ export const CreateRoom = {
         },
         linkButtonView: {
           text: '',
-          onClick: () => {},
+          onClick: DO_NOTHING,
         },
         get linkButtonText() {
           return (this as BottomProps).linkButtonView.text;

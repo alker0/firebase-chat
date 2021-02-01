@@ -2,6 +2,7 @@ import { batch, createComputed, Resource, SetStateFunction } from 'solid-js';
 import { RoomRow } from '../search-rooms/search';
 import { getPassword, RequestingBaseOption } from './rtdb';
 import { EnterResult, EnterOption, executeEnter } from './enter';
+import { DO_NOTHING } from '../common-utils';
 
 export type { EnterResult };
 
@@ -56,7 +57,7 @@ export function createHandlerForEnter(option: CreateHendlerForEnterOption) {
           });
 
           batch(() => {
-            setCancelEnteringFn(() => {});
+            setCancelEnteringFn(DO_NOTHING);
             if (enterResult === 'Succeeded') {
               redirectToChatPage(ownerId, ownRoomId);
             }

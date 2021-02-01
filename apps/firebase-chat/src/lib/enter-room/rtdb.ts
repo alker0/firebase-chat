@@ -7,6 +7,7 @@ import {
   getRequestingPath,
   getAcceptedPath,
 } from '../rtdb/utils';
+import { DO_NOTHING } from '../common-utils';
 
 export { getMembersCountPath, getRequestingPath, getAcceptedPath };
 
@@ -231,7 +232,7 @@ export async function enterRoomAuto({
     const userAcceptedRef = db.ref(acceptedPath).orderByKey().equalTo(uid);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     let resolve = (_a: boolean) => {};
-    let reject = () => {};
+    let reject = DO_NOTHING;
     const enteringPromise = new Promise<boolean>((resolveFn, rejectFn) => {
       resolve = resolveFn;
       reject = rejectFn;

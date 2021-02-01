@@ -1,4 +1,4 @@
-import { DO_NOTHING } from '@components/common/util/component-utils';
+import { DO_NOTHING } from '@lib/common-utils';
 import {
   createMemo,
   SetStateFunction,

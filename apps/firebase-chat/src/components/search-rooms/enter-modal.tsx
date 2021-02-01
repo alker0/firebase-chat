@@ -3,6 +3,7 @@ import { Cirrus } from '@alker/cirrus-types';
 import { BasicInputField } from '@components/common/cirrus/common/basic-input-field';
 import { getRequestingPath } from '@lib/rtdb/utils';
 import { NON_EXISTANT_DOM_HREF } from '@lib/constants';
+import { DO_NOTHING } from '@lib/common-utils';
 import {
   checkPasswordNecessity,
   createHandlerForEnter,
@@ -51,7 +52,7 @@ export function createEnterModalComponent(context: EnterModalContext) {
 
   const [modalState, setModalState] = createState(modalStateWhenNonTarget);
 
-  const [getCancelEnteringFn, setCancelEnteringFn] = createSignal(() => {});
+  const [getCancelEnteringFn, setCancelEnteringFn] = createSignal(DO_NOTHING);
   const CancelAnchor = createCancelAnchor({
     getCancelEnteringFn,
   });

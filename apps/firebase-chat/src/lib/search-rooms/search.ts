@@ -13,6 +13,7 @@ import {
   RTDB_KEY_ROOM_NAME,
 } from '../rtdb/variables';
 import { arrayFromSnapshot as arrayFromSnapshotUtil } from '../rtdb/utils';
+import { getLastElement } from '../common-utils';
 import { logger } from '../logger';
 import { FirebaseDb, FirebaseDbSnapshot } from '../../typings/firebase-sdk';
 
@@ -117,10 +118,6 @@ export function createExecuteSearchFn(
       skipCondition: executeArg.skipCondition,
     });
   };
-}
-
-function getLastElement<T>(array: T[]) {
-  return array.slice(-1)[0];
 }
 
 interface SearchByNameOption {
