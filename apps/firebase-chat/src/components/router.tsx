@@ -2,6 +2,7 @@ import { PathMatchRouter } from '@components/common/case/path-match-router';
 import { Redirect as RedirectCreator } from '@components/common/base/atoms/redirect';
 import { inputRegex } from '@components/common/util/input-field-utils';
 import { sessionState } from '@lib/solid-firebase-auth';
+import { NON_EXISTANT_DOM_HREF } from '@lib/constants';
 import { fullPath } from '@lib/browser-utils';
 import { logger } from '@lib/logger';
 import { Cirrus } from '@alker/cirrus-types';
@@ -25,16 +26,24 @@ const [routeSignal, sendRouteSignal] = createSignal(
 );
 
 window.addEventListener('popstate', () => {
-  logger.log(
-    { prefix: 'Location' },
-    '',
-    window.location.href.replace(window.location.origin, ''),
-  );
-
   const prevWithoutHash = routeSignal().replace(/#[^?]+/, '');
   const currentWithoutHash = window.location.pathname.replace(
     window.location.hash,
     '',
+  );
+
+  if (window.location.hash === NON_EXISTANT_DOM_HREF) {
+    window.history.replaceState(
+      window.history.state,
+      document.title,
+      currentWithoutHash,
+    );
+  }
+
+  logger.log(
+    { prefix: 'Location' },
+    '',
+    window.location.href.replace(window.location.origin, ''),
   );
 
   if (currentWithoutHash !== prevWithoutHash) {
