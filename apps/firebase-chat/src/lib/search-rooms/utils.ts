@@ -9,7 +9,6 @@ import {
   createComputed,
   onCleanup,
 } from 'solid-js';
-import { FirebaseDb } from '../../typings/firebase-sdk';
 import {
   createSearchByNameFn,
   ExecuteSearchFunction,
@@ -19,6 +18,7 @@ import {
 } from './search';
 import { isEnterKey } from '../browser-utils';
 import { LogContentPairs, logger, shouldLog } from '../logger';
+import { FirebaseDb } from '../../typings/firebase-sdk';
 
 export const initialResultsInfo: ResultsInfo = {
   pageCount: 0,

@@ -1,5 +1,3 @@
-import clsx, { Clsx } from 'clsx';
-import { Cirrus } from '@alker/cirrus-types';
 import { BasicInputField } from '@components/common/cirrus/common/basic-input-field';
 import { getRequestingPath } from '@lib/rtdb/utils';
 import { NON_EXISTANT_DOM_HREF } from '@lib/constants';
@@ -12,6 +10,8 @@ import {
   modalStateWhenNonTarget,
   createModalStateUpdator,
 } from '@lib/enter-room/utils';
+import { Cirrus } from '@alker/cirrus-types';
+import clsx, { Clsx } from 'clsx';
 import {
   createComputed,
   createResource,
@@ -19,9 +19,8 @@ import {
   JSX,
   batch,
   createState,
-  For,
 } from 'solid-js';
-import { Show } from 'solid-js/web';
+import { Show, For } from 'solid-js/web';
 import { FirebaseAuth, FirebaseDb } from '../typings/firebase-sdk';
 
 const cn: Clsx<Cirrus> = clsx;

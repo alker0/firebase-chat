@@ -2,7 +2,6 @@ import { Form } from '@components/common/base/form/form';
 import { FormContainer } from '@components/common/base/form/form-container';
 import { BasicInputField } from '@components/common/cirrus/common/basic-input-field';
 import { FormBasicBottom } from '@components/common/cirrus/domain/form-basic-bottom';
-import { Cirrus } from '@alker/cirrus-types';
 import {
   EventArg,
   EventArgOf,
@@ -14,6 +13,7 @@ import {
   inputRegexSource,
 } from '@components/common/util/input-field-utils';
 import { sessionState } from '@lib/solid-firebase-auth';
+import { Cirrus } from '@alker/cirrus-types';
 import clsx, { Clsx } from 'clsx';
 import {
   assignProps,

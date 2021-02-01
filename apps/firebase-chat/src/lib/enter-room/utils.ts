@@ -1,7 +1,7 @@
 import { batch, createComputed, Resource, SetStateFunction } from 'solid-js';
-import { RoomRow } from '../search-rooms/search';
 import { getPassword, RequestingBaseOption } from './rtdb';
 import { EnterResult, EnterOption, executeEnter } from './enter';
+import { RoomRow } from '../search-rooms/search';
 import { DO_NOTHING } from '../common-utils';
 
 export type { EnterResult };

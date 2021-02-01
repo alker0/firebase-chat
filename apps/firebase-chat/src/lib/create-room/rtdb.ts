@@ -1,4 +1,3 @@
-import { FirebaseDb, FirebaseDbServerValue } from '../../typings/firebase-sdk';
 import {
   RTDB_KEY_PASSWORD,
   RTDB_KEY_REQUESTING,
@@ -7,6 +6,7 @@ import {
   RTDB_QUERY_COUNT_LIMIT_OWN_ROOMS,
 } from '../rtdb/variables';
 import { isPermissionDeniedError } from '../rtdb/utils';
+import { FirebaseDb, FirebaseDbServerValue } from '../../typings/firebase-sdk';
 
 export function getNewRoomKey(db: FirebaseDb) {
   return db.ref(RTDB_KEY_ROOM_ENTRANCES).push().key!;

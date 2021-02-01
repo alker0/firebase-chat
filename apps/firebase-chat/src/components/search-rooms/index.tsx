@@ -1,17 +1,7 @@
 import { BasicInputField } from '@components/common/cirrus/common/basic-input-field';
 import { buttonize } from '@components/common/util/component-utils';
-import { Cirrus } from '@alker/cirrus-types';
-import clsx, { Clsx } from 'clsx';
-import {
-  createSignal,
-  createResourceState,
-  createSelector,
-  createEffect,
-  createComputed,
-  Suspense,
-} from 'solid-js';
-import { Switch, Match } from 'solid-js/web';
 import { ENTER_MODAL_ID } from '@lib/constants';
+import { logger } from '@lib/logger';
 import {
   SearchResults,
   SearchResultsKey,
@@ -20,14 +10,23 @@ import {
   createExecuteSearchFn,
   ExecuteSearchFunction,
   RoomRow,
-} from '../../lib/search-rooms/search';
+} from '@lib/search-rooms/search';
 import {
   initialResultsInfo,
   createRefreshState,
   createSearchByNameHandler,
   createPageCountLogger,
-} from '../../lib/search-rooms/utils';
-import { logger } from '../../lib/logger';
+} from '@lib/search-rooms/utils';
+import { Cirrus } from '@alker/cirrus-types';
+import clsx, { Clsx } from 'clsx';
+import {
+  createSignal,
+  createResourceState,
+  createSelector,
+  createEffect,
+  createComputed,
+} from 'solid-js';
+import { Switch, Match, Suspense } from 'solid-js/web';
 import { createLazyResultList } from './lazy/result-list';
 import { createLazyEnterModal, EnterModalContext } from './lazy/enter-modal';
 import {

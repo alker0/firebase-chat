@@ -1,4 +1,3 @@
-import { FirebaseDb, FirebaseDbServerValue } from '../../typings/firebase-sdk';
 import { RTDB_KEY_PASSWORD, RequestingDataSchema } from '../rtdb/variables';
 import {
   isPermissionDeniedError,
@@ -8,6 +7,7 @@ import {
   getAcceptedPath,
 } from '../rtdb/utils';
 import { DO_NOTHING } from '../common-utils';
+import { FirebaseDb, FirebaseDbServerValue } from '../../typings/firebase-sdk';
 
 export { getMembersCountPath, getRequestingPath, getAcceptedPath };
 

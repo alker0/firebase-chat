@@ -1,4 +1,3 @@
-import { FirebaseDb } from '../../typings/firebase-sdk';
 import {
   RTDB_KEY_CREATED_AT,
   RTDB_KEY_ROOM_ENTRANCES,
@@ -7,6 +6,7 @@ import {
   RTDB_QUERY_COUNT_LIMIT_ENTRANCES,
   RTDB_QUERY_MAX_LIMIT_ROOM_MEMBERS_COUNT,
 } from '../rtdb/variables';
+import { FirebaseDb } from '../../typings/firebase-sdk';
 
 export function searchRoomsByName(
   db: FirebaseDb,

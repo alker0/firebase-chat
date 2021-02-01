@@ -1,18 +1,18 @@
 import { HeaderMenu } from '@components/project/header-menu';
 import {
-  sessionState,
-  sessionStateChangedHandler,
-} from '@lib/solid-firebase-auth';
-import {
   createRouter,
   routingPaths,
   movePageFromPath,
 } from '@components/project/router';
+import { buttonize } from '@components/common/util/component-utils';
+import {
+  sessionState,
+  sessionStateChangedHandler,
+} from '@lib/solid-firebase-auth';
+import { IS_NOT_PRODUCTION, IS_PRODUCTION } from '@lib/constants';
+import { logger, shouldLog } from '@lib/logger';
 import { createComputed, createRoot } from 'solid-js';
 import { render, For } from 'solid-js/web';
-import { buttonize } from '@components/common/util/component-utils';
-import { logger, shouldLog } from '@lib/logger';
-import { IS_NOT_PRODUCTION, IS_PRODUCTION } from '@lib/constants';
 
 const dropDownTarget = document.getElementById('header-menu');
 

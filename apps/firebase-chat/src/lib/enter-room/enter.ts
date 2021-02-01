@@ -1,5 +1,5 @@
-import { getMembersCountPath, getMembersInfoPathOfUser } from '../rtdb/utils';
 import { enterRoomAuto, requestRoomEntryPermission } from './rtdb';
+import { getMembersCountPath, getMembersInfoPathOfUser } from '../rtdb/utils';
 import {
   FirebaseAuth,
   FirebaseDb,

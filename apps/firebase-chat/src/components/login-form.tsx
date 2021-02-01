@@ -7,9 +7,10 @@ import {
   ClickHandle,
 } from '@components/common/util/component-utils';
 import { createMultiDisposableStyle } from '@components/common/util/style-utils';
-import { Cirrus } from '@alker/cirrus-types';
 import { ComponentMemo, OnlyOptional } from '@components/types/component-utils';
 import { DO_NOTHING } from '@lib/common-utils';
+import { Cirrus } from '@alker/cirrus-types';
+import { css } from 'styled-jsx/css';
 import clsx, { Clsx } from 'clsx';
 import {
   assignProps,
@@ -19,7 +20,6 @@ import {
   createSignal,
   createState,
 } from 'solid-js';
-import { css } from 'styled-jsx/css';
 import { FirebaseAuthOwnUI } from './firebase-auth-own-ui';
 import { FirebaseAuth } from './typings/firebase-sdk';
 

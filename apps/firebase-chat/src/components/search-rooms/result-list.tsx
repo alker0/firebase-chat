@@ -1,17 +1,17 @@
-import { Cirrus } from '@alker/cirrus-types';
-import { css } from 'styled-jsx/css';
-import clsx, { Clsx } from 'clsx';
 import { createDisposableStyle } from '@components/common/util/style-utils';
 import { NON_EXISTANT_DOM_ID } from '@lib/constants';
-import { createMemo, untrack, createRoot, onCleanup } from 'solid-js';
-import { For, Switch, Match, Suspense } from 'solid-js/web';
+import { logger } from '@lib/logger';
 import {
   RoomRow,
   SearchResults,
   SearchResultsKey,
-} from '../../lib/search-rooms/search';
-import { getOldnessText } from '../../lib/search-rooms/utils';
-import { logger } from '../../lib/logger';
+} from '@lib/search-rooms/search';
+import { getOldnessText } from '@lib/search-rooms/utils';
+import { Cirrus } from '@alker/cirrus-types';
+import { css } from 'styled-jsx/css';
+import clsx, { Clsx } from 'clsx';
+import { createMemo, untrack, createRoot, onCleanup } from 'solid-js';
+import { For, Switch, Match, Suspense } from 'solid-js/web';
 
 const cn: Clsx<Cirrus> = clsx;
 

@@ -1,10 +1,10 @@
-import { css } from 'styled-jsx/css';
-import { createSignal, assignProps, JSX } from 'solid-js';
-import clsx, { Clsx } from 'clsx';
-import { Portal, For } from 'solid-js/web';
 import { Cirrus } from '@alker/cirrus-types';
-import { ComponentCreater } from '../../../types/component-creator';
+import { css } from 'styled-jsx/css';
+import clsx, { Clsx } from 'clsx';
+import { createSignal, assignProps, JSX } from 'solid-js';
+import { Portal, For } from 'solid-js/web';
 import { buttonize } from '../../util/component-utils';
+import { ComponentCreater } from '../../../types/component-creator';
 
 type LinkButtonClass = 'LinkButtonClassName';
 

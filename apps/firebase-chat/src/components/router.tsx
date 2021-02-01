@@ -1,14 +1,14 @@
-import clsx, { Clsx } from 'clsx';
 import { PathMatchRouter } from '@components/common/case/path-match-router';
 import { Redirect as RedirectCreator } from '@components/common/base/atoms/redirect';
-import { Cirrus } from '@alker/cirrus-types';
 import { inputRegex } from '@components/common/util/input-field-utils';
-import { createSignal, untrack } from 'solid-js';
 import { sessionState } from '@lib/solid-firebase-auth';
 import { fullPath } from '@lib/browser-utils';
 import { logger } from '@lib/logger';
-import { createLazyAuthUI } from './lazy/firebase-auth-own-ui';
+import { Cirrus } from '@alker/cirrus-types';
+import clsx, { Clsx } from 'clsx';
+import { createSignal, untrack } from 'solid-js';
 import { TopMenu as TopMenuCreator } from './top-menu';
+import { createLazyAuthUI } from './lazy/firebase-auth-own-ui';
 import { createLazyCompleteVerifyEmail } from './lazy/complete-verify-email';
 import { createLazyLoginForm } from './lazy/login-form';
 import { createLazyCreateRoom } from './lazy/create-room';

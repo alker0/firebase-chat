@@ -1,5 +1,5 @@
-import clsx, { Clsx } from 'clsx';
 import { Cirrus } from '@alker/cirrus-types';
+import clsx, { Clsx } from 'clsx';
 import { assignProps, Component, createMemo, JSX } from 'solid-js';
 import { sizeSuffixMap } from '../../util/cirrus-utils';
 

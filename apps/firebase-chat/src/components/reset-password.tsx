@@ -1,5 +1,5 @@
-import { Cirrus } from '@alker/cirrus-types';
 import { loginMethodCreater } from '@components/common/util/input-field-utils';
+import { Cirrus } from '@alker/cirrus-types';
 import clsx, { Clsx } from 'clsx';
 import { Component, createSignal, createState } from 'solid-js';
 import { FirebaseAuthOwnUI } from './firebase-auth-own-ui';
