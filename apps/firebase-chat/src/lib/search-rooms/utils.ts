@@ -4,9 +4,7 @@ import {
   SetStateFunction,
   JSX,
   createSignal,
-  createRoot,
-  createComputed,
-  onCleanup,
+  createEffect,
 } from 'solid-js';
 import {
   createSearchByNameFn,
@@ -18,6 +16,7 @@ import {
 import { isEnterKey } from '../browser-utils';
 import { LogContentPairs, logger, shouldLog } from '../logger';
 import { FirebaseDb } from '../../typings/firebase-sdk';
+import { StateOrResource } from '../../typings/solid-utils';
 
 export const initialResultsInfo: ResultsInfo = {
   pageCount: 0,
@@ -113,47 +112,47 @@ export function createSearchByNameHandler(
   };
 }
 
-export function createPageCountLogger(searchResults: SearchResults) {
+export function createPageCountLogger(
+  searchResults: StateOrResource<SearchResults>,
+) {
   if (shouldLog({ prefix: 'Page Count' })) {
-    onCleanup(
-      createRoot((...dispose) => {
-        type PageCountObject = Record<SearchResultsKey, number>;
+    type PageCountObject = Record<SearchResultsKey, number>;
 
-        const pageCounts = createMemo(
-          () => {
-            return {
-              byName: searchResults.byName.pageCount,
-              byMembersCount: searchResults.byMembersCount.pageCount,
-              byCreatedTime: searchResults.byCreatedTime.pageCount,
-            };
+    createEffect<PageCountObject>((prev = {} as PageCountObject) => {
+      if (searchResultsKeyArray.some((key) => searchResults.loading?.[key])) {
+        return prev;
+      } else {
+        const [
+          anyChanged,
+          logContents,
+          currentPageCount,
+        ] = searchResultsKeyArray.reduce(
+          ([anyChangedAccum, logContentsAccum, currentPageCountAccum], key) => {
+            const prevCount = prev[key];
+            const currentCount = searchResults[key].pageCount;
+            const isSame = currentCount === prevCount;
+            return [
+              anyChangedAccum || !isSame,
+              logContentsAccum.concat([
+                [key, ...(isSame ? [] : [prevCount, '->']), currentCount],
+              ]),
+              {
+                ...currentPageCountAccum,
+                [key]: currentCount,
+              },
+            ];
           },
-          {} as PageCountObject,
-          (prev, next) =>
-            searchResultsKeyArray.every((key) => prev[key] === next[key]),
+          [false, [] as LogContentPairs, {} as PageCountObject],
         );
 
-        createComputed((prev = {} as PageCountObject) => {
-          const currentPageCount = pageCounts();
-          let logContents: LogContentPairs = [];
-          searchResultsKeyArray.forEach((key) => {
-            const prevCount = prev[key];
-            const currentCount = currentPageCount[key];
-            logContents = logContents.concat([
-              [
-                key,
-                ...(currentCount === prevCount ? [] : [prevCount, '->']),
-                currentCount,
-              ],
-            ]);
-          });
+        if (anyChanged) {
           logger.logMultiLines(
             { prefix: 'Page Count', skipCheck: true },
             logContents,
           );
-          return currentPageCount;
-        }, {} as PageCountObject);
-        return dispose[0];
-      }),
-    );
+        }
+        return currentPageCount;
+      }
+    });
   }
 }
