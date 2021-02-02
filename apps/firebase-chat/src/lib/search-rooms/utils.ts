@@ -3,7 +3,6 @@ import {
   createMemo,
   SetStateFunction,
   JSX,
-  untrack,
   createSignal,
   createRoot,
   createComputed,
@@ -104,7 +103,7 @@ export function createSearchByNameHandler(
   const [getLastTargetName, setLastTargetName] = createSignal('');
   const searchFn = createSearchByNameFn(executeFn, {
     db,
-    getLastTargetName: () => untrack(getLastTargetName),
+    getLastTargetName,
     setLastTargetName,
   });
   return (event) => {

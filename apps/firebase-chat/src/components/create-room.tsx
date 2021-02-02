@@ -2,7 +2,7 @@ import { Form } from '@components/common/base/form/form';
 import { FormContainer } from '@components/common/base/form/form-container';
 import { BasicInputField } from '@components/common/cirrus/common/basic-input-field';
 import { buttonize } from '@components/common/util/component-utils';
-import { EventArg, EventArgOf } from '@components/types/component-utils';
+import { EventArg } from '@components/types/component-utils';
 import { CallableSubmit } from '@components/common/util/input-field-utils';
 import { sessionState } from '@lib/solid-firebase-auth';
 import { DO_NOTHING } from '@lib/common-utils';
@@ -26,7 +26,6 @@ import {
   createState,
   SetStateFunction,
   State,
-  untrack,
   JSX,
   batch,
 } from 'solid-js';
@@ -102,18 +101,13 @@ async function createRoomAndUpdateLinkButton(
     db,
     dbServerValues,
     uid,
-    formState,
+    formState: { roomName, password },
     setFormState,
   }: Pick<CreateRoomRunnerArgs, 'db' | 'dbServerValues' | 'uid'> &
     FormStateAccessors,
   setBottomProps: SetStateFunction<BottomProps>,
   linkButtonViewContext: CreateRoom.LinkButtonViewContext,
 ) {
-  const { roomName, password } = untrack(() => ({
-    roomName: formState.roomName,
-    password: formState.password,
-  }));
-
   const roomId = getNewRoomKey(db);
 
   function updateView({
@@ -255,7 +249,6 @@ export const CreateRoom = {
       const [getBottomProps, setBottomProps] = createState<BottomProps>({
         linkButtonColorStyle: 'btn-link',
         get linkButtonHide(): boolean {
-          // eslint-disable-next-line react/no-this-in-sfc
           return !(this as BottomProps).linkButtonView.text;
         },
         linkButtonView: {
@@ -271,8 +264,8 @@ export const CreateRoom = {
       });
 
       const onSubmit: () => CallableSubmit = createMemo(() => {
-        if (untrack(() => !sessionState.isLoggedIn)) {
-          return (e: EventArgOf<CallableSubmit>) => {
+        if (!sessionState.isLoggedIn) {
+          return (e) => {
             e.preventDefault();
             console.log('Is Not Logged In');
             context.redirectToFailedUrl();

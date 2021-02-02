@@ -23,7 +23,6 @@ import {
   createState,
   SetStateFunction,
   State,
-  untrack,
   JSX,
 } from 'solid-js';
 
@@ -184,7 +183,7 @@ export const FirebaseAuthOwnUI = {
       const [formState, setFormState] = props.createFormState();
 
       const onSubmit: () => CallableSubmit = createMemo(() => {
-        if (untrack(() => sessionState.isLoggedIn)) {
+        if (sessionState.isLoggedIn) {
           return (e: EventArgOf<CallableSubmit>) => {
             e.preventDefault();
             console.log('Already Logged In');
