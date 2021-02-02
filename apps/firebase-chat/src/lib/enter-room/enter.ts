@@ -65,14 +65,6 @@ export async function executeEnter({
 
     handleEntering(removeListener);
 
-    // createDebugButton({
-    //   text: 'Cancel Entering',
-    //   onClick: (_e, remove) => {
-    //     cancelFn();
-    //     remove();
-    //   },
-    // });
-
     const succeededEntering = await entering;
 
     if (succeededEntering) {
