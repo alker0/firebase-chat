@@ -272,7 +272,9 @@ export const CreateRoom = {
           };
         }
 
-        return () => {
+        return (e) => {
+          e.preventDefault();
+
           const {
             auth: { currentUser },
             db,
@@ -292,8 +294,6 @@ export const CreateRoom = {
               context.linkButtonView,
             );
           }
-
-          return false;
         };
       });
 
