@@ -1,6 +1,6 @@
 import { createDisposableStyle } from '@components/common/util/style-utils';
 import { NON_EXISTANT_DOM_ID } from '@lib/constants';
-import { logger } from '@lib/logger';
+import { logger, shouldLog } from '@lib/logger';
 import {
   RoomRow,
   SearchResults,
@@ -10,8 +10,9 @@ import { getOldnessText } from '@lib/search-rooms/utils';
 import { Cirrus } from '@alker/cirrus-types';
 import { css } from 'styled-jsx/css';
 import clsx, { Clsx } from 'clsx';
-import { createMemo, untrack, createRoot, onCleanup } from 'solid-js';
+import { $RAW, createEffect } from 'solid-js';
 import { For, Switch, Match, Suspense } from 'solid-js/web';
+import { ResourceState } from '../../typings/solid-utils';
 
 const cn: Clsx<Cirrus> = clsx;
 
@@ -22,10 +23,6 @@ const enterModalAnchorStyle = createDisposableStyle<Cirrus>(
     }
   `,
 ).className;
-
-interface AsyncSearchResults extends SearchResults {
-  loading: Record<SearchResultsKey, boolean>;
-}
 
 interface ResultRowProps {
   roomRow: RoomRow;
@@ -86,68 +83,86 @@ export function createSearchResultListComponent(
       setSelectingRoomRow,
     } = context;
 
-    const [disposeMemo, resultsMemo] = createRoot((...dispose) => {
-      const presentMemo = createMemo(
-        () => {
-          return Boolean(searchResultsState[resultsKey].resultList.length);
+    if (shouldLog({ prefix: 'Search Result Length' })) {
+      interface LogEffectSchema {
+        isPresent: boolean;
+        list: RoomRow[];
+      }
+
+      createEffect<LogEffectSchema>(
+        (
+          prev = {
+            isPresent: false,
+            list: [],
+          },
+        ) => {
+          const searchResultList = searchResultsState[resultsKey].resultList;
+
+          if (prev.list === searchResultList[$RAW]) {
+            logger.log(
+              { prefix: 'Result List Component', defaultDo: false },
+              'Skip because both lists are same',
+            );
+
+            return prev;
+          }
+
+          const nextIsPresent = Boolean(searchResultList.length);
+
+          if (!prev?.isPresent && !nextIsPresent) {
+            logger.log(
+              { prefix: 'Result List Component', defaultDo: false },
+              'Skip because both lists are empty',
+            );
+
+            return prev;
+          } else {
+            logger.log(
+              { prefix: 'Result List Component' },
+              `Result Length (${resultsKey})`,
+              searchResultList.length,
+            );
+
+            return {
+              isPresent: nextIsPresent,
+              list: searchResultList[$RAW] ?? [],
+            };
+          }
         },
-        false,
-        (prev, next) => !prev && !next,
       );
-      return [
-        dispose[0],
-        createMemo(() => {
-          const searchResultList = untrack(
-            () => searchResultsState[resultsKey].resultList,
-          );
-
-          logger.log(
-            { prefix: 'Result List Component' },
-            'Result Length',
-            SearchResultList.length,
-          );
-
-          const [firstResult, ...restResults] = searchResultList;
-
-          return {
-            isPresent: presentMemo(),
-            firstResult,
-            restResults,
-          };
-        }),
-      ];
-    });
-
-    onCleanup(disposeMemo);
-
+    }
     return (
       <Suspense fallback="Failed to Search">
         <Switch fallback="Not Found">
           <Match when={searchResultsState.loading[resultsKey]}>
             Searching...
           </Match>
-          <Match when={resultsMemo().isPresent}>
-            <div class={cn('row', 'row--no-wrap')}>
-              <SearchResultRow
-                roomRow={resultsMemo().firstResult}
-                enterModalId={enterModalId}
-                setSelectingRoomRow={setSelectingRoomRow}
-              />
-            </div>
-            <For each={resultsMemo().restResults}>
-              {(roomRow) => (
-                <>
-                  <div class={cn('divider', 'mx-1', 'my-0')} />
-                  <div class={cn('row', 'row--no-wrap')}>
-                    <SearchResultRow
-                      roomRow={roomRow}
-                      enterModalId={enterModalId}
-                      setSelectingRoomRow={setSelectingRoomRow}
-                    />
-                  </div>
-                </>
-              )}
-            </For>
+          <Match when={searchResultsState[resultsKey].resultList[0]}>
+            {(firstRow) => (
+              <>
+                <div class={cn('row', 'row--no-wrap')}>
+                  <SearchResultRow
+                    roomRow={firstRow}
+                    enterModalId={enterModalId}
+                    setSelectingRoomRow={setSelectingRoomRow}
+                  />
+                </div>
+                <For each={searchResultsState[resultsKey].resultList.slice(1)}>
+                  {(roomRow) => (
+                    <>
+                      <div class={cn('divider', 'mx-1', 'my-0')} />
+                      <div class={cn('row', 'row--no-wrap')}>
+                        <SearchResultRow
+                          roomRow={roomRow}
+                          enterModalId={enterModalId}
+                          setSelectingRoomRow={setSelectingRoomRow}
+                        />
+                      </div>
+                    </>
+                  )}
+                </For>
+              </>
+            )}
           </Match>
         </Switch>
       </Suspense>
@@ -156,7 +171,7 @@ export function createSearchResultListComponent(
 }
 
 export interface SearchResultListContext {
-  searchResultsState: AsyncSearchResults;
+  searchResultsState: ResourceState<SearchResults>;
   enterModalId?: string;
   setSelectingRoomRow: (roomRow: RoomRow) => void;
 }
