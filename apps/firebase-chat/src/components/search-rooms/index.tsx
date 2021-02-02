@@ -140,9 +140,7 @@ export const SearchRooms = {
     const RefreshButton = createRefreshButton(sendRefreshSignal);
 
     return () => {
-      if (import.meta.env.MODE !== 'production') {
-        createPageCountLogger(searchResults);
-      }
+      createPageCountLogger(searchResults);
 
       createComputed(() => {
         searchMode();

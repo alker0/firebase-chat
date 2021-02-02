@@ -65,38 +65,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
   auth.setPersistence(firebaseSdk.auth.Auth.Persistence.SESSION);
 
-  if (IS_NOT_PRODUCTION) {
-    logger.log({ prefix: 'Env Var', defaultDo: false }, '', import.meta.env);
+  logger.log({ prefix: 'Env Var', defaultDo: false }, '', import.meta.env);
 
-    if (shouldLog('Login State')) {
-      createRoot(() =>
-        createComputed(() =>
-          logger.log(
-            { prefix: 'Login State', skipCheck: true },
-            'Is Logged In',
-            sessionState.isLoggedIn,
-          ),
+  if (shouldLog({ prefix: 'Login State' })) {
+    createRoot(() =>
+      createComputed(() =>
+        logger.log(
+          { prefix: 'Login State', skipCheck: true },
+          'Is Logged In',
+          sessionState.isLoggedIn,
         ),
-      );
-    }
+      ),
+    );
+  }
 
-    if (shouldLog('Focus In', undefined, false)) {
-      document.body.addEventListener('focusin', (event) => {
-        logger.logMultiLines({ prefix: 'Focus In', skipCheck: true }, [
-          ['Previous', event.relatedTarget],
-          ['Current', event.target],
-        ]);
-      });
-    }
+  if (shouldLog({ prefix: 'Focus In', defaultDo: false })) {
+    document.body.addEventListener('focusin', (event) => {
+      logger.logMultiLines({ prefix: 'Focus In', skipCheck: true }, [
+        ['Previous', event.relatedTarget],
+        ['Current', event.target],
+      ]);
+    });
+  }
 
-    if (shouldLog('Focus Out', undefined, false)) {
-      document.body.addEventListener('focusout', (event) => {
-        logger.logMultiLines({ prefix: 'Focus Out', skipCheck: true }, [
-          ['Previous', event.relatedTarget],
-          ['Current', event.target],
-        ]);
-      });
-    }
+  if (shouldLog({ prefix: 'Focus Out', defaultDo: false })) {
+    document.body.addEventListener('focusout', (event) => {
+      logger.logMultiLines({ prefix: 'Focus Out', skipCheck: true }, [
+        ['Previous', event.relatedTarget],
+        ['Current', event.target],
+      ]);
+    });
   }
 
   const brandTarget = document.getElementById('header-brand-container');

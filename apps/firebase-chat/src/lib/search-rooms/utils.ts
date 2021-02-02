@@ -114,7 +114,7 @@ export function createSearchByNameHandler(
 }
 
 export function createPageCountLogger(searchResults: SearchResults) {
-  if (shouldLog('Page Count')) {
+  if (shouldLog({ prefix: 'Page Count' })) {
     onCleanup(
       createRoot((...dispose) => {
         type PageCountObject = Record<SearchResultsKey, number>;

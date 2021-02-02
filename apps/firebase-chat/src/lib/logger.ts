@@ -1,15 +1,8 @@
-import { IS_NOT_PRODUCTION } from './constants';
+import { IS_NOT_PRODUCTION, IS_PRODUCTION } from './constants';
 
 export type LogContentPair = [string, ...any[]];
 
 export type LogContentPairs = LogContentPair[];
-
-export interface LogOption {
-  prefix: string;
-  envKey?: string;
-  defaultDo?: boolean;
-  skipCheck?: boolean;
-}
 
 function getFixedPrefix(prefix: string) {
   return prefix
@@ -26,11 +19,22 @@ function includesInEnv(envName: unknown, targetKey: string) {
   return String(envName).toLowerCase().split(':').includes(targetKey);
 }
 
-export function shouldLog(
-  prefix: string,
-  envKey?: string,
+export interface ShouldLogOption {
+  prefix: string;
+  envKey?: string;
+  defaultDo?: boolean;
+}
+
+export interface LogOption extends ShouldLogOption {
+  skipCheck?: boolean;
+}
+
+export function shouldLog({
+  prefix,
+  envKey,
   defaultDo = true,
-): boolean {
+}: ShouldLogOption): boolean {
+  if (IS_PRODUCTION) return false;
   const fixedEnvKey = getFixedEnvKey(prefix, envKey);
   return defaultDo
     ? !includesInEnv(
@@ -59,10 +63,7 @@ export const logger = {
     name: string,
     ...contents: any[]
   ) {
-    if (
-      IS_NOT_PRODUCTION &&
-      (skipCheck || shouldLog(prefix, envKey, defaultDo))
-    ) {
+    if (skipCheck || shouldLog({ prefix, envKey, defaultDo })) {
       console.log(`[${prefix}]${name}:`, ...contents);
     }
   },
@@ -72,7 +73,7 @@ export const logger = {
   ) {
     if (IS_NOT_PRODUCTION) {
       const fixedEnvKey = getFixedEnvKey(prefix, envKey);
-      if (skipCheck || shouldLog(prefix, fixedEnvKey, defaultDo)) {
+      if (skipCheck || shouldLog({ prefix, envKey: fixedEnvKey, defaultDo })) {
         groupStart(prefix, fixedEnvKey);
         contentPairs.forEach(([name, ...contents]) =>
           console.log(`${name}:`, ...contents),
@@ -86,10 +87,7 @@ export const logger = {
     name: string,
     contentsFn: () => any[],
   ) {
-    if (
-      IS_NOT_PRODUCTION &&
-      (skipCheck || shouldLog(prefix, envKey, defaultDo))
-    ) {
+    if (skipCheck || shouldLog({ prefix, envKey, defaultDo })) {
       console.log(`[${prefix}]${name}:`, ...contentsFn());
     }
   },
@@ -99,7 +97,7 @@ export const logger = {
   ) {
     if (IS_NOT_PRODUCTION) {
       const fixedEnvKey = getFixedEnvKey(prefix, envKey);
-      if (skipCheck || shouldLog(prefix, fixedEnvKey, defaultDo)) {
+      if (skipCheck || shouldLog({ prefix, envKey: fixedEnvKey, defaultDo })) {
         groupStart(prefix, fixedEnvKey);
         contentPairsFn().forEach(([name, ...contents]) =>
           console.log(`${name}:`, ...contents),
