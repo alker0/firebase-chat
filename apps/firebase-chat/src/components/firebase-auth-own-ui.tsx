@@ -2,11 +2,7 @@ import { Form } from '@components/common/base/form/form';
 import { FormContainer } from '@components/common/base/form/form-container';
 import { BasicInputField } from '@components/common/cirrus/common/basic-input-field';
 import { FormBasicBottom } from '@components/common/cirrus/domain/form-basic-bottom';
-import {
-  EventArg,
-  EventArgOf,
-  OnlyOptional,
-} from '@components/types/component-utils';
+import { OnlyOptional } from '@components/types/component-utils';
 import {
   CallableSubmit,
   inputRegex,
@@ -127,8 +123,7 @@ export const FirebaseAuthOwnUI = {
               required: true,
               pattern: inputRegexSource.email,
               value: props.formState.email,
-              onChange: (e: EventArg<HTMLInputElement>) =>
-                props.setFormState('email', e.target.value),
+              onChange: (e) => props.setFormState('email', e.target.value),
             }}
           />
           {props.useFields.password && (
@@ -141,8 +136,7 @@ export const FirebaseAuthOwnUI = {
                 required: true,
                 pattern: context.passwordRegex.source,
                 value: props.formState.password,
-                onChange: (e: EventArg<HTMLInputElement>) =>
-                  props.setFormState('password', e.target.value),
+                onChange: (e) => props.setFormState('password', e.target.value),
               }}
             />
           )}
@@ -156,7 +150,7 @@ export const FirebaseAuthOwnUI = {
                 required: true,
                 pattern: context.passwordRegex.source,
                 value: props.formState.passConfirm,
-                onChange: (e: EventArg<HTMLInputElement>) =>
+                onChange: (e) =>
                   props.setFormState('passConfirm', e.target.value),
               }}
             />
@@ -184,7 +178,7 @@ export const FirebaseAuthOwnUI = {
 
       const onSubmit: () => CallableSubmit = createMemo(() => {
         if (sessionState.isLoggedIn) {
-          return (e: EventArgOf<CallableSubmit>) => {
+          return (e) => {
             e.preventDefault();
             console.log('Already Logged In');
             props.redirectToSuccessUrl();

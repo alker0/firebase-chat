@@ -2,7 +2,6 @@ import { Form } from '@components/common/base/form/form';
 import { FormContainer } from '@components/common/base/form/form-container';
 import { BasicInputField } from '@components/common/cirrus/common/basic-input-field';
 import { buttonize } from '@components/common/util/component-utils';
-import { EventArg } from '@components/types/component-utils';
 import { CallableSubmit } from '@components/common/util/input-field-utils';
 import { sessionState } from '@lib/solid-firebase-auth';
 import { DO_NOTHING } from '@lib/common-utils';
@@ -198,8 +197,7 @@ export const CreateRoom = {
               required: true,
               pattern: `^.{1,${RTDB_DATA_LIMIT_ROOM_NAME_MAX_LENGTH - 1}}$`,
               value: props.formState.roomName,
-              onChange: (e: EventArg<HTMLInputElement>) =>
-                props.setFormState('roomName', e.target.value),
+              onChange: (e) => props.setFormState('roomName', e.target.value),
             }}
           />
           <InputField
@@ -211,8 +209,7 @@ export const CreateRoom = {
               required: false,
               pattern: `^.{0,${RTDB_DATA_LIMIT_PASSWORD_MAX_LENGTH - 1}}$`,
               value: props.formState.password,
-              onChange: (e: EventArg<HTMLInputElement>) =>
-                props.setFormState('password', e.target.value),
+              onChange: (e) => props.setFormState('password', e.target.value),
             }}
           />
         </>
