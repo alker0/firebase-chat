@@ -150,6 +150,7 @@ export const SearchRooms = {
       const refreshState = createRefreshState(refreshSignal, setSearchResults);
 
       const executeFn = createExecuteSearchFn({
+        auth: context.auth,
         getRequestedPage: searchPage,
         getRefreshPromise: () => refreshState.promise,
         getPreviousResults: searchResults,

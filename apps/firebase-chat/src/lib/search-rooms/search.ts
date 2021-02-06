@@ -15,7 +15,11 @@ import {
 import { arrayFromSnapshot as arrayFromSnapshotUtil } from '../rtdb/utils';
 import { getLastElement } from '../common-utils';
 import { logger } from '../logger';
-import { FirebaseDb, FirebaseDbSnapshot } from '../../typings/firebase-sdk';
+import {
+  FirebaseAuth,
+  FirebaseDb,
+  FirebaseDbSnapshot,
+} from '../../typings/firebase-sdk';
 
 // export type SearchResultsKey = `by${'Name' | 'MembersCount' | 'CreatedTime'}`;
 export type SearchResultsKey = 'byName' | 'byMembersCount' | 'byCreatedTime';
@@ -34,6 +38,7 @@ export interface ResultsInfo extends ResultsInfoBase<RoomRow> {}
 export interface SearchResults extends Record<SearchResultsKey, ResultsInfo> {}
 
 export interface SearchBaseOption {
+  auth: FirebaseAuth;
   getRequestedPage: () => number;
   getRefreshPromise: () => Promise<ResultsInfo>;
   getPreviousResults: SearchResults;
@@ -78,15 +83,26 @@ export interface ExecuteSearchFunction {
 export function createExecuteSearchFn(
   searchOption: SearchBaseOption,
 ): ExecuteSearchFunction {
-  return function executeSearch(executeArg: ExecuteSearchOption) {
-    const requestedPage = searchOption.getRequestedPage();
+  return async function executeSearch(executeArg: ExecuteSearchOption) {
+    const {
+      auth,
+      getRequestedPage,
+      getPreviousResults,
+      resultHandleFn,
+      getRefreshPromise,
+    } = searchOption;
+    const requestedPage = getRequestedPage();
 
-    const prevResults = searchOption.getPreviousResults[executeArg.targetKey];
+    const prevResults = getPreviousResults[executeArg.targetKey];
 
     logger.logMultiLinesFn({ prefix: 'Search Page Number' }, () => [
       ['Requested Page', requestedPage],
       ['Already Loaded Page', prevResults.pageCount],
     ]);
+
+    if (!auth.currentUser) {
+      await auth.signInAnonymously();
+    }
 
     executeSearchRooms({
       targetPage: requestedPage,
@@ -97,9 +113,9 @@ export function createExecuteSearchFn(
           executeArg.descending,
         ),
       resultHandleFn: (searchPromise) => {
-        searchOption.resultHandleFn(executeArg.targetKey, () =>
+        resultHandleFn(executeArg.targetKey, () =>
           Promise.race([
-            searchOption.getRefreshPromise(),
+            getRefreshPromise(),
             (async () => {
               try {
                 const resultInfo = await searchPromise;
