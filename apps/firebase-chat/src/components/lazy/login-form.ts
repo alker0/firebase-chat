@@ -1,5 +1,7 @@
 import { createLazyComponent } from '@components/common/util/lazy-component-creator';
-import { LoginForm } from '../login-form';
+import type { LoginForm } from '../login-form';
+
+export type { LoginForm };
 
 export const createLazyLoginForm = (context: LoginForm.Context) => {
   return createLazyComponent(

@@ -1,9 +1,9 @@
-import { Cirrus } from '@alker/cirrus-types';
 import {
   inputRegex,
   loginMethodCreater,
 } from '@components/common/util/input-field-utils';
 import { firebaseSdk } from '@lib/firebase-sdk';
+import { Cirrus } from '@alker/cirrus-types';
 import clsx, { Clsx } from 'clsx';
 import {
   Component,

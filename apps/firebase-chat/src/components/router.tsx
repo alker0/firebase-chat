@@ -1,13 +1,15 @@
-import clsx, { Clsx } from 'clsx';
 import { PathMatchRouter } from '@components/common/case/path-match-router';
 import { Redirect as RedirectCreator } from '@components/common/base/atoms/redirect';
-import { Cirrus } from '@alker/cirrus-types';
 import { inputRegex } from '@components/common/util/input-field-utils';
-import { createSignal, untrack } from 'solid-js';
 import { sessionState } from '@lib/solid-firebase-auth';
-import { fullPath } from '@lib/routing-utils';
-import { createLazyAuthUI } from './lazy/firebase-auth-own-ui';
+import { NON_EXISTANT_DOM_HREF } from '@lib/constants';
+import { fullPath } from '@lib/browser-utils';
+import { logger } from '@lib/logger';
+import { Cirrus } from '@alker/cirrus-types';
+import clsx, { Clsx } from 'clsx';
+import { createSignal, untrack } from 'solid-js';
 import { TopMenu as TopMenuCreator } from './top-menu';
+import { createLazyAuthUI } from './lazy/firebase-auth-own-ui';
 import { createLazyCompleteVerifyEmail } from './lazy/complete-verify-email';
 import { createLazyLoginForm } from './lazy/login-form';
 import { createLazyCreateRoom } from './lazy/create-room';
@@ -18,11 +20,40 @@ import {
   FirebaseDbServerValue,
 } from './typings/firebase-sdk';
 
-const [routeSignal, sendRouteSignal] = createSignal('', true);
+const [routeSignal, sendRouteSignal] = createSignal(
+  window.location.pathname,
+  true,
+);
 
 window.addEventListener('popstate', () => {
-  console.log(window.location.href.replace(window.location.origin, ''));
-  sendRouteSignal(window.location.pathname);
+  const prevWithoutHash = routeSignal().replace(/#[^?]+/, '');
+  const currentWithoutHash = window.location.pathname.replace(
+    window.location.hash,
+    '',
+  );
+
+  if (window.location.hash === NON_EXISTANT_DOM_HREF) {
+    window.history.replaceState(
+      window.history.state,
+      document.title,
+      currentWithoutHash,
+    );
+  }
+
+  logger.log(
+    { prefix: 'Location' },
+    '',
+    window.location.href.replace(window.location.origin, ''),
+  );
+
+  if (currentWithoutHash !== prevWithoutHash) {
+    logger.logFn({ prefix: 'Location' }, '', () => [
+      routeSignal(),
+      '->',
+      window.location.pathname,
+    ]);
+    sendRouteSignal(window.location.pathname);
+  }
 });
 
 export const thisOriginUrl = (path: string) =>
@@ -163,6 +194,9 @@ export const createRouter = (context: RouterContext) => {
   const SearchRoomsComponent = createLazySearchRooms({
     auth: context.auth,
     db: context.db,
+    dbServerValue: context.dbServerValue,
+    redirectToChatPage: (ownerId, ownRoomId) =>
+      movePageFromPath(`${routingPaths.chat}/${ownerId}/${ownRoomId}`),
   });
 
   return () => (

@@ -1,18 +1,23 @@
 import { Form } from '@components/common/base/form/form';
 import { FormContainer } from '@components/common/base/form/form-container';
 import { BasicInputField } from '@components/common/cirrus/common/basic-input-field';
-import { buttonize, DO_NOTHING } from '@components/common/util/component-utils';
-import { Cirrus } from '@alker/cirrus-types';
-import { EventArg, EventArgOf } from '@components/types/component-utils';
+import { buttonize } from '@components/common/util/component-utils';
 import { CallableSubmit } from '@components/common/util/input-field-utils';
 import { sessionState } from '@lib/solid-firebase-auth';
-import { roomEntrances } from '@lib/rtdb/variables';
+import { DO_NOTHING } from '@lib/common-utils';
+import {
+  RTDB_DATA_LIMIT_OWN_ROOMS_MAX_COUNT,
+  RTDB_DATA_LIMIT_PASSWORD_MAX_LENGTH,
+  RTDB_DATA_LIMIT_ROOM_NAME_MAX_LENGTH,
+} from '@lib/rtdb/constants';
 import {
   createRoomIntoDb,
   CreateRoomRunnerArgs,
   createRoomWithRetry,
+  getNewRoomKey,
   ownRoomsIsFilled,
 } from '@lib/create-room/rtdb';
+import { Cirrus } from '@alker/cirrus-types';
 import clsx, { Clsx } from 'clsx';
 import {
   assignProps,
@@ -20,7 +25,6 @@ import {
   createState,
   SetStateFunction,
   State,
-  untrack,
   JSX,
   batch,
 } from 'solid-js';
@@ -31,9 +35,6 @@ import {
 } from './typings/firebase-sdk';
 
 const cn: Clsx<Cirrus> = clsx;
-
-const roomNameMaxLength = 20;
-const passwordMaxLength = 20;
 
 interface ContainerProps {
   onSubmit?: JSX.FormHTMLAttributes<HTMLFormElement>['onSubmit'];
@@ -94,26 +95,19 @@ interface InputProps extends FormStateAccessors {}
 interface MessageState
   extends Pick<FormState['scheme'], 'infoMessage' | 'errorMessage'> {}
 
-const maxOwnRoomCount = 3;
-
 async function createRoomAndUpdateLinkButton(
   {
     db,
     dbServerValues,
     uid,
-    formState,
+    formState: { roomName, password },
     setFormState,
   }: Pick<CreateRoomRunnerArgs, 'db' | 'dbServerValues' | 'uid'> &
     FormStateAccessors,
   setBottomProps: SetStateFunction<BottomProps>,
   linkButtonViewContext: CreateRoom.LinkButtonViewContext,
 ) {
-  const { roomName, password } = untrack(() => ({
-    roomName: formState.roomName,
-    password: formState.password,
-  }));
-
-  const roomId = db.ref(roomEntrances).push().key!;
+  const roomId = getNewRoomKey(db);
 
   function updateView({
     infoMessage,
@@ -147,7 +141,7 @@ async function createRoomAndUpdateLinkButton(
           ownRoomId: ownRoomIdArg,
           roomId,
         }),
-      maxOwnRoomCount,
+      RTDB_DATA_LIMIT_OWN_ROOMS_MAX_COUNT,
     );
 
     if (succeeded) {
@@ -158,11 +152,11 @@ async function createRoomAndUpdateLinkButton(
         linkButtonColorStyle: 'btn-info',
       });
     } else {
-      const isFilled = await ownRoomsIsFilled(db, uid, maxOwnRoomCount);
+      const isFilled = await ownRoomsIsFilled(db, uid);
       if (isFilled) {
         updateView({
           infoMessage: '',
-          errorMessage: `You can create only ${maxOwnRoomCount} rooms`,
+          errorMessage: `You can create only ${RTDB_DATA_LIMIT_OWN_ROOMS_MAX_COUNT} rooms`,
           linkButtonView: linkButtonViewContext.alreadyFilled,
           linkButtonColorStyle: 'btn-warning',
         });
@@ -201,10 +195,9 @@ export const CreateRoom = {
               id: 'input-room-name',
               type: 'text',
               required: true,
-              pattern: `^.{1,${roomNameMaxLength - 1}}$`,
+              pattern: `^.{1,${RTDB_DATA_LIMIT_ROOM_NAME_MAX_LENGTH - 1}}$`,
               value: props.formState.roomName,
-              onChange: (e: EventArg<HTMLInputElement>) =>
-                props.setFormState('roomName', e.target.value),
+              onChange: (e) => props.setFormState('roomName', e.target.value),
             }}
           />
           <InputField
@@ -214,10 +207,9 @@ export const CreateRoom = {
               id: 'input-room-password',
               type: 'text',
               required: false,
-              pattern: `^.{0,${passwordMaxLength - 1}}$`,
+              pattern: `^.{0,${RTDB_DATA_LIMIT_PASSWORD_MAX_LENGTH - 1}}$`,
               value: props.formState.password,
-              onChange: (e: EventArg<HTMLInputElement>) =>
-                props.setFormState('password', e.target.value),
+              onChange: (e) => props.setFormState('password', e.target.value),
             }}
           />
         </>
@@ -254,12 +246,11 @@ export const CreateRoom = {
       const [getBottomProps, setBottomProps] = createState<BottomProps>({
         linkButtonColorStyle: 'btn-link',
         get linkButtonHide(): boolean {
-          // eslint-disable-next-line react/no-this-in-sfc
           return !(this as BottomProps).linkButtonView.text;
         },
         linkButtonView: {
           text: '',
-          onClick: () => {},
+          onClick: DO_NOTHING,
         },
         get linkButtonText() {
           return (this as BottomProps).linkButtonView.text;
@@ -270,15 +261,17 @@ export const CreateRoom = {
       });
 
       const onSubmit: () => CallableSubmit = createMemo(() => {
-        if (untrack(() => !sessionState.isLoggedIn)) {
-          return (e: EventArgOf<CallableSubmit>) => {
+        if (!sessionState.isLoggedIn) {
+          return (e) => {
             e.preventDefault();
             console.log('Is Not Logged In');
             context.redirectToFailedUrl();
           };
         }
 
-        return () => {
+        return (e) => {
+          e.preventDefault();
+
           const {
             auth: { currentUser },
             db,
@@ -298,8 +291,6 @@ export const CreateRoom = {
               context.linkButtonView,
             );
           }
-
-          return false;
         };
       });
 

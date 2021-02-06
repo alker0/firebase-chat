@@ -26,7 +26,6 @@
 
     <div id="main-contents" role="main"></div>
 
-    <div id="firebase-auth-container"></div>
 
     <p id="load">Firebase SDK Loading&hellip;</p>
 

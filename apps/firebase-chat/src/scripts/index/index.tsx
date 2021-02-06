@@ -1,16 +1,18 @@
 import { HeaderMenu } from '@components/project/header-menu';
 import {
-  sessionState,
-  sessionStateChangedHandler,
-} from '@lib/solid-firebase-auth';
-import {
   createRouter,
   routingPaths,
   movePageFromPath,
 } from '@components/project/router';
+import { buttonize } from '@components/common/util/component-utils';
+import {
+  sessionState,
+  sessionStateChangedHandler,
+} from '@lib/solid-firebase-auth';
+import { IS_NOT_PRODUCTION, IS_PRODUCTION } from '@lib/constants';
+import { logger, shouldLog } from '@lib/logger';
 import { createComputed, createRoot } from 'solid-js';
 import { render, For } from 'solid-js/web';
-import { buttonize } from '@components/common/util/component-utils';
 
 const dropDownTarget = document.getElementById('header-menu');
 
@@ -21,10 +23,7 @@ if (dropDownTarget) {
 document.addEventListener('DOMContentLoaded', () => {
   const firebaseSdk = firebase.default;
 
-  if (
-    import.meta.env.MODE === 'production' &&
-    import.meta.env.SNOWPACK_PUBLIC_USE_FIREBASE_ANALYTICS
-  ) {
+  if (IS_PRODUCTION && import.meta.env.SNOWPACK_PUBLIC_USE_FIREBASE_ANALYTICS) {
     firebaseSdk.analytics();
   }
 
@@ -34,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const auth = firebaseSdk.auth();
   const dbFunc = firebaseSdk.database;
 
-  if (import.meta.env.MODE !== 'production') {
+  if (IS_NOT_PRODUCTION) {
     if (import.meta.env.SNOWPACK_PUBLIC_AUTH_EMULATOR_PATH) {
       auth.useEmulator(
         import.meta.env.SNOWPACK_PUBLIC_AUTH_EMULATOR_PATH,
@@ -66,12 +65,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
   auth.setPersistence(firebaseSdk.auth.Auth.Persistence.SESSION);
 
-  if (import.meta.env.MODE !== 'production') {
+  logger.log({ prefix: 'Env Var', defaultDo: false }, '', import.meta.env);
+
+  if (shouldLog({ prefix: 'Login State' })) {
     createRoot(() =>
       createComputed(() =>
-        console.log('Is Logged In =>', sessionState.isLoggedIn),
+        logger.log(
+          { prefix: 'Login State', skipCheck: true },
+          'Is Logged In',
+          sessionState.isLoggedIn,
+        ),
       ),
     );
+  }
+
+  if (shouldLog({ prefix: 'Focus In', defaultDo: false })) {
+    document.body.addEventListener('focusin', (event) => {
+      logger.logMultiLines({ prefix: 'Focus In', skipCheck: true }, [
+        ['Previous', event.relatedTarget],
+        ['Current', event.target],
+      ]);
+    });
+  }
+
+  if (shouldLog({ prefix: 'Focus Out', defaultDo: false })) {
+    document.body.addEventListener('focusout', (event) => {
+      logger.logMultiLines({ prefix: 'Focus Out', skipCheck: true }, [
+        ['Previous', event.relatedTarget],
+        ['Current', event.target],
+      ]);
+    });
   }
 
   const brandTarget = document.getElementById('header-brand-container');

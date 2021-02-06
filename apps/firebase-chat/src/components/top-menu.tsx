@@ -1,8 +1,8 @@
 import {
   buttonize,
   ClickHandle,
-  DO_NOTHING,
 } from '@components/common/util/component-utils';
+import { DO_NOTHING } from '@lib/common-utils';
 import { Cirrus } from '@alker/cirrus-types';
 import clsx, { Clsx } from 'clsx';
 import { assignProps, Component, JSX } from 'solid-js';

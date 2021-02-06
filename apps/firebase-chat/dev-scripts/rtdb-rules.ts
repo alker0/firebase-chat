@@ -545,18 +545,16 @@ export const getTalkerRules = () =>
           },
           $user_id: {
             [write]: [
+              whenDelete,
+              '?',
               [
-                whenDelete,
-                '&&',
-                [
-                  `${auth.uid} === ${dataOwnerIdFromRoomId}`,
-                  '||',
-                  `${auth.uid} === ${$userId}`,
-                ],
+                `${auth.uid} === ${dataOwnerIdFromRoomId}`,
+                '||',
+                `${auth.uid} === ${$userId}`,
               ],
-              '||',
+              ':',
               [
-                whenCreate,
+                `${auth.uid} !== ${dataOwnerIdFromRoomId}`,
                 '&&',
                 `${$userId} === ${auth.uid}`,
                 '&&',
@@ -586,6 +584,11 @@ export const getTalkerRules = () =>
           },
         },
         accepted: {
+          [read]: [
+            `${auth.uid} === ${dataOwnerIdFromRoomId}`,
+            '||',
+            [query.orderByKey, '&&', `${query.equalTo} === ${auth.uid}`],
+          ],
           $user_id: {
             [write]: [
               whenDelete,
@@ -704,6 +707,11 @@ export const getTalkerRules = () =>
           },
         },
         denied: {
+          [read]: [
+            `${auth.uid} === ${dataOwnerIdFromRoomId}`,
+            '||',
+            [query.orderByKey, '&&', `${query.equalTo} === ${auth.uid}`],
+          ],
           [write]: `${auth.uid} === ${dataOwnerIdFromRoomId}`,
           [validate]: newDataIsObject,
           $user_id: {

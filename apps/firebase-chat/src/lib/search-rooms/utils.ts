@@ -1,14 +1,11 @@
-import { DO_NOTHING } from '@components/common/util/component-utils';
+import { DO_NOTHING } from '@lib/common-utils';
 import {
   createMemo,
   SetStateFunction,
   JSX,
-  createRoot,
-  createComputed,
-  untrack,
   createSignal,
+  createEffect,
 } from 'solid-js';
-import { FirebaseDb } from '../../typings/firebase-sdk';
 import {
   createSearchByNameFn,
   ExecuteSearchFunction,
@@ -16,6 +13,10 @@ import {
   SearchResults,
   SearchResultsKey,
 } from './search';
+import { isEnterKey } from '../browser-utils';
+import { LogContentPairs, logger, shouldLog } from '../logger';
+import { FirebaseDb } from '../../typings/firebase-sdk';
+import { StateOrResource } from '../../typings/solid-utils';
 
 export const initialResultsInfo: ResultsInfo = {
   pageCount: 0,
@@ -64,7 +65,9 @@ export function createRefreshState(
       const refreshKey = refreshSignal();
 
       prevResolve();
-      console.log('[On Refresh]');
+
+      logger.log({ prefix: 'On Refresh' }, 'Key', refreshKey || 'All Keys');
+
       let refreshResolveFn = DO_NOTHING;
       const refreshPromise = new Promise<ResultsInfo>((resolve) => {
         refreshResolveFn = () => resolve(initialResultsInfo);
@@ -99,43 +102,57 @@ export function createSearchByNameHandler(
   const [getLastTargetName, setLastTargetName] = createSignal('');
   const searchFn = createSearchByNameFn(executeFn, {
     db,
-    getLastTargetName: () => untrack(getLastTargetName),
+    getLastTargetName,
     setLastTargetName,
   });
   return (event) => {
-    if (event.key ? event.key === 'Enter' : event.keyCode === 13) {
+    if (isEnterKey(event)) {
       searchFn(event.target.value);
     }
   };
 }
 
-export function createPageCountLogger(searchResults: SearchResults) {
-  return createRoot((...dispose) => {
-    const pageCounts = createMemo(
-      () => {
-        return {
-          byName: searchResults.byName.pageCount,
-          byMembersCount: searchResults.byMembersCount.pageCount,
-          byCreatedTime: searchResults.byCreatedTime.pageCount,
-        };
-      },
-      {} as Record<SearchResultsKey, number>,
-      (prev, next) =>
-        searchResultsKeyArray.every((key) => prev[key] === next[key]),
-    );
+export function createPageCountLogger(
+  searchResults: StateOrResource<SearchResults>,
+) {
+  if (shouldLog({ prefix: 'Page Count' })) {
+    type PageCountObject = Record<SearchResultsKey, number>;
 
-    createComputed((prev = {} as Record<SearchResultsKey, number>) => {
-      const currentPageCounts = pageCounts();
-      searchResultsKeyArray.forEach((key) => {
-        console.log(
-          `[Page Counts]${key}:`,
-          prev[key],
-          '->',
-          currentPageCounts[key],
+    createEffect<PageCountObject>((prev = {} as PageCountObject) => {
+      if (searchResultsKeyArray.some((key) => searchResults.loading?.[key])) {
+        return prev;
+      } else {
+        const [
+          anyChanged,
+          logContents,
+          currentPageCount,
+        ] = searchResultsKeyArray.reduce(
+          ([anyChangedAccum, logContentsAccum, currentPageCountAccum], key) => {
+            const prevCount = prev[key];
+            const currentCount = searchResults[key].pageCount;
+            const isSame = currentCount === prevCount;
+            return [
+              anyChangedAccum || !isSame,
+              logContentsAccum.concat([
+                [key, ...(isSame ? [] : [prevCount, '->']), currentCount],
+              ]),
+              {
+                ...currentPageCountAccum,
+                [key]: currentCount,
+              },
+            ];
+          },
+          [false, [] as LogContentPairs, {} as PageCountObject],
         );
-      });
-      return currentPageCounts;
-    }, {} as Record<SearchResultsKey, number>);
-    return dispose[0];
-  });
+
+        if (anyChanged) {
+          logger.logMultiLines(
+            { prefix: 'Page Count', skipCheck: true },
+            logContents,
+          );
+        }
+        return currentPageCount;
+      }
+    });
+  }
 }
