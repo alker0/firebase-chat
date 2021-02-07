@@ -4,6 +4,7 @@ import {
   routingPaths,
   movePageFromPath,
 } from '@components/project/router';
+import { DebugButtonTable } from '@components/common/case/debug-button-table';
 import { buttonize } from '@components/common/util/component-utils';
 import {
   sessionState,
@@ -11,6 +12,11 @@ import {
 } from '@lib/solid-firebase-auth';
 import { IS_NOT_PRODUCTION, IS_PRODUCTION } from '@lib/constants';
 import { logger, shouldLog } from '@lib/logger';
+import {
+  getDebugButtonPropsArray,
+  //
+  // createDebugButton,
+} from '@lib/debug-utils';
 import { createComputed, createRoot } from 'solid-js';
 import { render, For } from 'solid-js/web';
 
@@ -95,6 +101,24 @@ document.addEventListener('DOMContentLoaded', () => {
         ['Current', event.target],
       ]);
     });
+  }
+
+  if (IS_NOT_PRODUCTION) {
+    const debugButtonsTarget = document.getElementById(
+      import.meta.env.SNOWPACK_PUBLIC_DEBUG_DOM_ID ?? 'debug-contents',
+    );
+    if (debugButtonsTarget) {
+      const DebugButtonTableComponent = DebugButtonTable.createComponent({
+        getDebugButtonPropsArray,
+        rowWrapperProps: {
+          class: 'row',
+        },
+        columnWrapperProps: {
+          class: 'col',
+        },
+      });
+      render(() => <DebugButtonTableComponent />, debugButtonsTarget);
+    }
   }
 
   const brandTarget = document.getElementById('header-brand-container');

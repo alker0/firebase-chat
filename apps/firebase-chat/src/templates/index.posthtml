@@ -26,6 +26,9 @@
 
     <div id="main-contents" role="main"></div>
 
+    <if condition="mode !== 'production'">
+      <div id="{{ debugDomId }}" role="none"></div>
+    </if>
 
     <p id="load">Firebase SDK Loading&hellip;</p>
 
