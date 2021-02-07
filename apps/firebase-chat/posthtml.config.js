@@ -13,6 +13,7 @@ const {
   NODE_ENV = 'development',
   SNOWPACK_PUBLIC_USE_FIREBASE_ANALYTICS = true,
   SNOWPACK_PUBLIC_CIRRUS_VERSION = '0.6.0',
+  SNOWPACK_PUBLIC_DEBUG_DOM_ID: debugDomId = 'debug-contents',
 } = process.env;
 
 const isProduction = NODE_ENV === 'production';
@@ -42,6 +43,7 @@ module.exports = {
         mode: NODE_ENV,
         cssArray,
         jsArray,
+        debugDomId,
         firebaseVersion: onlyVersion(devDeps.firebase),
         firebaseUseSdks,
         firebaseConfig: {
