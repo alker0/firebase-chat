@@ -1,3 +1,5 @@
+import { FirebaseDb } from '../../typings/firebase-sdk';
+
 export const RTDB_KEY_ROOM_ENTRANCES = 'room_entrances';
 export const RTDB_KEY_OWNER_ID = 'owner_id';
 export const RTDB_KEY_OWN_ROOM_ID = 'own_room_id';
@@ -35,4 +37,9 @@ export interface RoomMembersInfoSchema {
   [RTDB_KEY_REQUESTING]: Record<string, string>;
   [RTDB_KEY_ACCEPTED]: Record<string, boolean>;
   [RTDB_KEY_DENIED]: Record<string, boolean>;
+}
+
+export interface DbAndRequestingPath {
+  db: FirebaseDb;
+  requestingPath: string;
 }
