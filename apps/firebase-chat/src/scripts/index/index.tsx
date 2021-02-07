@@ -40,22 +40,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const dbFunc = firebaseSdk.database;
 
   if (IS_NOT_PRODUCTION) {
-    if (import.meta.env.SNOWPACK_PUBLIC_AUTH_EMULATOR_PATH) {
+    const authEmulatorPath = import.meta.env.SNOWPACK_PUBLIC_AUTH_EMULATOR_PATH;
+    if (authEmulatorPath) {
       auth.useEmulator(
-        import.meta.env.SNOWPACK_PUBLIC_AUTH_EMULATOR_PATH,
+        authEmulatorPath,
         // @ts-expect-error
         { disableWarnings: true },
       );
     }
 
-    if (
-      import.meta.env.SNOWPACK_PUBLIC_DATABASE_EMULATOR_HOST &&
-      import.meta.env.SNOWPACK_PUBLIC_DATABASE_EMULATOR_PORT
-    ) {
-      dbFunc().useEmulator(
-        import.meta.env.SNOWPACK_PUBLIC_DATABASE_EMULATOR_HOST,
-        Number(import.meta.env.SNOWPACK_PUBLIC_DATABASE_EMULATOR_PORT),
-      );
+    const dbEmulatorHost = import.meta.env
+      .SNOWPACK_PUBLIC_DATABASE_EMULATOR_HOST;
+    const dbEmulatorPort = import.meta.env
+      .SNOWPACK_PUBLIC_DATABASE_EMULATOR_PORT;
+    if (dbEmulatorHost && dbEmulatorPort) {
+      dbFunc().useEmulator(dbEmulatorHost, Number(dbEmulatorPort));
 
       dbFunc.enableLogging(true);
 
