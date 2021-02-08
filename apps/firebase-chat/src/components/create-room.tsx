@@ -115,11 +115,11 @@ interface MessageState
 async function createRoomAndUpdateLinkButton(
   {
     db,
-    dbServerValues,
+    dbServerValue,
     uid,
     formState: { roomName, password },
     setFormState,
-  }: Pick<CreateRoomRunnerArgs, 'db' | 'dbServerValues' | 'uid'> &
+  }: Pick<CreateRoomRunnerArgs, 'db' | 'dbServerValue' | 'uid'> &
     FormStateAccessors,
   setBottomProps: SetStateFunction<BottomProps>,
   linkButtonViewContext: CreateRoom.LinkButtonViewContext,
@@ -151,7 +151,7 @@ async function createRoomAndUpdateLinkButton(
       (ownRoomIdArg) =>
         createRoomIntoDb({
           db,
-          dbServerValues,
+          dbServerValue,
           uid,
           roomName,
           password,
@@ -279,14 +279,14 @@ export const CreateRoom = {
           const {
             auth: { currentUser },
             db,
-            dbServerValues,
+            dbServerValue,
           } = context;
 
           if (currentUser) {
             createRoomAndUpdateLinkButton(
               {
                 db,
-                dbServerValues,
+                dbServerValue,
                 uid: currentUser.uid,
                 formState,
                 setFormState,
@@ -324,7 +324,7 @@ export declare module CreateRoom {
     linkButtonView: LinkButtonViewContext;
     auth: FirebaseAuth;
     db: FirebaseDb;
-    dbServerValues: FirebaseDbServerValue;
+    dbServerValue: FirebaseDbServerValue;
   }
   export interface Props {}
 

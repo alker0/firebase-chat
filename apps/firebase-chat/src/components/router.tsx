@@ -161,7 +161,7 @@ export const createRouter = (context: RouterContext) => {
     redirectToFailedUrl: redirectToHome,
     auth: context.auth,
     db: context.db,
-    dbServerValues: context.dbServerValue,
+    dbServerValue: context.dbServerValue,
     linkButtonView: {
       created: (ownRoomId) => {
         return {
