@@ -56,36 +56,44 @@ export function createEnterModalComponent(context: EnterModalContext) {
     getCancelEnteringFn,
   });
 
+  const {
+    auth,
+    db,
+    getSelectingRoomRow,
+    executeEnterOption,
+    onSuccess,
+  } = context;
+
   const handlerForEnter = createHandlerForEnter({
     targetIsOwnRoom,
     targetHasPassword: () => targetHasPassword() ?? true,
     getInputPassword,
     setInputPassword,
-    getSelectingRoomRow: context.getSelectingRoomRow,
+    getSelectingRoomRow,
     startEntering: startEnter,
-    redirectToChatPage: context.redirectToChatPage,
+    onSuccess,
     setCancelEnteringFn,
     executeOption: {
-      ...context.executeEnterOption,
-      auth: context.auth,
-      db: context.db,
+      ...executeEnterOption,
+      auth,
+      db,
     },
   });
 
   return () => {
     createComputed(() =>
       batch(() => {
-        const selectingRoom = context.getSelectingRoomRow();
+        const selectingRoom = getSelectingRoomRow();
         if (selectingRoom) {
           const { roomId, ownerId } = selectingRoom;
           if (roomId) {
-            if (context.auth.currentUser?.uid === ownerId) {
+            if (auth.currentUser?.uid === ownerId) {
               setTargetIsOwnRoom(true);
             } else {
               setTargetIsOwnRoom(false);
               loadPasswordNecessity(() =>
                 checkPasswordNecessity({
-                  db: context.db,
+                  db,
                   requestingPath: getRequestingPath(roomId),
                 }),
               );
@@ -101,7 +109,7 @@ export function createEnterModalComponent(context: EnterModalContext) {
     );
 
     createModalStateUpdator({
-      getSelectingRoomRow: context.getSelectingRoomRow,
+      getSelectingRoomRow,
       setModalState,
       targetHasPassword,
       enterResult,
@@ -191,7 +199,7 @@ export function createEnterModalComponent(context: EnterModalContext) {
 export interface EnterModalContext
   extends Pick<
     CreateHendlerForEnterOption,
-    'getSelectingRoomRow' | 'redirectToChatPage'
+    'getSelectingRoomRow' | 'onSuccess'
   > {
   auth: FirebaseAuth;
   db: FirebaseDb;

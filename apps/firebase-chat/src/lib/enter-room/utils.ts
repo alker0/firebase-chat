@@ -19,7 +19,7 @@ export interface CreateHendlerForEnterOption {
   getSelectingRoomRow: () => RoomRow | undefined;
   startEntering: (fn: () => Promise<EnterResult>) => Promise<EnterResult>;
   setCancelEnteringFn: (cancelFn: () => void) => void;
-  redirectToChatPage: (ownerId: string, ownRoomId: string) => void;
+  onSuccess: (targetRoom: Required<RoomRow>) => void;
   executeOption: Omit<
     EnterOption,
     'targetRoomId' | 'inputPassword' | 'handleEntering'
@@ -36,17 +36,17 @@ export function createHandlerForEnter(option: CreateHendlerForEnterOption) {
       getSelectingRoomRow,
       startEntering,
       setCancelEnteringFn,
-      redirectToChatPage,
+      onSuccess,
       executeOption,
     } = option;
     const inputPassword = getInputPassword();
     const targetRoom = getSelectingRoomRow();
 
     if (targetRoom?.roomId) {
-      const { roomId, ownerId, ownRoomId } = targetRoom;
+      const { roomId } = targetRoom;
 
       if (targetIsOwnRoom()) {
-        redirectToChatPage(ownerId, ownRoomId);
+        onSuccess(targetRoom);
       } else if (!targetHasPassword() || inputPassword.length) {
         startEntering(async () => {
           const enterResult = await executeEnter({
@@ -59,7 +59,7 @@ export function createHandlerForEnter(option: CreateHendlerForEnterOption) {
           batch(() => {
             setCancelEnteringFn(DO_NOTHING);
             if (enterResult === 'Succeeded') {
-              redirectToChatPage(ownerId, ownRoomId);
+              onSuccess(targetRoom);
             }
           });
 

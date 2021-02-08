@@ -193,8 +193,11 @@ export const createRouter = (context: RouterContext) => {
     auth: context.auth,
     db: context.db,
     dbServerValue: context.dbServerValue,
-    redirectToChatPage: (ownerId, ownRoomId) =>
-      movePageFromPath(`${routingPaths.chat}/${ownerId}/${ownRoomId}`),
+    onEnteringSucceeded: (targetRoom) =>
+      movePageFromPath(
+        `${routingPaths.chat}/${targetRoom.ownerId}/${targetRoom.ownRoomId}`,
+        targetRoom,
+      ),
   });
 
   return () => (
