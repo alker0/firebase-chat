@@ -1,9 +1,12 @@
 import {
   RTDB_KEY_PASSWORD,
   RequestingDataSchema,
-  DbAndRequestingPath,
 } from '../rtdb/constants';
-import { isPermissionDeniedError, getOnceValue } from '../rtdb/utils';
+import {
+  isPermissionDeniedError,
+  getOnceValue,
+  DbAndRequestingPath,
+} from '../rtdb/utils';
 import { FirebaseDb } from '../../typings/firebase-sdk';
 
 export interface AcceptingBaseOption extends DbAndRequestingPath {

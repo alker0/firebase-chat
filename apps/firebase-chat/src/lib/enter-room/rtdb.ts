@@ -1,10 +1,11 @@
-import { RTDB_KEY_PASSWORD, DbAndRequestingPath } from '../rtdb/constants';
+import { RTDB_KEY_PASSWORD } from '../rtdb/constants';
 import {
   isPermissionDeniedError,
   getOnceValue,
   getMembersCountPath,
   getRequestingPath,
   getAcceptedPath,
+  DbAndRequestingPath,
 } from '../rtdb/utils';
 import { DO_NOTHING } from '../common-utils';
 import { FirebaseDb, FirebaseDbServerValue } from '../../typings/firebase-sdk';

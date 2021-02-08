@@ -11,6 +11,7 @@ import {
   RoomMembersInfoKey,
 } from './constants';
 import { logger } from '../logger';
+import { FirebaseDb } from '../../typings/firebase-sdk';
 
 export const permDeniedCode = 'PERMISSION_DENIED';
 export const permDeniedMsg = 'PERMISSION_DENIED: Permission denied';
@@ -118,4 +119,9 @@ export function arrayFromSnapshot<T>(
     onNoChildren?.();
   }
   return resultList;
+}
+
+export interface DbAndRequestingPath {
+  db: FirebaseDb;
+  requestingPath: string;
 }

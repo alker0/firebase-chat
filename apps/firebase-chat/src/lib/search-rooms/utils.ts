@@ -1,4 +1,3 @@
-import { DO_NOTHING } from '@lib/common-utils';
 import {
   createMemo,
   SetStateFunction,
@@ -13,6 +12,7 @@ import {
   SearchResults,
   SearchResultsKey,
 } from './search';
+import { DO_NOTHING } from '../common-utils';
 import { isEnterKey } from '../browser-utils';
 import { LogContentPairs, logger, shouldLog } from '../logger';
 import { FirebaseDb } from '../../typings/firebase-sdk';

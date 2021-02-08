@@ -48,8 +48,3 @@ export interface RoomMembersInfoSchema {
   [RTDB_KEY_ACCEPTED]: Record<string, boolean>;
   [RTDB_KEY_DENIED]: Record<string, boolean>;
 }
-
-export interface DbAndRequestingPath {
-  db: FirebaseDb;
-  requestingPath: string;
-}
