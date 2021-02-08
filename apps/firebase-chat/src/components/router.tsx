@@ -3,7 +3,7 @@ import { Redirect as RedirectCreator } from '@components/common/base/atoms/redir
 import { inputRegex } from '@components/common/util/input-field-utils';
 import { sessionState } from '@lib/solid-firebase-auth';
 import { NON_EXISTANT_DOM_HREF } from '@lib/constants';
-import { fullPath } from '@lib/browser-utils';
+import { fullPath, pathWithoutHash } from '@lib/browser-utils';
 import { logger } from '@lib/logger';
 import { Cirrus } from '@alker/cirrus-types';
 import clsx, { Clsx } from 'clsx';
@@ -27,10 +27,7 @@ const [routeSignal, sendRouteSignal] = createSignal(
 
 window.addEventListener('popstate', () => {
   const prevWithoutHash = routeSignal().replace(/#[^?]+/, '');
-  const currentWithoutHash = window.location.pathname.replace(
-    window.location.hash,
-    '',
-  );
+  const currentWithoutHash = pathWithoutHash();
 
   if (window.location.hash === NON_EXISTANT_DOM_HREF) {
     window.history.replaceState(
