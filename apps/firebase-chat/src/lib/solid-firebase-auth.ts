@@ -1,5 +1,5 @@
 import { createState, createRoot } from 'solid-js';
-import { FirebaseUser } from '../typings/firebase-sdk';
+import { FirebaseAuth, FirebaseUser } from '../typings/firebase-sdk';
 
 export type UserState = FirebaseUser | null;
 
@@ -28,3 +28,7 @@ export const sessionStateChangedHandler = (user: UserState) => {
     setSessionState('currentUser', user);
   }
 };
+
+export async function getCurrentUserOrSignInAnonymously(auth: FirebaseAuth) {
+  return auth.currentUser ?? (await auth.signInAnonymously()).user;
+}

@@ -1,3 +1,4 @@
+import { getCurrentUserOrSignInAnonymously } from '../solid-firebase-auth';
 import { enterRoomAuto, requestRoomEntryPermission } from './rtdb';
 import { getMembersCountPath, getMembersInfoPathOfUser } from '../rtdb/utils';
 import {
@@ -30,7 +31,7 @@ export async function executeEnter({
   inputPassword,
   handleEntering,
 }: EnterOption): Promise<EnterResult> {
-  const currentUser = auth.currentUser ?? (await auth.signInAnonymously()).user;
+  const currentUser = await getCurrentUserOrSignInAnonymously(auth);
   if (currentUser) {
     const { uid } = currentUser;
 
