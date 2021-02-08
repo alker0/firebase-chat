@@ -56,12 +56,13 @@ window.addEventListener('popstate', () => {
 export const thisOriginUrl = (path: string) =>
   `${window.location.origin}${path}`;
 
-export const movePage = (url: string) => {
-  window.history.pushState({}, '', url);
+export const movePage = (url: string, state: Object | null = null) => {
+  window.history.pushState(state, '', url);
   window.dispatchEvent(new Event('popstate'));
 };
 
-export const movePageFromPath = (path: string) => movePage(thisOriginUrl(path));
+export const movePageFromPath = (path: string, state?: Object | null) =>
+  movePage(thisOriginUrl(path), state);
 
 export const routingPaths = {
   home: '/',
