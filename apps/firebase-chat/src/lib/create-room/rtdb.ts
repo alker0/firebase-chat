@@ -1,6 +1,8 @@
 import {
   RTDB_KEY_PASSWORD,
+  RTDB_KEY_PUBLIC_INFO,
   RTDB_KEY_REQUESTING,
+  RTDB_KEY_ROOMS,
   RTDB_KEY_ROOM_ENTRANCES,
   RTDB_KEY_ROOM_MEMBERS_INFO,
   RTDB_QUERY_COUNT_LIMIT_OWN_ROOMS,
@@ -32,7 +34,7 @@ export function createRoomIntoDb({
   roomId,
 }: CreateRoomRunnerArgs) {
   return db.ref().update({
-    [`rooms/${uid}/${ownRoomId}/public_info`]: {
+    [`${RTDB_KEY_ROOMS}/${uid}/${ownRoomId}/${RTDB_KEY_PUBLIC_INFO}`]: {
       room_id: roomId,
     },
     [`${RTDB_KEY_ROOM_ENTRANCES}/${roomId}`]: {

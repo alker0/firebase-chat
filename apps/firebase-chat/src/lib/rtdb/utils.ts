@@ -1,5 +1,7 @@
 import type firebase from 'firebase';
 import {
+  RTDB_KEY_ROOMS,
+  RTDB_KEY_PUBLIC_INFO,
   RTDB_KEY_ACCEPTED,
   RTDB_KEY_DENIED,
   RTDB_KEY_REQUESTING,
@@ -54,6 +56,14 @@ export type OnceGettable =
 export async function getOnceValue<T = any>(reference: OnceGettable) {
   const snapshot = await reference.once('value');
   return snapshot.val() as T;
+}
+
+export function getRoomInternalPath(ownerId: string, ownRoomId: string) {
+  return `${RTDB_KEY_ROOMS}/${ownerId}/${ownRoomId}`;
+}
+
+export function getRoomPublicInfoPath(ownerId: string, ownRoomId: string) {
+  return `${RTDB_KEY_ROOMS}/${ownerId}/${ownRoomId}/${RTDB_KEY_PUBLIC_INFO}`;
 }
 
 export function getMembersCountPath(roomId: string) {

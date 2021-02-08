@@ -1,5 +1,7 @@
 import { FirebaseDb } from '../../typings/firebase-sdk';
 
+export const RTDB_KEY_ROOMS = 'rooms';
+export const RTDB_KEY_PUBLIC_INFO = 'public_info';
 export const RTDB_KEY_ROOM_ENTRANCES = 'room_entrances';
 export const RTDB_KEY_OWNER_ID = 'owner_id';
 export const RTDB_KEY_OWN_ROOM_ID = 'own_room_id';
@@ -23,6 +25,14 @@ export const RTDB_QUERY_COUNT_LIMIT_OWN_ROOMS = RTDB_DATA_LIMIT_OWN_ROOMS_MAX_CO
 export const RTDB_QUERY_COUNT_LIMIT_ENTRANCES = 10;
 
 export const RTDB_QUERY_MAX_LIMIT_ROOM_MEMBERS_COUNT = RTDB_DATA_LIMIT_ROOM_MEMBERS_MAX_COUNT;
+
+export interface RoomPublicInfoDataSchema {
+  room_id: string;
+}
+
+export interface RoomInternalDataSchama {
+  public_info: RoomPublicInfoDataSchema;
+}
 
 export interface RequestingDataSchema extends Record<string, string> {
   password: string;
