@@ -109,7 +109,7 @@ const Redirect = RedirectCreator.createComponent({
 
 const cn: Clsx<Cirrus> = clsx;
 
-export const createRouter = (context: RouterContext) => {
+export const createRouter = ({ auth, db, dbServerValue }: RouterContext) => {
   const routerContext: PathMatchRouter.Context = {
     loadingElement: () => <div>Loading...</div>,
     unmatchElement: () => <div>Any Pages Are Not Matched</div>,
@@ -123,7 +123,7 @@ export const createRouter = (context: RouterContext) => {
     ),
     getSessionButtonText: () =>
       sessionState.isLoggedIn ? 'Sign Out' : 'Sign Up',
-    onSessionButtonClick: getSessionButtonHandler(context.auth),
+    onSessionButtonClick: getSessionButtonHandler(auth),
     leftButtonText: 'Search Rooms',
     onLeftButtonClick: () => movePageFromPath(routingPaths.searchRooms),
     rightButtonText: 'Create Room',
@@ -142,7 +142,7 @@ export const createRouter = (context: RouterContext) => {
   const redirectToHome = () => movePageFromPath(routingPaths.home);
 
   const LoginFormComponent = createLazyLoginForm({
-    auth: context.auth,
+    auth,
     authComponent: AuthComponent,
     redirectToSuccessUrl: redirectToHome,
     verifyEmailLinkUrl: thisOriginUrl(routingPaths.completeVerifyEmail),
@@ -151,7 +151,7 @@ export const createRouter = (context: RouterContext) => {
   });
 
   const CompleteVerifyEmailComponent = createLazyCompleteVerifyEmail({
-    auth: context.auth,
+    auth,
     authComponent: AuthComponent,
     redirectToSuccessUrl: redirectToHome,
     redirectToFailedUrl: redirectToHome,
@@ -159,15 +159,15 @@ export const createRouter = (context: RouterContext) => {
 
   const CreateRoomComponent = createLazyCreateRoom({
     redirectToFailedUrl: redirectToHome,
-    auth: context.auth,
-    db: context.db,
-    dbServerValue: context.dbServerValue,
+    auth,
+    db,
+    dbServerValue,
     linkButtonView: {
       created: (ownRoomId) => {
         return {
           text: 'Go to your new chat room',
           onClick: () => {
-            const { currentUser } = context.auth;
+            const { currentUser } = auth;
             if (currentUser) {
               movePageFromPath(
                 `${routingPaths.chat}/${currentUser.uid}/${ownRoomId}`,
@@ -190,9 +190,9 @@ export const createRouter = (context: RouterContext) => {
   });
 
   const SearchRoomsComponent = createLazySearchRooms({
-    auth: context.auth,
-    db: context.db,
-    dbServerValue: context.dbServerValue,
+    auth,
+    db,
+    dbServerValue,
     onEnteringSucceeded: (targetRoom) =>
       movePageFromPath(
         `${routingPaths.chat}/${targetRoom.ownerId}/${targetRoom.ownRoomId}`,
