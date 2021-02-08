@@ -68,7 +68,7 @@ export async function getRequestingKeys({
 
 export async function acceptAllUsers(
   option: AcceptingBaseOption,
-): Promise<boolean> {
+): Promise<false | string[]> {
   const { requestingPath, acceptedPath } = option;
   try {
     const requestKeys = await getRequestingKeys(option);
@@ -84,7 +84,7 @@ export async function acceptAllUsers(
 
     console.log(acceptanceData);
 
-    return await acceptUserRunner(option.db, acceptanceData);
+    return (await acceptUserRunner(option.db, acceptanceData)) && requestKeys;
   } catch (error) {
     if (!isPermissionDeniedError(error)) {
       console.error(error);
