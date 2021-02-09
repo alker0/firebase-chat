@@ -1,8 +1,9 @@
 import { batch, createComputed, Resource, SetStateFunction } from 'solid-js';
 import { getPassword, RequestingBaseOption } from './rtdb';
 import { EnterResult, EnterOption, executeEnter } from './enter';
+import { RoomEntranceInfo } from '../rtdb/utils';
+import { CONSIDER, DO_NOTHING } from '../common-utils';
 import { RoomRow } from '../search-rooms/search';
-import { DO_NOTHING } from '../common-utils';
 
 export type { EnterResult };
 
@@ -43,6 +44,8 @@ export function createHandlerForEnter(option: CreateHendlerForEnterOption) {
     const targetRoom = getSelectingRoomRow();
 
     if (targetRoom?.roomId) {
+      CONSIDER<RoomEntranceInfo>(targetRoom);
+
       const { roomId } = targetRoom;
 
       if (targetIsOwnRoom()) {
