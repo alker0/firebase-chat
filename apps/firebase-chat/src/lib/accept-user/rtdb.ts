@@ -26,7 +26,7 @@ export function createAcceptanceDataCreator({
 async function acceptUserRunner(db: FirebaseDb, acceptanceData: object) {
   await db.ref().update(acceptanceData);
 
-  return true;
+  return true as const;
 }
 
 export async function acceptUser(
@@ -71,7 +71,7 @@ export async function getRequestingKeys({
 
 export async function acceptAllUsers(
   option: AcceptingBaseOption,
-): Promise<false | string[]> {
+): Promise<string[] | null> {
   const { requestingPath, acceptedPath } = option;
   try {
     const requestKeys = await getRequestingKeys(option);
@@ -92,7 +92,7 @@ export async function acceptAllUsers(
     if (!isPermissionDeniedError(error)) {
       console.error(error);
     }
-    return false;
+    return null;
   }
 }
 
@@ -122,7 +122,7 @@ export function acceptUsersAuto(option: AcceptingBaseOption) {
     if (!isPermissionDeniedError(error)) {
       console.error(error);
     }
-    return false;
+    return null;
   }
 }
 

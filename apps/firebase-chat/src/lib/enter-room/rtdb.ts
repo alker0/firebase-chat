@@ -140,7 +140,7 @@ export async function enterRoomAuto({
     if (!isPermissionDeniedError(error)) {
       console.error(error);
     }
-    return false;
+    return null;
   }
 }
 
