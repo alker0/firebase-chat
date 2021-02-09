@@ -19,7 +19,7 @@ export interface CreateHendlerForEnterOption {
   getSelectingRoomRow: () => RoomRow | undefined;
   startEntering: (fn: () => Promise<EnterResult>) => Promise<EnterResult>;
   setCancelEnteringFn: (cancelFn: () => void) => void;
-  onSuccess: (targetRoom: Required<RoomRow>) => void;
+  onSuccess: (targetRoom: RoomEntranceInfo) => void;
   executeOption: Omit<
     EnterOption,
     'targetRoomId' | 'inputPassword' | 'handleEntering'

@@ -12,7 +12,10 @@ import {
   RTDB_KEY_OWN_ROOM_ID,
   RTDB_KEY_ROOM_NAME,
 } from '../rtdb/constants';
-import { arrayFromSnapshot as arrayFromSnapshotUtil } from '../rtdb/utils';
+import {
+  arrayFromSnapshot as arrayFromSnapshotUtil,
+  RoomEntranceInfo,
+} from '../rtdb/utils';
 import { getLastElement } from '../common-utils';
 import { logger } from '../logger';
 import {
@@ -24,13 +27,8 @@ import {
 // export type SearchResultsKey = `by${'Name' | 'MembersCount' | 'CreatedTime'}`;
 export type SearchResultsKey = 'byName' | 'byMembersCount' | 'byCreatedTime';
 
-export interface RoomRow {
+export interface RoomRow extends Omit<RoomEntranceInfo, 'roomId'> {
   roomId: string | null;
-  ownerId: string;
-  ownRoomId: string;
-  roomName: string;
-  membersCount: number;
-  createdTime: number;
 }
 
 export interface ResultsInfo extends ResultsInfoBase<RoomRow> {}

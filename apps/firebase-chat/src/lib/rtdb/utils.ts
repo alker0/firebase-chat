@@ -125,3 +125,12 @@ export interface DbAndRequestingPath {
   db: FirebaseDb;
   requestingPath: string;
 }
+
+export interface RoomEntranceInfo {
+  roomId: string;
+  ownerId: string;
+  ownRoomId: string;
+  roomName: string;
+  membersCount: number;
+  createdTime: number;
+}
