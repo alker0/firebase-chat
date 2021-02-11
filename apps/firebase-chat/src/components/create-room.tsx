@@ -3,8 +3,8 @@ import { FormContainer } from '@components/common/base/form/form-container';
 import { BasicInputField } from '@components/common/cirrus/common/basic-input-field';
 import { buttonize } from '@components/common/util/component-utils';
 import { CallableSubmit } from '@components/common/util/input-field-utils';
-import { sessionState } from '@lib/solid-firebase-auth';
 import { DO_NOTHING } from '@lib/common-utils';
+import { sessionState } from '@lib/solid-firebase-auth';
 import {
   RTDB_DATA_LIMIT_OWN_ROOMS_MAX_COUNT,
   RTDB_DATA_LIMIT_PASSWORD_MAX_LENGTH,
@@ -70,6 +70,23 @@ interface BottomProps {
   readonly linkButtonAction: () => void;
 }
 
+const defaultBottomProps: Required<BottomProps> = {
+  linkButtonColorStyle: 'btn-link',
+  get linkButtonHide(): boolean {
+    return !(this as BottomProps).linkButtonView.text;
+  },
+  linkButtonView: {
+    text: '',
+    onClick: DO_NOTHING,
+  },
+  get linkButtonText() {
+    return (this as BottomProps).linkButtonView.text;
+  },
+  get linkButtonAction() {
+    return (this as BottomProps).linkButtonView.onClick;
+  },
+};
+
 const InputField = BasicInputField.createComponent({
   fieldSize: 'small',
 });
@@ -98,11 +115,11 @@ interface MessageState
 async function createRoomAndUpdateLinkButton(
   {
     db,
-    dbServerValues,
+    dbServerValue,
     uid,
     formState: { roomName, password },
     setFormState,
-  }: Pick<CreateRoomRunnerArgs, 'db' | 'dbServerValues' | 'uid'> &
+  }: Pick<CreateRoomRunnerArgs, 'db' | 'dbServerValue' | 'uid'> &
     FormStateAccessors,
   setBottomProps: SetStateFunction<BottomProps>,
   linkButtonViewContext: CreateRoom.LinkButtonViewContext,
@@ -134,7 +151,7 @@ async function createRoomAndUpdateLinkButton(
       (ownRoomIdArg) =>
         createRoomIntoDb({
           db,
-          dbServerValues,
+          dbServerValue,
           uid,
           roomName,
           password,
@@ -243,22 +260,9 @@ export const CreateRoom = {
         errorMessage: '',
       });
 
-      const [getBottomProps, setBottomProps] = createState<BottomProps>({
-        linkButtonColorStyle: 'btn-link',
-        get linkButtonHide(): boolean {
-          return !(this as BottomProps).linkButtonView.text;
-        },
-        linkButtonView: {
-          text: '',
-          onClick: DO_NOTHING,
-        },
-        get linkButtonText() {
-          return (this as BottomProps).linkButtonView.text;
-        },
-        get linkButtonAction() {
-          return (this as BottomProps).linkButtonView.onClick;
-        },
-      });
+      const [getBottomProps, setBottomProps] = createState<BottomProps>(
+        defaultBottomProps,
+      );
 
       const onSubmit: () => CallableSubmit = createMemo(() => {
         if (!sessionState.isLoggedIn) {
@@ -275,14 +279,14 @@ export const CreateRoom = {
           const {
             auth: { currentUser },
             db,
-            dbServerValues,
+            dbServerValue,
           } = context;
 
           if (currentUser) {
             createRoomAndUpdateLinkButton(
               {
                 db,
-                dbServerValues,
+                dbServerValue,
                 uid: currentUser.uid,
                 formState,
                 setFormState,
@@ -320,7 +324,7 @@ export declare module CreateRoom {
     linkButtonView: LinkButtonViewContext;
     auth: FirebaseAuth;
     db: FirebaseDb;
-    dbServerValues: FirebaseDbServerValue;
+    dbServerValue: FirebaseDbServerValue;
   }
   export interface Props {}
 

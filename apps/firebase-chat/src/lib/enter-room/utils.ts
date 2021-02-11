@@ -1,14 +1,15 @@
 import { batch, createComputed, Resource, SetStateFunction } from 'solid-js';
 import { getPassword, RequestingBaseOption } from './rtdb';
 import { EnterResult, EnterOption, executeEnter } from './enter';
+import { RoomEntranceInfo } from '../rtdb/utils';
+import { CONSIDER, DO_NOTHING } from '../common-utils';
 import { RoomRow } from '../search-rooms/search';
-import { DO_NOTHING } from '../common-utils';
 
 export type { EnterResult };
 
 export async function checkPasswordNecessity(option: RequestingBaseOption) {
   const necessity = await getPassword(option);
-  return !necessity.succeeded;
+  return necessity == null;
 }
 
 export interface CreateHendlerForEnterOption {
@@ -19,7 +20,7 @@ export interface CreateHendlerForEnterOption {
   getSelectingRoomRow: () => RoomRow | undefined;
   startEntering: (fn: () => Promise<EnterResult>) => Promise<EnterResult>;
   setCancelEnteringFn: (cancelFn: () => void) => void;
-  redirectToChatPage: (ownerId: string, ownRoomId: string) => void;
+  onSuccess: (targetRoom: RoomEntranceInfo) => void;
   executeOption: Omit<
     EnterOption,
     'targetRoomId' | 'inputPassword' | 'handleEntering'
@@ -36,17 +37,19 @@ export function createHandlerForEnter(option: CreateHendlerForEnterOption) {
       getSelectingRoomRow,
       startEntering,
       setCancelEnteringFn,
-      redirectToChatPage,
+      onSuccess,
       executeOption,
     } = option;
     const inputPassword = getInputPassword();
     const targetRoom = getSelectingRoomRow();
 
     if (targetRoom?.roomId) {
-      const { roomId, ownerId, ownRoomId } = targetRoom;
+      CONSIDER<RoomEntranceInfo>(targetRoom);
+
+      const { roomId } = targetRoom;
 
       if (targetIsOwnRoom()) {
-        redirectToChatPage(ownerId, ownRoomId);
+        onSuccess(targetRoom);
       } else if (!targetHasPassword() || inputPassword.length) {
         startEntering(async () => {
           const enterResult = await executeEnter({
@@ -59,7 +62,7 @@ export function createHandlerForEnter(option: CreateHendlerForEnterOption) {
           batch(() => {
             setCancelEnteringFn(DO_NOTHING);
             if (enterResult === 'Succeeded') {
-              redirectToChatPage(ownerId, ownRoomId);
+              onSuccess(targetRoom);
             }
           });
 

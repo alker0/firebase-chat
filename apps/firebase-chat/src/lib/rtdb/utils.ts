@@ -1,5 +1,7 @@
 import type firebase from 'firebase';
 import {
+  RTDB_KEY_ROOMS,
+  RTDB_KEY_PUBLIC_INFO,
   RTDB_KEY_ACCEPTED,
   RTDB_KEY_DENIED,
   RTDB_KEY_REQUESTING,
@@ -8,7 +10,15 @@ import {
   RTDB_KEY_ROOM_MEMBERS_INFO,
   RoomMembersInfoKey,
 } from './constants';
+import { DO_NOTHING } from '../common-utils';
 import { logger } from '../logger';
+import {
+  FirebaseDb,
+  FirebaseDbEventType,
+  FirebaseDbQuery,
+  FirebaseDbRef,
+  FirebaseDbSnapshot,
+} from '../../typings/firebase-sdk';
 
 export const permDeniedCode = 'PERMISSION_DENIED';
 export const permDeniedMsg = 'PERMISSION_DENIED: Permission denied';
@@ -54,6 +64,14 @@ export type OnceGettable =
 export async function getOnceValue<T = any>(reference: OnceGettable) {
   const snapshot = await reference.once('value');
   return snapshot.val() as T;
+}
+
+export function getRoomInternalPath(ownerId: string, ownRoomId: string) {
+  return `${RTDB_KEY_ROOMS}/${ownerId}/${ownRoomId}`;
+}
+
+export function getRoomInternalPublicPath(ownerId: string, ownRoomId: string) {
+  return `${RTDB_KEY_ROOMS}/${ownerId}/${ownRoomId}/${RTDB_KEY_PUBLIC_INFO}`;
 }
 
 export function getMembersCountPath(roomId: string) {
@@ -108,4 +126,53 @@ export function arrayFromSnapshot<T>(
     onNoChildren?.();
   }
   return resultList;
+}
+
+export interface SnapshotHandler {
+  (snapshot: FirebaseDbSnapshot): void;
+}
+
+export interface SnapshotWatchOption {
+  snapshotHandler: SnapshotHandler;
+  handleFirstResult?: boolean;
+}
+
+export function createDbFirstPromiseAndListener(
+  targetRef: FirebaseDbRef | FirebaseDbQuery,
+  eventType: FirebaseDbEventType,
+  { snapshotHandler, handleFirstResult = false }: SnapshotWatchOption = {
+    snapshotHandler: DO_NOTHING,
+  },
+) {
+  let onEventFn: (snapshot: FirebaseDbSnapshot) => void = snapshotHandler;
+  const firstSnapshotPromise = new Promise<FirebaseDbSnapshot>((resolve) => {
+    onEventFn = (snapshot) => {
+      onEventFn = snapshotHandler;
+      resolve(snapshot);
+      if (handleFirstResult) snapshotHandler(snapshot);
+    };
+  });
+
+  const callback = targetRef.on(eventType, function onEvent(snapthot) {
+    onEventFn(snapthot);
+  });
+
+  return [
+    firstSnapshotPromise,
+    () => targetRef.off(eventType, callback),
+  ] as const;
+}
+
+export interface DbAndRequestingPath {
+  db: FirebaseDb;
+  requestingPath: string;
+}
+
+export interface RoomEntranceInfo {
+  roomId: string;
+  ownerId: string;
+  ownRoomId: string;
+  roomName: string;
+  membersCount: number;
+  createdTime: number;
 }

@@ -3,7 +3,7 @@ import { Redirect as RedirectCreator } from '@components/common/base/atoms/redir
 import { inputRegex } from '@components/common/util/input-field-utils';
 import { sessionState } from '@lib/solid-firebase-auth';
 import { NON_EXISTANT_DOM_HREF } from '@lib/constants';
-import { fullPath } from '@lib/browser-utils';
+import { fullPath, pathWithoutHash } from '@lib/browser-utils';
 import { logger } from '@lib/logger';
 import { Cirrus } from '@alker/cirrus-types';
 import clsx, { Clsx } from 'clsx';
@@ -14,6 +14,7 @@ import { createLazyCompleteVerifyEmail } from './lazy/complete-verify-email';
 import { createLazyLoginForm } from './lazy/login-form';
 import { createLazyCreateRoom } from './lazy/create-room';
 import { createLazySearchRooms } from './lazy/search-rooms';
+import { createLazyChatRoom } from './lazy/chat-room';
 import {
   FirebaseAuth,
   FirebaseDb,
@@ -27,10 +28,7 @@ const [routeSignal, sendRouteSignal] = createSignal(
 
 window.addEventListener('popstate', () => {
   const prevWithoutHash = routeSignal().replace(/#[^?]+/, '');
-  const currentWithoutHash = window.location.pathname.replace(
-    window.location.hash,
-    '',
-  );
+  const currentWithoutHash = pathWithoutHash();
 
   if (window.location.hash === NON_EXISTANT_DOM_HREF) {
     window.history.replaceState(
@@ -59,12 +57,13 @@ window.addEventListener('popstate', () => {
 export const thisOriginUrl = (path: string) =>
   `${window.location.origin}${path}`;
 
-export const movePage = (url: string) => {
-  window.history.pushState({}, '', url);
+export const movePage = (url: string, state: Object | null = null) => {
+  window.history.pushState(state, '', url);
   window.dispatchEvent(new Event('popstate'));
 };
 
-export const movePageFromPath = (path: string) => movePage(thisOriginUrl(path));
+export const movePageFromPath = (path: string, state?: Object | null) =>
+  movePage(thisOriginUrl(path), state);
 
 export const routingPaths = {
   home: '/',
@@ -111,7 +110,7 @@ const Redirect = RedirectCreator.createComponent({
 
 const cn: Clsx<Cirrus> = clsx;
 
-export const createRouter = (context: RouterContext) => {
+export const createRouter = ({ auth, db, dbServerValue }: RouterContext) => {
   const routerContext: PathMatchRouter.Context = {
     loadingElement: () => <div>Loading...</div>,
     unmatchElement: () => <div>Any Pages Are Not Matched</div>,
@@ -125,7 +124,7 @@ export const createRouter = (context: RouterContext) => {
     ),
     getSessionButtonText: () =>
       sessionState.isLoggedIn ? 'Sign Out' : 'Sign Up',
-    onSessionButtonClick: getSessionButtonHandler(context.auth),
+    onSessionButtonClick: getSessionButtonHandler(auth),
     leftButtonText: 'Search Rooms',
     onLeftButtonClick: () => movePageFromPath(routingPaths.searchRooms),
     rightButtonText: 'Create Room',
@@ -144,7 +143,7 @@ export const createRouter = (context: RouterContext) => {
   const redirectToHome = () => movePageFromPath(routingPaths.home);
 
   const LoginFormComponent = createLazyLoginForm({
-    auth: context.auth,
+    auth,
     authComponent: AuthComponent,
     redirectToSuccessUrl: redirectToHome,
     verifyEmailLinkUrl: thisOriginUrl(routingPaths.completeVerifyEmail),
@@ -153,7 +152,7 @@ export const createRouter = (context: RouterContext) => {
   });
 
   const CompleteVerifyEmailComponent = createLazyCompleteVerifyEmail({
-    auth: context.auth,
+    auth,
     authComponent: AuthComponent,
     redirectToSuccessUrl: redirectToHome,
     redirectToFailedUrl: redirectToHome,
@@ -161,15 +160,15 @@ export const createRouter = (context: RouterContext) => {
 
   const CreateRoomComponent = createLazyCreateRoom({
     redirectToFailedUrl: redirectToHome,
-    auth: context.auth,
-    db: context.db,
-    dbServerValues: context.dbServerValue,
+    auth,
+    db,
+    dbServerValue,
     linkButtonView: {
       created: (ownRoomId) => {
         return {
           text: 'Go to your new chat room',
           onClick: () => {
-            const { currentUser } = context.auth;
+            const { currentUser } = auth;
             if (currentUser) {
               movePageFromPath(
                 `${routingPaths.chat}/${currentUser.uid}/${ownRoomId}`,
@@ -192,11 +191,20 @@ export const createRouter = (context: RouterContext) => {
   });
 
   const SearchRoomsComponent = createLazySearchRooms({
-    auth: context.auth,
-    db: context.db,
-    dbServerValue: context.dbServerValue,
-    redirectToChatPage: (ownerId, ownRoomId) =>
-      movePageFromPath(`${routingPaths.chat}/${ownerId}/${ownRoomId}`),
+    auth,
+    db,
+    dbServerValue,
+    onEnteringSucceeded: (targetRoom) =>
+      movePageFromPath(
+        `${routingPaths.chat}/${targetRoom.ownerId}/${targetRoom.ownRoomId}`,
+        targetRoom,
+      ),
+  });
+
+  const ChatRoomComponent = createLazyChatRoom({
+    auth,
+    db,
+    redirectToFailedUrl: redirectToHome,
   });
 
   return () => (
@@ -209,7 +217,7 @@ export const createRouter = (context: RouterContext) => {
         },
         {
           matcher: () => fullPath().startsWith(routingPaths.chat),
-          getComponent: () => <div>Chat Page</div>,
+          getComponent: () => <ChatRoomComponent />,
         },
         {
           matcher: () => fullPath().startsWith(routingPaths.login),

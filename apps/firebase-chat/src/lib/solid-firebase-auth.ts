@@ -1,30 +1,41 @@
-import { createState, createRoot } from 'solid-js';
-import { FirebaseUser } from '../typings/firebase-sdk';
+import { createState, createRoot, batch, reconcile } from 'solid-js';
+import { FirebaseAuth, FirebaseUser } from '../typings/firebase-sdk';
 
 export type UserState = FirebaseUser | null;
 
-export interface SesstionState {
-  currentUser: UserState;
-  readonly isLoggedIn: boolean;
+export interface SessionStateWhenLoggedIn {
+  readonly currentUser: FirebaseUser;
+  readonly isLoggedIn: true;
 }
 
-export const [sessionState, setSessionState] = createRoot(() => {
-  const sessionStateAccessor = createState<SesstionState>({
-    currentUser: null as UserState,
-    get isLoggedIn(): boolean {
-      return Boolean((this as SesstionState).currentUser);
-    },
-  });
-  return sessionStateAccessor;
-});
+export interface SessionStateWhenLoggedOut {
+  readonly currentUser: null;
+  readonly isLoggedIn: false;
+}
+
+export type SessionState = SessionStateWhenLoggedIn | SessionStateWhenLoggedOut;
+
+export const [sessionState, setSessionState] = createRoot(() =>
+  createState<SessionState>({
+    currentUser: null,
+    isLoggedIn: false,
+  }),
+);
 
 export const sessionStateChangedHandler = (user: UserState) => {
-  if (user && !user.emailVerified) {
+  if (user && !user.isAnonymous && !user.emailVerified) {
     user
       .delete()
       .then(() => console.log('User is deleted'))
       .catch(console.log);
   } else {
-    setSessionState('currentUser', user);
+    batch(() => {
+      setSessionState('currentUser', reconcile(user));
+      setSessionState('isLoggedIn', Boolean(user));
+    });
   }
 };
+
+export async function getCurrentUserOrSignInAnonymously(auth: FirebaseAuth) {
+  return auth.currentUser ?? (await auth.signInAnonymously()).user;
+}

@@ -25,6 +25,8 @@ import {
   createSelector,
   createEffect,
   createComputed,
+  State,
+  $RAW,
 } from 'solid-js';
 import { Switch, Match, Suspense } from 'solid-js/web';
 import { createLazyResultList } from './lazy/result-list';
@@ -124,14 +126,17 @@ export const SearchRooms = {
       );
     }
 
-    const { auth, db, dbServerValue, redirectToChatPage } = context;
+    const { auth, db, dbServerValue, onEnteringSucceeded } = context;
 
     const EnterModal = createLazyEnterModal({
       auth,
       db,
       enterModelId: ENTER_MODAL_ID,
       getSelectingRoomRow,
-      redirectToChatPage,
+      onSuccess: (targetRoom) =>
+        onEnteringSucceeded(
+          (targetRoom as State<typeof targetRoom>)[$RAW] ?? targetRoom,
+        ),
       executeEnterOption: {
         dbServerValue,
       },
@@ -270,7 +275,7 @@ export declare module SearchRooms {
     auth: FirebaseAuth;
     db: FirebaseDb;
     dbServerValue: FirebaseDbServerValue;
-    redirectToChatPage: EnterModalContext['redirectToChatPage'];
+    onEnteringSucceeded: EnterModalContext['onSuccess'];
   }
   export interface Props {}
 }

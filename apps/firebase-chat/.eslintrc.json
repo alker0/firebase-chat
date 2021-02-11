@@ -79,5 +79,14 @@
         "assertFunctionNames": ["expect", "firebase.assertSucceeds", "firebase.assertFails"]
       }
     ]
-  }
+  },
+  "overrides": [
+    {
+      "files": ["./src/components/**/*.ts", "./src/components/**/*.tsx"],
+      "rules": {
+        "@typescript-eslint/no-redeclare": "off",
+        "import/export": "off"
+      }
+    }
+  ]
 }
