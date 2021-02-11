@@ -25,6 +25,8 @@ import {
   createSelector,
   createEffect,
   createComputed,
+  State,
+  $RAW,
 } from 'solid-js';
 import { Switch, Match, Suspense } from 'solid-js/web';
 import { createLazyResultList } from './lazy/result-list';
@@ -131,7 +133,10 @@ export const SearchRooms = {
       db,
       enterModelId: ENTER_MODAL_ID,
       getSelectingRoomRow,
-      onSuccess: onEnteringSucceeded,
+      onSuccess: (targetRoom) =>
+        onEnteringSucceeded(
+          (targetRoom as State<typeof targetRoom>)[$RAW] ?? targetRoom,
+        ),
       executeEnterOption: {
         dbServerValue,
       },
