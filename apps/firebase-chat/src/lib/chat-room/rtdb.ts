@@ -1,13 +1,56 @@
 import {
   RTDB_KEY_PASSWORD,
+  RTDB_KEY_ROOM_ENTRANCES,
   RequestingDataSchema,
 } from '../rtdb/constants';
 import {
   isPermissionDeniedError,
   getOnceValue,
   DbAndRequestingPath,
+  SnapshotWatchOption,
+  createDbFirstPromiseAndListener,
 } from '../rtdb/utils';
 import { FirebaseDb } from '../../typings/firebase-sdk';
+
+export function getAndWatchOwnRoomInternal({
+  db,
+  internalInfoPath,
+  watchOption,
+}: {
+  db: FirebaseDb;
+  internalInfoPath: string;
+  watchOption?: SnapshotWatchOption;
+}) {
+  const targetRef = db.ref(internalInfoPath);
+
+  return createDbFirstPromiseAndListener(targetRef, 'value', watchOption);
+}
+
+export function getAndWatchRoomInternalPublic({
+  db,
+  internalPublicPath,
+  watchOption,
+}: {
+  db: FirebaseDb;
+  internalPublicPath: string;
+  watchOption?: SnapshotWatchOption;
+}) {
+  const targetRef = db.ref(internalPublicPath);
+
+  return createDbFirstPromiseAndListener(targetRef, 'value', watchOption);
+}
+
+export function getAndWatchRoomEntranceById(
+  db: FirebaseDb,
+  roomId: string,
+  watchOption?: SnapshotWatchOption,
+) {
+  const targetRef = db
+    .ref(`${RTDB_KEY_ROOM_ENTRANCES}/${roomId}`)
+    .limitToFirst(1);
+
+  return createDbFirstPromiseAndListener(targetRef, 'value', watchOption);
+}
 
 export interface AcceptingBaseOption extends DbAndRequestingPath {
   acceptedPath: string;
@@ -105,12 +148,15 @@ export function acceptUsersAuto(option: AcceptingBaseOption) {
     const handler = db
       .ref(`${requestingPath}`)
       .on('child_added', (childSnapshot) => {
-        if (childSnapshot.key) {
-          const acceptanceData = createAcceptanceData(childSnapshot.key);
+        const childKey = childSnapshot.key;
+        if (childKey) {
+          if (childKey !== RTDB_KEY_PASSWORD) {
+            const acceptanceData = createAcceptanceData(childKey);
 
-          console.log(acceptanceData);
+            console.log(acceptanceData);
 
-          acceptUserRunner(db, acceptanceData);
+            acceptUserRunner(db, acceptanceData);
+          }
         } else {
           console.error('[acceptUsersAuto]Snapshot does not have a key');
         }

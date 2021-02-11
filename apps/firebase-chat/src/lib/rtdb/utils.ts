@@ -70,7 +70,7 @@ export function getRoomInternalPath(ownerId: string, ownRoomId: string) {
   return `${RTDB_KEY_ROOMS}/${ownerId}/${ownRoomId}`;
 }
 
-export function getRoomPublicInfoPath(ownerId: string, ownRoomId: string) {
+export function getRoomInternalPublicPath(ownerId: string, ownRoomId: string) {
   return `${RTDB_KEY_ROOMS}/${ownerId}/${ownRoomId}/${RTDB_KEY_PUBLIC_INFO}`;
 }
 

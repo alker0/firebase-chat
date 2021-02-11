@@ -95,9 +95,13 @@ export async function enterRoomAuto({
 }: EnterRoomOption) {
   try {
     const userAcceptedPath = `${acceptedPath}/${uid}`;
-    const userAcceptedRef = db.ref(acceptedPath).orderByKey().equalTo(uid);
+    const userAcceptedRef = db
+      .ref(acceptedPath)
+      .orderByKey()
+      .equalTo(uid)
+      .limitToFirst(1);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    let resolve = (_a: boolean) => {};
+    let resolve: (_: boolean) => void = DO_NOTHING;
     let reject = DO_NOTHING;
     const enteringPromise = new Promise<boolean>((resolveFn, rejectFn) => {
       resolve = resolveFn;

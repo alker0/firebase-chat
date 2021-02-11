@@ -1,6 +1,10 @@
 import { getCurrentUserOrSignInAnonymously } from '../solid-firebase-auth';
 import { enterRoomAuto, requestRoomEntryPermission } from './rtdb';
-import { getMembersCountPath, getMembersInfoPathOfUser } from '../rtdb/utils';
+import {
+  getMembersCountPath,
+  getAcceptedPath,
+  getRequestingPath,
+} from '../rtdb/utils';
 import {
   FirebaseAuth,
   FirebaseDb,
@@ -35,10 +39,8 @@ export async function executeEnter({
   if (currentUser) {
     const { uid } = currentUser;
 
-    const {
-      requesting: userRequestingPath,
-      accepted: acceptedPath,
-    } = getMembersInfoPathOfUser(targetRoomId, uid);
+    const userRequestingPath = `${getRequestingPath(targetRoomId)}/${uid}`;
+    const acceptedPath = getAcceptedPath(targetRoomId);
 
     const succeededRequesting = await requestRoomEntryPermission({
       db,

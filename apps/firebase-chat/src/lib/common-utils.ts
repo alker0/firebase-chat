@@ -1,5 +1,7 @@
 export const DO_NOTHING = () => {};
 
+export const DO_NOTHING_PROMISE = Promise.resolve(DO_NOTHING);
+
 export const CONSIDER: <T>(target: unknown) => asserts target is T = DO_NOTHING;
 
 export type TypeCheckText =

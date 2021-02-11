@@ -14,6 +14,7 @@ import { createLazyCompleteVerifyEmail } from './lazy/complete-verify-email';
 import { createLazyLoginForm } from './lazy/login-form';
 import { createLazyCreateRoom } from './lazy/create-room';
 import { createLazySearchRooms } from './lazy/search-rooms';
+import { createLazyChatRoom } from './lazy/chat-room';
 import {
   FirebaseAuth,
   FirebaseDb,
@@ -200,6 +201,12 @@ export const createRouter = ({ auth, db, dbServerValue }: RouterContext) => {
       ),
   });
 
+  const ChatRoomComponent = createLazyChatRoom({
+    auth,
+    db,
+    redirectToFailedUrl: redirectToHome,
+  });
+
   return () => (
     <RouteComponent
       routeSignal={routeSignal}
@@ -210,7 +217,7 @@ export const createRouter = ({ auth, db, dbServerValue }: RouterContext) => {
         },
         {
           matcher: () => fullPath().startsWith(routingPaths.chat),
-          getComponent: () => <div>Chat Page</div>,
+          getComponent: () => <ChatRoomComponent />,
         },
         {
           matcher: () => fullPath().startsWith(routingPaths.login),
