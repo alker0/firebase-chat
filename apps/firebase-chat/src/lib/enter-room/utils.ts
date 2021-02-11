@@ -9,7 +9,7 @@ export type { EnterResult };
 
 export async function checkPasswordNecessity(option: RequestingBaseOption) {
   const necessity = await getPassword(option);
-  return !necessity.succeeded;
+  return necessity == null;
 }
 
 export interface CreateHendlerForEnterOption {

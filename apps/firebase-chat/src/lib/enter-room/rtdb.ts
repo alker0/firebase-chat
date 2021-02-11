@@ -9,6 +9,7 @@ import {
 } from '../rtdb/utils';
 import { DO_NOTHING } from '../common-utils';
 import { FirebaseDb, FirebaseDbServerValue } from '../../typings/firebase-sdk';
+import { NullablePromise } from '../../typings/common-utils';
 
 export { getMembersCountPath, getRequestingPath, getAcceptedPath };
 
@@ -16,30 +17,19 @@ export interface RequestingBaseOption extends DbAndRequestingPath {}
 
 interface GetPasswordOption extends DbAndRequestingPath {}
 
-interface GetPasswordResult {
-  succeeded: boolean;
-  password: string;
-}
-
 export async function getPassword({
   db,
   requestingPath,
-}: GetPasswordOption): Promise<GetPasswordResult> {
+}: GetPasswordOption): NullablePromise<string> {
   try {
-    return {
-      succeeded: true,
-      password: await getOnceValue(
-        db.ref(requestingPath).orderByKey().equalTo(RTDB_KEY_PASSWORD),
-      ),
-    };
+    return await getOnceValue(
+      db.ref(requestingPath).orderByKey().equalTo(RTDB_KEY_PASSWORD),
+    );
   } catch (error) {
     if (!isPermissionDeniedError(error)) {
       console.error(error);
     }
-    return {
-      succeeded: false,
-      password: '',
-    };
+    return null;
   }
 }
 
