@@ -14,15 +14,15 @@
     "@alker/cirrus-types": "workspace:*",
     "@alker/styled-tsx": "workspace:*",
     "@alker/type-filtered-clsx": "workspace:*",
-    "@babel/cli": "^7.12.10",
-    "@babel/core": "^7.12.10",
-    "@babel/preset-typescript": "^7.12.7",
-    "firebase": "^8.2.1",
-    "firebaseui": "^4.7.1",
+    "@babel/cli": "^7.12.16",
+    "@babel/core": "^7.12.16",
+    "@babel/preset-typescript": "^7.12.16",
+    "firebase": "^8.2.7",
+    "firebaseui": "^4.7.3",
     "npm-run-all": "^4.1.5",
     "solid-js": "^0.23.4",
     "solid-styled-jsx": "^0.23.4",
-    "styled-jsx": "~3.3.2"
+    "styled-jsx": "3.3.2"
   },
   "peerDependencies": {
     "cirrus-ui": "0.6.x",
