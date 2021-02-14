@@ -13019,7 +13019,7 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"postcss-syntax@npm:^0.36.2":
+"postcss-syntax@npm:0.36 - 1, postcss-syntax@npm:^0.36.2":
   version: 0.36.2
   resolution: "postcss-syntax@npm:0.36.2"
   peerDependencies:
@@ -16634,6 +16634,7 @@ typescript@^4.1.5:
     postcss-cli: ^8.3.1
     postcss-import: ^14.0.0
     postcss-import-url: ^7.0.0
+    postcss-syntax: 0.36 - 1
     postcss-ts-classnames: "patch:postcss-ts-classnames@0.2.0#./patches/postcss-ts-classnames.patch"
     posthtml: ^0.15.1
     prettier: ^2.2.1
