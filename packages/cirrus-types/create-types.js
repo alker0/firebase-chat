@@ -1,6 +1,6 @@
 const { join: pathJoin, relative: pathRelative } = require('path');
 const { existsSync } = require('fs');
-const { readFile, writeFile } = require('fs/promises');
+const { readFile, writeFile, mkdir } = require('fs/promises');
 const postcss = require('postcss');
 const importPlugin = require('postcss-import-url');
 const declarePlugin = require('postcss-ts-classnames');
@@ -8,7 +8,8 @@ const declarePlugin = require('postcss-ts-classnames');
 const dirName = process.cwd();
 const cssPath = pathJoin(dirName, 'cdn', 'cirrus.css');
 
-const typeOutput = pathJoin(dirName, 'tmp', 'index.d.ts');
+const typeOutputDir = pathJoin(dirName, 'dist');
+const typeOutput = pathJoin(typeOutputDir, 'cirrus.d.ts');
 
 const green = '\x1b[32m%s\x1b[0m';
 const normal = '%s';
@@ -18,6 +19,10 @@ const encoding = 'utf-8';
 (async () => {
   try {
     const css = await readFile(cssPath, encoding);
+
+    if (!existsSync(typeOutputDir)) {
+      await mkdir(typeOutputDir);
+    }
 
     await postcss([
       importPlugin,
@@ -35,15 +40,19 @@ const encoding = 'utf-8';
     if (existsSync(typeOutput)) {
       const rawResult = await readFile(typeOutput, encoding);
 
-      const fixedResult = rawResult.replace('ClassNames', 'Cirrus');
+      if (rawResult.length) {
+        const fixedResult = rawResult.replace('ClassNames', 'Cirrus');
 
-      await writeFile(typeOutput, fixedResult, encoding);
+        await writeFile(typeOutput, fixedResult, encoding);
 
-      console.log(
-        greenNormal,
-        'Declared',
-        ` : ${pathRelative(dirName, typeOutput)}`,
-      );
+        console.log(
+          greenNormal,
+          'Declared',
+          ` : ${pathRelative(dirName, typeOutput)}`,
+        );
+      } else {
+        throw new Error('Results is empty');
+      }
     } else {
       throw new Error('Failed to create types');
     }
