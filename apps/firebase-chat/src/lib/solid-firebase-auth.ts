@@ -3,35 +3,59 @@ import { FirebaseAuth, FirebaseUser } from '../typings/firebase-sdk';
 
 export type UserState = FirebaseUser | null;
 
-export interface SessionStateWhenLoggedIn {
+export interface SessionStateWhenActualLoggingIn {
   readonly currentUser: FirebaseUser;
   readonly isLoggedIn: true;
+  readonly isActuallyLoggedIn: true;
 }
 
-export interface SessionStateWhenLoggedOut {
+export interface SessionStateWhenAnonymousLoggingIn {
+  readonly currentUser: FirebaseUser;
+  readonly isLoggedIn: true;
+  readonly isActuallyLoggedIn: false;
+}
+
+export interface SessionStateWhenLoggingOut {
   readonly currentUser: null;
   readonly isLoggedIn: false;
+  readonly isActuallyLoggedIn: false;
 }
 
-export type SessionState = SessionStateWhenLoggedIn | SessionStateWhenLoggedOut;
+export type SessionState =
+  | SessionStateWhenActualLoggingIn
+  | SessionStateWhenAnonymousLoggingIn
+  | SessionStateWhenLoggingOut;
 
 export const [sessionState, setSessionState] = createRoot(() =>
   createState<SessionState>({
     currentUser: null,
     isLoggedIn: false,
+    isActuallyLoggedIn: false,
   }),
 );
 
 export const sessionStateChangedHandler = (user: UserState) => {
-  if (user && !user.isAnonymous && !user.emailVerified) {
-    user
-      .delete()
-      .then(() => console.log('User is deleted'))
-      .catch(console.log);
+  if (user) {
+    const isEmailVerified = user.emailVerified;
+    if (!user.isAnonymous && !isEmailVerified) {
+      user
+        .delete()
+        .then(() => console.log('User is deleted'))
+        .catch(console.error);
+    } else {
+      batch(() => {
+        setSessionState('currentUser', reconcile(user as UserState));
+        setSessionState({
+          isLoggedIn: true,
+          isActuallyLoggedIn: isEmailVerified,
+        });
+      });
+    }
   } else {
-    batch(() => {
-      setSessionState('currentUser', reconcile(user));
-      setSessionState('isLoggedIn', Boolean(user));
+    setSessionState({
+      currentUser: null,
+      isLoggedIn: false,
+      isActuallyLoggedIn: false,
     });
   }
 };

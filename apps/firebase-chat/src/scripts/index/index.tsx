@@ -75,11 +75,10 @@ document.addEventListener('DOMContentLoaded', () => {
   if (shouldLog({ prefix: 'Login State' })) {
     createRoot(() =>
       createComputed(() =>
-        logger.log(
-          { prefix: 'Login State', skipCheck: true },
-          'Is Logged In',
-          sessionState.isLoggedIn,
-        ),
+        logger.logMultiLines({ prefix: 'Login State', skipCheck: true }, [
+          ['Is Logged In', sessionState.isLoggedIn],
+          ['Is Actually Logged In', sessionState.isActuallyLoggedIn],
+        ]),
       ),
     );
   }
