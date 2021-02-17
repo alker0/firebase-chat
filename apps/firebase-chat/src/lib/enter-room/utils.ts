@@ -1,6 +1,11 @@
 import { batch, createComputed, Resource, SetStateFunction } from 'solid-js';
 import { getPassword, RequestingBaseOption } from './rtdb';
-import { EnterResult, EnterOption, executeEnter } from './enter';
+import {
+  EnterCondition,
+  EnterResult,
+  EnterOption,
+  executeEnter,
+} from './enter';
 import { RoomEntranceInfo } from '../rtdb/utils';
 import { CONSIDER, DO_NOTHING } from '../common-utils';
 import { RoomRow } from '../search-rooms/search';
@@ -14,16 +19,18 @@ export async function checkPasswordNecessity(option: RequestingBaseOption) {
 
 export interface CreateHendlerForEnterOption {
   targetIsOwnRoom: () => boolean;
-  targetHasPassword: () => boolean;
+  getEnterCondition: () => EnterCondition | undefined;
   getInputPassword: () => string;
   setInputPassword: (password: string) => void;
   getSelectingRoomRow: () => RoomRow | undefined;
-  startEntering: (fn: () => Promise<EnterResult>) => Promise<EnterResult>;
+  startEntering: (
+    fn: () => EnterResult | Promise<EnterResult>,
+  ) => Promise<EnterResult>;
   setCancelEnteringFn: (cancelFn: () => void) => void;
   onSuccess: (targetRoom: RoomEntranceInfo) => void;
   executeOption: Omit<
     EnterOption,
-    'targetRoomId' | 'inputPassword' | 'handleEntering'
+    'targetRoomId' | 'enterCondition' | 'inputPassword' | 'handleEntering'
   >;
 }
 
@@ -32,7 +39,7 @@ export function createHandlerForEnter(option: CreateHendlerForEnterOption) {
     event.preventDefault();
     const {
       targetIsOwnRoom,
-      targetHasPassword,
+      getEnterCondition,
       getInputPassword,
       getSelectingRoomRow,
       startEntering,
@@ -46,15 +53,18 @@ export function createHandlerForEnter(option: CreateHendlerForEnterOption) {
     if (targetRoom?.roomId) {
       CONSIDER<RoomEntranceInfo>(targetRoom);
 
-      const { roomId } = targetRoom;
+      const enterCondition = getEnterCondition() ?? 'NeedsPassword';
 
-      if (targetIsOwnRoom()) {
+      if (targetIsOwnRoom() || enterCondition === 'IsAlreadyMember') {
         onSuccess(targetRoom);
-      } else if (!targetHasPassword() || inputPassword.length) {
+        startEntering(() => 'Succeeded');
+      } else if (enterCondition !== 'NeedsPassword' || inputPassword.length) {
+        const { roomId } = targetRoom;
         startEntering(async () => {
           const enterResult = await executeEnter({
             ...executeOption,
             targetRoomId: roomId,
+            enterCondition,
             inputPassword,
             handleEntering: setCancelEnteringFn,
           });
@@ -80,7 +90,7 @@ export interface ModalState {
   bodyTextStyle: string | undefined;
   inputShown: boolean;
   inputDisabled: boolean;
-  enterButtonShoudBeLoading: boolean;
+  enterButtonShouldBeLoading: boolean;
 }
 
 export const modalStateWhenNonTarget: ModalState = {
@@ -90,15 +100,24 @@ export const modalStateWhenNonTarget: ModalState = {
   bodyTextStyle: undefined,
   inputShown: false,
   inputDisabled: true,
-  enterButtonShoudBeLoading: true,
+  enterButtonShouldBeLoading: true,
+};
+
+const loadingModalStateObject: Pick<
+  ModalState,
+  'bodyTextStyle' | 'inputDisabled' | 'enterButtonShouldBeLoading'
+> = {
+  bodyTextStyle: undefined,
+  inputDisabled: true,
+  enterButtonShouldBeLoading: true,
 };
 
 export interface ModalStateUpdateOption {
   getSelectingRoomRow: () => RoomRow | undefined;
   setModalState: SetStateFunction<ModalState>;
-  targetHasPassword: Resource<boolean>;
-  enterResult: Resource<EnterResult>;
   targetIsOwnRoom: () => boolean;
+  getEnterCondition: Resource<EnterCondition>;
+  enterResult: Resource<EnterResult>;
   successTextStyle: string;
   errorTextStyle: string;
 }
@@ -109,9 +128,9 @@ export function createModalStateUpdator(option: ModalStateUpdateOption) {
       const {
         getSelectingRoomRow,
         setModalState,
-        targetHasPassword,
-        enterResult,
         targetIsOwnRoom,
+        getEnterCondition,
+        enterResult,
         successTextStyle,
         errorTextStyle,
       } = option;
@@ -121,28 +140,24 @@ export function createModalStateUpdator(option: ModalStateUpdateOption) {
       if (selectingRoomRow) {
         setModalState('onlyTitle', false);
         const { roomName } = selectingRoomRow;
-        if (targetHasPassword.loading) {
+        if (getEnterCondition.loading) {
           setModalState({
-            titleText: `Checking that the password of ${roomName} is needed...`,
+            ...loadingModalStateObject,
+            titleText: `Checking enter condition of ${roomName}...`,
             bodyTexts: ['Wait a minute...'],
-            bodyTextStyle: undefined,
             inputShown: false,
-            inputDisabled: true,
-            enterButtonShoudBeLoading: true,
           });
         } else if (enterResult.loading) {
           setModalState({
+            ...loadingModalStateObject,
             bodyTexts: ['Entering...'],
-            bodyTextStyle: undefined,
-            inputDisabled: true,
-            enterButtonShoudBeLoading: true,
           });
         } else {
-          setModalState('enterButtonShoudBeLoading', false);
+          setModalState('enterButtonShouldBeLoading', false);
           if (targetIsOwnRoom()) {
             setModalState({
               titleText: 'This is your own room',
-              bodyTexts: ['Click [Enter] button to enter your room'],
+              bodyTexts: ['Click [ Enter ] button to enter your room'],
               inputShown: false,
               inputDisabled: true,
             });
@@ -158,7 +173,7 @@ export function createModalStateUpdator(option: ModalStateUpdateOption) {
               case 'FailedOnRequest':
                 setModalState({
                   bodyTexts: ['Failed to enter on requesting.'].concat(
-                    targetHasPassword()
+                    getEnterCondition() === 'NeedsPassword'
                       ? 'Maybe the input password is invalid.'
                       : [],
                   ),
@@ -187,19 +202,30 @@ export function createModalStateUpdator(option: ModalStateUpdateOption) {
                 });
                 break;
             }
-            if (targetHasPassword()) {
-              setModalState({
-                titleText: `Input password of ${roomName}`,
-                inputShown: true,
-                inputDisabled: false,
-              });
-            } else {
-              setModalState({
-                titleText: `${roomName} does not have a password`,
-                bodyTexts: ['Click [Enter] button to enter this room'],
-                inputShown: false,
-                inputDisabled: true,
-              });
+            switch (getEnterCondition()) {
+              case 'NeedsPassword':
+                setModalState({
+                  titleText: `Input password of ${roomName}`,
+                  inputShown: true,
+                  inputDisabled: false,
+                });
+                break;
+              case 'NeedsRequest':
+                setModalState({
+                  titleText: `${roomName} does not have a password`,
+                  bodyTexts: ['Click [Enter] button to enter this room'],
+                  inputShown: false,
+                  inputDisabled: true,
+                });
+                break;
+              default:
+                setModalState({
+                  titleText: 'You can enter this room',
+                  bodyTexts: ['Click [ Enter ] button to enter this room'],
+                  inputShown: false,
+                  inputDisabled: true,
+                });
+                break;
             }
           }
         }

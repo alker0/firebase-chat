@@ -15,7 +15,7 @@ export { getMembersCountPath, getRequestingPath, getAcceptedPath };
 
 export interface RequestingBaseOption extends DbAndRequestingPath {}
 
-interface GetPasswordOption extends DbAndRequestingPath {}
+export interface GetPasswordOption extends DbAndRequestingPath {}
 
 export async function getPassword({
   db,
@@ -54,6 +54,32 @@ export async function requestRoomEntryPermission({
       console.error(error);
     }
     return false;
+  }
+}
+
+export interface CheckAcceptanceStatusOption {
+  db: FirebaseDb;
+  acceptedPath: string;
+  uid: string;
+}
+
+export type AcceptanceStatus = boolean | null;
+
+export async function checkAcceptanceStatus({
+  db,
+  acceptedPath,
+  uid,
+}: CheckAcceptanceStatusOption): Promise<AcceptanceStatus> {
+  try {
+    const acceptanceObject = await getOnceValue<Record<string, boolean>>(
+      db.ref(acceptedPath).orderByKey().equalTo(uid),
+    );
+    return acceptanceObject[uid];
+  } catch (error) {
+    if (!isPermissionDeniedError(error)) {
+      console.error(error);
+    }
+    return null;
   }
 }
 
@@ -100,7 +126,6 @@ export async function enterRoomAuto({
       .orderByKey()
       .equalTo(uid)
       .limitToFirst(1);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     let resolve: (_: boolean) => void = DO_NOTHING;
     let reject = DO_NOTHING;
     const enteringPromise = new Promise<boolean>((resolveFn, rejectFn) => {
@@ -110,7 +135,11 @@ export async function enterRoomAuto({
     const handler = userAcceptedRef.on(
       'child_added',
       async function acceptedHandler(snapshot) {
-        if (snapshot.exists()) {
+        const snapshotValue: boolean | null = snapshot.val();
+        if (snapshotValue === true) {
+          resolve(true);
+          userAcceptedRef.off('child_added', acceptedHandler);
+        } else if (snapshotValue === false) {
           await db
             .ref()
             .update({
