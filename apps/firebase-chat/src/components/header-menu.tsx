@@ -15,9 +15,9 @@ const createMenuItems = () =>
     () => (
       <div
         class={clsx<Cirrus>('u-center')}
-        {...(sessionState.isLoggedIn ? buttonize(DO_NOTHING) : {})}
+        {...(sessionState.isActuallyLoggedIn ? buttonize(DO_NOTHING) : {})}
       >
-        {sessionState.isLoggedIn &&
+        {sessionState.isActuallyLoggedIn &&
           sessionState.currentUser?.email?.replace(/@.+$/, '')}
       </div>
     ),

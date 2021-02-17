@@ -1,9 +1,9 @@
 import { BasicInputField } from '@components/common/cirrus/common/basic-input-field';
-import { getRequestingPath } from '@lib/rtdb/utils';
+import { getRequestingPath, getAcceptedPath } from '@lib/rtdb/utils';
 import { NON_EXISTANT_DOM_HREF } from '@lib/constants';
 import { DO_NOTHING } from '@lib/common-utils';
+import { checkEnterCondition, EnterCondition } from '@lib/enter-room/enter';
 import {
-  checkPasswordNecessity,
   createHandlerForEnter,
   CreateHendlerForEnterOption,
   EnterResult,
@@ -43,7 +43,10 @@ function createCancelAnchor(context: {
 }
 
 export function createEnterModalComponent(context: EnterModalContext) {
-  const [targetHasPassword, loadPasswordNecessity] = createResource(true);
+  const [
+    getEnterCondition,
+    loadEnterCondition,
+  ] = createResource<EnterCondition>('NeedsPassword');
   const [targetIsOwnRoom, setTargetIsOwnRoom] = createSignal(false);
   const [getInputPassword, setInputPassword] = createSignal<string>('');
 
@@ -66,7 +69,7 @@ export function createEnterModalComponent(context: EnterModalContext) {
 
   const handlerForEnter = createHandlerForEnter({
     targetIsOwnRoom,
-    targetHasPassword: () => targetHasPassword() ?? true,
+    getEnterCondition,
     getInputPassword,
     setInputPassword,
     getSelectingRoomRow,
@@ -87,21 +90,28 @@ export function createEnterModalComponent(context: EnterModalContext) {
         if (selectingRoom) {
           const { roomId, ownerId } = selectingRoom;
           if (roomId) {
-            if (auth.currentUser?.uid === ownerId) {
+            const uid = auth.currentUser?.uid;
+            if (uid === ownerId) {
               setTargetIsOwnRoom(true);
             } else {
               setTargetIsOwnRoom(false);
-              loadPasswordNecessity(() =>
-                checkPasswordNecessity({
-                  db,
-                  requestingPath: getRequestingPath(roomId),
-                }),
-              );
+              loadEnterCondition(() => {
+                if (uid) {
+                  return checkEnterCondition({
+                    db,
+                    requestingPath: getRequestingPath(roomId),
+                    acceptedPath: getAcceptedPath(roomId),
+                    uid,
+                  });
+                } else {
+                  return 'NeedsPassword';
+                }
+              });
             }
           }
         } else {
           setTargetIsOwnRoom(false);
-          loadPasswordNecessity(() => true);
+          loadEnterCondition(() => 'NeedsPassword');
         }
         startEnter(() => 'NeverStarted');
         setInputPassword('');
@@ -111,9 +121,9 @@ export function createEnterModalComponent(context: EnterModalContext) {
     createModalStateUpdator({
       getSelectingRoomRow,
       setModalState,
-      targetHasPassword,
-      enterResult,
       targetIsOwnRoom,
+      getEnterCondition,
+      enterResult,
       successTextStyle: cn('text-success'),
       errorTextStyle: cn('text-danger'),
     });
@@ -177,12 +187,12 @@ export function createEnterModalComponent(context: EnterModalContext) {
                       'btn-small',
                       'u-inline-block',
                       'animated',
-                      modalState.enterButtonShoudBeLoading && [
+                      modalState.enterButtonShouldBeLoading && [
                         'loading',
                         'loading-left',
                       ],
                     )}
-                    disabled={modalState.enterButtonShoudBeLoading}
+                    disabled={modalState.enterButtonShouldBeLoading}
                   >
                     Enter
                   </button>

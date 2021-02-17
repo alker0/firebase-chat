@@ -46,7 +46,9 @@ export function getAndWatchRoomEntranceById(
   watchOption?: SnapshotWatchOption,
 ) {
   const targetRef = db
-    .ref(`${RTDB_KEY_ROOM_ENTRANCES}/${roomId}`)
+    .ref(`${RTDB_KEY_ROOM_ENTRANCES}`)
+    .orderByKey()
+    .equalTo(roomId)
     .limitToFirst(1);
 
   return createDbFirstPromiseAndListener(targetRef, 'value', watchOption);
@@ -153,9 +155,11 @@ export function acceptUsersAuto(option: AcceptingBaseOption) {
           if (childKey !== RTDB_KEY_PASSWORD) {
             const acceptanceData = createAcceptanceData(childKey);
 
-            console.log(acceptanceData);
+            console.log('[acceptUserAuto]Target data', acceptanceData);
 
-            acceptUserRunner(db, acceptanceData);
+            acceptUserRunner(db, acceptanceData).then(() =>
+              console.log('[acceptUserAuto]Accepted', childKey),
+            );
           }
         } else {
           console.error('[acceptUsersAuto]Snapshot does not have a key');

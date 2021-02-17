@@ -145,17 +145,27 @@ export function createDbFirstPromiseAndListener(
   },
 ) {
   let onEventFn: (snapshot: FirebaseDbSnapshot) => void = snapshotHandler;
-  const firstSnapshotPromise = new Promise<FirebaseDbSnapshot>((resolve) => {
-    onEventFn = (snapshot) => {
-      onEventFn = snapshotHandler;
-      resolve(snapshot);
-      if (handleFirstResult) snapshotHandler(snapshot);
-    };
-  });
+  let onCancelFn: (reason?: any) => void = DO_NOTHING;
+  const firstSnapshotPromise = new Promise<FirebaseDbSnapshot>(
+    (resolve, reject) => {
+      onCancelFn = reject;
+      onEventFn = (snapshot) => {
+        onEventFn = snapshotHandler;
+        onCancelFn = DO_NOTHING;
+        resolve(snapshot);
 
-  const callback = targetRef.on(eventType, function onEvent(snapthot) {
-    onEventFn(snapthot);
-  });
+        if (handleFirstResult) snapshotHandler(snapshot);
+      };
+    },
+  );
+
+  const callback = targetRef.on(
+    eventType,
+    function onEvent(snapthot) {
+      onEventFn(snapthot);
+    },
+    onCancelFn,
+  );
 
   return [
     firstSnapshotPromise,

@@ -1,5 +1,12 @@
 import { getCurrentUserOrSignInAnonymously } from '../solid-firebase-auth';
-import { enterRoomAuto, requestRoomEntryPermission } from './rtdb';
+import {
+  checkAcceptanceStatus,
+  CheckAcceptanceStatusOption,
+  getPassword,
+  GetPasswordOption,
+  requestRoomEntryPermission,
+  enterRoomAuto,
+} from './rtdb';
 import {
   getMembersCountPath,
   getAcceptedPath,
@@ -11,9 +18,45 @@ import {
   FirebaseDbServerValue,
 } from '../../typings/firebase-sdk';
 
+export type EnterCondition =
+  | 'NeedsPassword'
+  | 'NeedsRequest'
+  | 'IsAlreadyAccepted'
+  | 'IsAlreadyMember';
+
+export interface CheckEnterConditionOption
+  extends CheckAcceptanceStatusOption,
+    GetPasswordOption {}
+
+export async function checkEnterCondition({
+  db,
+  requestingPath,
+  acceptedPath,
+  uid,
+}: CheckEnterConditionOption): Promise<EnterCondition> {
+  const acceptanceStatus = await checkAcceptanceStatus({
+    db,
+    acceptedPath,
+    uid,
+  });
+  switch (acceptanceStatus) {
+    case true:
+      return 'IsAlreadyMember';
+    case false:
+      return 'IsAlreadyAccepted';
+    default:
+      if (await getPassword({ db, requestingPath })) {
+        return 'NeedsRequest';
+      } else {
+        return 'NeedsPassword';
+      }
+  }
+}
+
 export interface EnterOption {
   auth: FirebaseAuth;
   targetRoomId: string;
+  enterCondition: EnterCondition;
   db: FirebaseDb;
   dbServerValue: FirebaseDbServerValue;
   inputPassword: string;
@@ -31,10 +74,15 @@ export async function executeEnter({
   auth,
   db,
   dbServerValue,
+  enterCondition,
   targetRoomId,
   inputPassword,
   handleEntering,
 }: EnterOption): Promise<EnterResult> {
+  if (enterCondition === 'IsAlreadyMember') {
+    return 'Succeeded';
+  }
+
   const currentUser = await getCurrentUserOrSignInAnonymously(auth);
   if (currentUser) {
     const { uid } = currentUser;
@@ -42,17 +90,22 @@ export async function executeEnter({
     const userRequestingPath = `${getRequestingPath(targetRoomId)}/${uid}`;
     const acceptedPath = getAcceptedPath(targetRoomId);
 
-    const succeededRequesting = await requestRoomEntryPermission({
-      db,
-      userRequestingPath,
-      password: inputPassword,
-    });
+    if (
+      enterCondition === 'NeedsPassword' ||
+      enterCondition === 'NeedsRequest'
+    ) {
+      const succeededRequesting = await requestRoomEntryPermission({
+        db,
+        userRequestingPath,
+        password: inputPassword,
+      });
 
-    if (!succeededRequesting) {
-      return 'FailedOnRequest';
+      if (!succeededRequesting) {
+        return 'FailedOnRequest';
+      }
     }
 
-    const autoState = await enterRoomAuto({
+    const autoEnterState = await enterRoomAuto({
       db,
       uid,
       acceptedPath,
@@ -60,15 +113,15 @@ export async function executeEnter({
       membersCountPath: getMembersCountPath(targetRoomId),
     });
 
-    if (!autoState) {
+    if (!autoEnterState) {
       return 'FailedOnAutoStart';
     }
 
-    const [entering, removeListener] = autoState;
+    const [enterPromise, removeListener] = autoEnterState;
 
     handleEntering(removeListener);
 
-    const succeededEntering = await entering;
+    const succeededEntering = await enterPromise;
 
     if (succeededEntering) {
       return 'Succeeded';

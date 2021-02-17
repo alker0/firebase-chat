@@ -212,6 +212,7 @@ export const CreateRoom = {
               id: 'input-room-name',
               type: 'text',
               required: true,
+              disabled: !sessionState.isActuallyLoggedIn,
               pattern: `^.{1,${RTDB_DATA_LIMIT_ROOM_NAME_MAX_LENGTH - 1}}$`,
               value: props.formState.roomName,
               onChange: (e) => props.setFormState('roomName', e.target.value),
@@ -224,6 +225,7 @@ export const CreateRoom = {
               id: 'input-room-password',
               type: 'text',
               required: false,
+              disabled: !sessionState.isActuallyLoggedIn,
               pattern: `^.{0,${RTDB_DATA_LIMIT_PASSWORD_MAX_LENGTH - 1}}$`,
               value: props.formState.password,
               onChange: (e) => props.setFormState('password', e.target.value),
@@ -235,7 +237,7 @@ export const CreateRoom = {
         <>
           <input
             type="submit"
-            disabled={!sessionState.isLoggedIn}
+            disabled={!sessionState.isActuallyLoggedIn}
             class={cn('animated', 'btn-primary')}
           />
           <button
@@ -257,7 +259,9 @@ export const CreateRoom = {
         roomName: '',
         password: '',
         infoMessage: '',
-        errorMessage: '',
+        errorMessage: sessionState.isActuallyLoggedIn
+          ? ''
+          : 'You must log in for creating a chat room',
       });
 
       const [getBottomProps, setBottomProps] = createState<BottomProps>(
@@ -265,10 +269,10 @@ export const CreateRoom = {
       );
 
       const onSubmit: () => CallableSubmit = createMemo(() => {
-        if (!sessionState.isLoggedIn) {
+        if (!sessionState.isActuallyLoggedIn) {
           return (e) => {
             e.preventDefault();
-            console.log('Is Not Logged In');
+            // TODO redirect to login page
             context.redirectToFailedUrl();
           };
         }
