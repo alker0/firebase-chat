@@ -117,5 +117,8 @@
     "fsevents": {
       "built": false
     }
+  },
+  "resolutions": {
+    "solid-js": "patch:solid-js@^0.24.7#./solid-js-web-exports.patch"
   }
 }

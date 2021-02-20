@@ -44,7 +44,7 @@
     "@typescript-eslint/eslint-plugin": "^4.15.0",
     "@typescript-eslint/parser": "^4.15.0",
     "babel-plugin-transform-remove-console": "^6.9.4",
-    "babel-preset-solid": "^0.23.4",
+    "babel-preset-solid": "^0.24.2",
     "dotenv": "^8.2.0",
     "dotenv-cli": "^4.0.0",
     "dotenv-with-expand": "^1.0.1",
@@ -78,8 +78,8 @@
   "dependencies": {
     "@alker/solid-components": "workspace:*",
     "clsx": "^1.1.1",
-    "solid-js": "^0.23.4",
-    "solid-styled-jsx": "^0.23.4",
+    "solid-js": "^0.24.7",
+    "solid-styled-jsx": "^0.24.7",
     "styled-jsx": "3.3.2"
   },
   "peerDependencies": {
