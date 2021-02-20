@@ -1,4 +1,10 @@
-import { assignProps, createSignal, splitProps, JSX } from 'solid-js';
+import {
+  createSignal,
+  createMemo,
+  mergeProps,
+  splitProps,
+  JSX,
+} from 'solid-js';
 import { DO_NOTHING } from '../../util/component-utils';
 import { EventArg } from '../../../types/component-utils';
 
@@ -23,15 +29,14 @@ export function createDebugButtonFactory(
     FixedDebugButtonProps[]
   >([]);
 
-  const defaultProps = assignProps(
-    {},
+  const defaultProps = mergeProps(
     defaultRemovableDebugButtonProps,
     defaultPropsArg,
   );
 
   return {
     createDebugButton(propsArg: Partial<RemovableDebugButtonProps>) {
-      const props = assignProps({}, defaultProps, propsArg);
+      const props = mergeProps({}, defaultProps, propsArg);
       let fixedForSearch: FixedDebugButtonProps = defaultFixedButtonProps;
 
       const removeDebugButtonProp = () => {
@@ -44,12 +49,13 @@ export function createDebugButtonFactory(
         }
       };
 
-      const fixed: FixedDebugButtonProps = assignProps(
-        {},
+      const onClickMemo = createMemo(() => props.onClick.bind(props));
+
+      const fixed: FixedDebugButtonProps = mergeProps(
         splitProps(props, [onClickKey])[1],
         {
           get onClick(): FixedDebugButtonProps[OnClick] {
-            const onClickFn = props.onClick.bind(props);
+            const onClickFn = onClickMemo();
             return (event) => onClickFn(event, removeDebugButtonProp);
           },
         },

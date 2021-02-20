@@ -1,6 +1,6 @@
 import { Cirrus } from '@alker/cirrus-types';
 import clsx, { Clsx } from 'clsx';
-import { assignProps, Component, JSX } from 'solid-js';
+import { mergeProps, Component, JSX } from 'solid-js';
 import { DefaultComponents } from '../../../types/component-creator';
 
 const cn: Clsx<Cirrus> = clsx;
@@ -38,10 +38,10 @@ export const FormBasicBottom = {
   >(
     contextArg: FormBasicBottom.Context<T, U> = {},
   ): Component<FormBasicBottom.Props<T, U>> {
-    const context = assignProps({}, defaultContext, contextArg);
+    const context = mergeProps(defaultContext, contextArg);
 
     return (propsArg) => {
-      const props = assignProps({}, defaultProps, propsArg);
+      const props = mergeProps(defaultProps, propsArg);
 
       const SubmitButton = props.ofWhole.submitButton ?? context.submit;
 

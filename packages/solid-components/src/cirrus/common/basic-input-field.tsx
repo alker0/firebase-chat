@@ -1,6 +1,6 @@
 import { Cirrus } from '@alker/cirrus-types';
 import clsx, { Clsx } from 'clsx';
-import { assignProps, Component, createMemo, JSX } from 'solid-js';
+import { createMemo, mergeProps, Component, JSX } from 'solid-js';
 import { sizeSuffixMap } from '../../util/cirrus-utils';
 
 const cn: Clsx<Cirrus> = clsx;
@@ -41,12 +41,12 @@ export const BasicInputField = {
   createComponent(
     contextArg: BasicInputField.Context = {},
   ): Component<BasicInputField.Props> {
-    const context = assignProps({}, defaultContext, contextArg);
+    const context = mergeProps(defaultContext, contextArg);
 
     const [sizedLabel, sizedInput] = getSizedFieldClassName(context.fieldSize);
 
     return (propsArg) => {
-      const props = assignProps({}, defaultProps, propsArg);
+      const props = mergeProps(defaultProps, propsArg);
 
       const fieldId = createMemo(() => {
         return props.ofInput.id ?? context.baseInputProps.id ?? props.inputId;

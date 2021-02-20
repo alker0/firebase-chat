@@ -3,30 +3,33 @@ import { buttonize } from '@components/common/util/component-utils';
 import { ENTER_MODAL_ID } from '@lib/constants';
 import { logger } from '@lib/logger';
 import {
-  SearchResults,
   SearchResultsKey,
   searchByMembersCount,
   searchByCreatedTime,
   createExecuteSearchFn,
   ExecuteSearchFunction,
   RoomRow,
+  ResultsInfo,
 } from '@lib/search-rooms/search';
 import {
   initialResultsInfo,
   createRefreshState,
   createSearchByNameHandler,
   createPageCountLogger,
+  searchResultsKeyArray,
+  ResultsInfoResources,
 } from '@lib/search-rooms/utils';
 import { Cirrus } from '@alker/cirrus-types';
 import clsx, { Clsx } from 'clsx';
 import {
   createSignal,
-  createResourceState,
   createSelector,
-  createEffect,
+  createResource,
   createComputed,
+  createEffect,
   State,
   $RAW,
+  createMemo,
 } from 'solid-js';
 import { Switch, Match, Suspense } from 'solid-js/web';
 import { createLazyResultList } from './lazy/result-list';
@@ -40,6 +43,8 @@ import {
 const cn: Clsx<Cirrus> = clsx;
 
 type SearchMode = 'Name' | 'Members Count' | 'Created Time';
+
+const getInitialResultsInfoPromise = () => Promise.resolve(initialResultsInfo);
 
 function createImmidiateSearchersEffect(
   getSearchMode: () => SearchMode,
@@ -87,6 +92,29 @@ function createRefreshButton(sendRefreshSignal: () => void) {
   };
 }
 
+interface LoadingInfo {
+  targetKey: SearchResultsKey | null;
+  getResultsInfoPromise: () => Promise<ResultsInfo>;
+}
+interface LoadingInfoSignal {
+  (): LoadingInfo;
+}
+
+function createResultsInfoResources(
+  getLoadingInfo: LoadingInfoSignal,
+): ResultsInfoResources {
+  const resultObj = {} as ResultsInfoResources;
+  searchResultsKeyArray.forEach((key) => {
+    resultObj[key] = createResource(
+      createMemo(getLoadingInfo, null, (_p, next) => next?.targetKey !== key),
+      (loadingInfo) =>
+        loadingInfo?.getResultsInfoPromise() ?? initialResultsInfo,
+      initialResultsInfo,
+    );
+  });
+  return resultObj;
+}
+
 export const SearchRooms = {
   createComponent: (context: SearchRooms.Context) => {
     const [searchMode, setSearchMode] = createSignal<SearchMode>('Name', true);
@@ -98,20 +126,17 @@ export const SearchRooms = {
 
     const modeSelector = createSelector<SearchMode, SearchMode>(searchMode);
 
-    const [
-      searchResults,
-      loadSearchResults,
-      setSearchResults,
-    ] = createResourceState<SearchResults>({
-      byName: initialResultsInfo,
-      byMembersCount: initialResultsInfo,
-      byCreatedTime: initialResultsInfo,
-    });
-
     const [getSelectingRoomRow, setSelectingRoomRow] = createSignal<RoomRow>();
 
+    const [getLoadingInfo, loadSearchResults] = createSignal<LoadingInfo>({
+      targetKey: null,
+      getResultsInfoPromise: getInitialResultsInfoPromise,
+    });
+
+    const resultsInfoResources = createResultsInfoResources(getLoadingInfo);
+
     const SearchResultList = createLazyResultList({
-      searchResultsState: searchResults,
+      resultsInfoResources,
       enterModalId: ENTER_MODAL_ID,
       setSelectingRoomRow,
     });
@@ -145,23 +170,28 @@ export const SearchRooms = {
     const RefreshButton = createRefreshButton(sendRefreshSignal);
 
     return () => {
-      createPageCountLogger(searchResults);
+      createPageCountLogger(resultsInfoResources);
 
       createComputed(() => {
         searchMode();
         setSearchPage(1);
       });
 
-      const refreshState = createRefreshState(refreshSignal, setSearchResults);
+      const refreshState = createRefreshState(
+        refreshSignal,
+        resultsInfoResources,
+      );
 
       const executeFn = createExecuteSearchFn({
         auth: context.auth,
         getRequestedPage: searchPage,
         getRefreshPromise: () => refreshState.promise,
-        getPreviousResults: searchResults,
-        resultHandleFn: (targetKey, loadResultInfo) => {
+        getPreviousResults: (targetKey) =>
+          resultsInfoResources[targetKey][0]() ?? initialResultsInfo,
+        resultHandleFn: (targetKey, getResultsInfoPromise) => {
           loadSearchResults({
-            [targetKey]: loadResultInfo,
+            targetKey,
+            getResultsInfoPromise,
           });
         },
       });

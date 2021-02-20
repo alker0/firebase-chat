@@ -12,13 +12,13 @@ import { sessionState } from '@lib/solid-firebase-auth';
 import { Cirrus } from '@alker/cirrus-types';
 import clsx, { Clsx } from 'clsx';
 import {
-  assignProps,
-  Component,
-  createComputed,
-  createMemo,
   createState,
-  SetStateFunction,
+  createMemo,
+  createComputed,
+  mergeProps,
   State,
+  SetStateFunction,
+  Component,
   JSX,
 } from 'solid-js';
 
@@ -34,7 +34,7 @@ const defaultContainerProps: Required<ContainerProps> = {
 
 const Container = FormContainer.createComponent({
   createContainer: () => (propsArg: ContainerProps = {}) => {
-    const props = assignProps({}, defaultContainerProps, propsArg);
+    const props = mergeProps(defaultContainerProps, propsArg);
     return (
       <form {...(props.ofForm ?? {})}>
         <div {...props.ofInternalContainer}>
@@ -102,7 +102,7 @@ const defaultProps: Required<OnlyOptional<FirebaseAuthOwnUI.Props<unknown>>> = {
 
 export const FirebaseAuthOwnUI = {
   createComponent: (contextArg: FirebaseAuthOwnUI.Context = {}) => {
-    const context = assignProps({}, defaultContext, contextArg);
+    const context = mergeProps(defaultContext, contextArg);
 
     const FormComponent = Form.createComponent({
       container: Container,
@@ -172,7 +172,7 @@ export const FirebaseAuthOwnUI = {
     });
 
     function resultComponent<T>(propsArg: FirebaseAuthOwnUI.Props<T>) {
-      const props = assignProps({}, defaultProps, propsArg);
+      const props = mergeProps(defaultProps, propsArg);
 
       const [formState, setFormState] = props.createFormState();
 

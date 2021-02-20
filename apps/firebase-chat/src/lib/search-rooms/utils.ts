@@ -1,22 +1,15 @@
-import {
-  createMemo,
-  SetStateFunction,
-  JSX,
-  createSignal,
-  createEffect,
-} from 'solid-js';
+import { createSignal, createMemo, createEffect, JSX } from 'solid-js';
 import {
   createSearchByNameFn,
   ExecuteSearchFunction,
   ResultsInfo,
-  SearchResults,
   SearchResultsKey,
 } from './search';
 import { DO_NOTHING } from '../common-utils';
 import { isEnterKey } from '../browser-utils';
-import { LogContentPairs, logger, shouldLog } from '../logger';
+import { logger, shouldLog, LogContentPairs } from '../logger';
 import { FirebaseDb } from '../../typings/firebase-sdk';
-import { StateOrResource } from '../../typings/solid-utils';
+import { ResourceWithController } from '../../typings/solid-utils';
 
 export const initialResultsInfo: ResultsInfo = {
   pageCount: 0,
@@ -46,6 +39,9 @@ export function getOldnessText(targetTime: number): string {
   }
 }
 
+export interface ResultsInfoResources
+  extends Record<SearchResultsKey, ResourceWithController<ResultsInfo>> {}
+
 interface RefreshState {
   promise: Promise<ResultsInfo>;
   resolve: () => void;
@@ -53,7 +49,7 @@ interface RefreshState {
 
 export function createRefreshState(
   refreshSignal: () => void | SearchResultsKey,
-  setSearchResults: SetStateFunction<SearchResults>,
+  resultsInfoResources: ResultsInfoResources,
 ) {
   const refreshMemo = createMemo(
     (
@@ -73,10 +69,13 @@ export function createRefreshState(
         refreshResolveFn = () => resolve(initialResultsInfo);
       });
 
-      setSearchResults(
-        refreshKey || [...searchResultsKeyArray],
-        initialResultsInfo,
-      );
+      if (refreshKey) {
+        resultsInfoResources[refreshKey][1].mutate(initialResultsInfo);
+      } else {
+        searchResultsKeyArray.forEach((key) =>
+          resultsInfoResources[key][1].mutate(initialResultsInfo),
+        );
+      }
 
       return {
         promise: refreshPromise,
@@ -112,14 +111,12 @@ export function createSearchByNameHandler(
   };
 }
 
-export function createPageCountLogger(
-  searchResults: StateOrResource<SearchResults>,
-) {
+export function createPageCountLogger(searchResults: ResultsInfoResources) {
   if (shouldLog({ prefix: 'Page Count' })) {
     type PageCountObject = Record<SearchResultsKey, number>;
 
     createEffect<PageCountObject>((prev = {} as PageCountObject) => {
-      if (searchResultsKeyArray.some((key) => searchResults.loading?.[key])) {
+      if (searchResultsKeyArray.some((key) => searchResults[key][0].loading)) {
         return prev;
       } else {
         const [
@@ -129,7 +126,7 @@ export function createPageCountLogger(
         ] = searchResultsKeyArray.reduce(
           ([anyChangedAccum, logContentsAccum, currentPageCountAccum], key) => {
             const prevCount = prev[key];
-            const currentCount = searchResults[key].pageCount;
+            const currentCount = searchResults[key][0]()?.pageCount;
             const isSame = currentCount === prevCount;
             return [
               anyChangedAccum || !isSame,

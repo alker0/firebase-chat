@@ -33,16 +33,14 @@ export interface RoomRow extends Omit<RoomEntranceInfo, 'roomId'> {
 
 export interface ResultsInfo extends ResultsInfoBase<RoomRow> {}
 
-export interface SearchResults extends Record<SearchResultsKey, ResultsInfo> {}
-
 export interface SearchBaseOption {
   auth: FirebaseAuth;
   getRequestedPage: () => number;
   getRefreshPromise: () => Promise<ResultsInfo>;
-  getPreviousResults: SearchResults;
+  getPreviousResults: (targetKey: SearchResultsKey) => ResultsInfo;
   resultHandleFn: (
     targetKey: SearchResultsKey,
-    loadResultInfo: () => Promise<ResultsInfo>,
+    resultInfoPromise: () => Promise<ResultsInfo>,
   ) => void;
 }
 
@@ -91,7 +89,7 @@ export function createExecuteSearchFn(
     } = searchOption;
     const requestedPage = getRequestedPage();
 
-    const prevResults = getPreviousResults[executeArg.targetKey];
+    const prevResults = getPreviousResults(executeArg.targetKey);
 
     logger.logMultiLinesFn({ prefix: 'Search Page Number' }, () => [
       ['Requested Page', requestedPage],

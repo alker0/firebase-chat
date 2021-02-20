@@ -2,7 +2,7 @@ import { BasicInputField } from '@components/common/cirrus/common/basic-input-fi
 import { getRequestingPath, getAcceptedPath } from '@lib/rtdb/utils';
 import { NON_EXISTANT_DOM_HREF } from '@lib/constants';
 import { DO_NOTHING } from '@lib/common-utils';
-import { checkEnterCondition, EnterCondition } from '@lib/enter-room/enter';
+import { checkEnterCondition } from '@lib/enter-room/enter';
 import {
   createHandlerForEnter,
   CreateHendlerForEnterOption,
@@ -42,15 +42,40 @@ function createCancelAnchor(context: {
   );
 }
 
+const neverStarted: EnterResult = 'NeverStarted';
+
 export function createEnterModalComponent(context: EnterModalContext) {
-  const [
-    getEnterCondition,
-    loadEnterCondition,
-  ] = createResource<EnterCondition>('NeedsPassword');
   const [targetIsOwnRoom, setTargetIsOwnRoom] = createSignal(false);
+  const [targetRoomId, setTargetRoomId] = createSignal(
+    '',
+    (_prev, next) => !next,
+  );
+  const [getUid, setUid] = createSignal<string>();
+  const [getEnterCondition, { mutate: setEnterCondition }] = createResource(
+    () => ({ roomId: targetRoomId(), uid: getUid() }),
+    async ({ roomId, uid }) => {
+      if (uid) {
+        return checkEnterCondition({
+          db: context.db,
+          requestingPath: getRequestingPath(roomId),
+          acceptedPath: getAcceptedPath(roomId),
+          uid,
+        });
+      } else {
+        return 'NeedsPassword';
+      }
+    },
+  );
   const [getInputPassword, setInputPassword] = createSignal<string>('');
 
-  const [enterResult, startEnter] = createResource<EnterResult>();
+  const [enterPromise, startEnter] = createSignal<Promise<EnterResult>>(
+    Promise.resolve<EnterResult>(neverStarted),
+  );
+  const [enterResult, { mutate: setEnterResult }] = createResource(
+    enterPromise,
+    (key) => key,
+    neverStarted,
+  );
 
   const [modalState, setModalState] = createState(modalStateWhenNonTarget);
 
@@ -73,7 +98,7 @@ export function createEnterModalComponent(context: EnterModalContext) {
     getInputPassword,
     setInputPassword,
     getSelectingRoomRow,
-    startEntering: startEnter,
+    startEnter,
     onSuccess,
     setCancelEnteringFn,
     executeOption: {
@@ -95,25 +120,15 @@ export function createEnterModalComponent(context: EnterModalContext) {
               setTargetIsOwnRoom(true);
             } else {
               setTargetIsOwnRoom(false);
-              loadEnterCondition(() => {
-                if (uid) {
-                  return checkEnterCondition({
-                    db,
-                    requestingPath: getRequestingPath(roomId),
-                    acceptedPath: getAcceptedPath(roomId),
-                    uid,
-                  });
-                } else {
-                  return 'NeedsPassword';
-                }
-              });
+              setTargetRoomId(roomId);
+              setUid(uid);
             }
           }
         } else {
           setTargetIsOwnRoom(false);
-          loadEnterCondition(() => 'NeedsPassword');
+          setEnterCondition('NeedsPassword');
         }
-        startEnter(() => 'NeverStarted');
+        setEnterResult(neverStarted);
         setInputPassword('');
       }),
     );
@@ -215,7 +230,7 @@ export interface EnterModalContext
   db: FirebaseDb;
   executeEnterOption: Omit<
     CreateHendlerForEnterOption['executeOption'],
-    'auth' | 'db' | 'startEntering' | 'setCancelEnteringFn'
+    'auth' | 'db' | 'startEnter' | 'setCancelEnteringFn'
   >;
   enterModelId: string;
 }

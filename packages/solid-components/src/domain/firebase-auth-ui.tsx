@@ -1,6 +1,6 @@
 import firebase from 'firebase';
 import firebaseui from 'firebaseui';
-import { createComputed, assignProps } from 'solid-js';
+import { createComputed, mergeProps } from 'solid-js';
 import { ComponentCreater } from '../../types/component-creator';
 
 const defaultProps: FirebaseAuthUI.DefaultProps = {
@@ -15,7 +15,7 @@ export const FirebaseAuthUI: ComponentCreater<
 > = {
   createComponent: (context) => {
     return (propsArg) => {
-      const props = assignProps({}, defaultProps, propsArg);
+      const props = mergeProps(defaultProps, propsArg);
 
       let authRef: HTMLDivElement | undefined;
 

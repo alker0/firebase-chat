@@ -22,7 +22,7 @@ import {
 } from '@lib/chat-room/utils';
 import { logger } from '@lib/logger';
 import { createDebugButton } from '@lib/debug-utils';
-import { createComputed, createResource } from 'solid-js';
+import { createComputed, createResource, createSignal } from 'solid-js';
 import { NullablePromise } from '../typings/common-utils';
 import { FirebaseAuth, FirebaseDb } from '../typings/firebase-sdk';
 
@@ -212,9 +212,11 @@ export const ChatRoom = {
         return undefined;
       }
 
-      const [roomInfo, loadRoomInfo] = createResource<RoomInfoObject | null>(
-        null,
-      );
+      const [roomInfoPromise, loadRoomInfo] = createSignal<
+        NullablePromise<RoomInfoObject>
+      >(Promise.resolve(null));
+
+      const [roomInfo] = createResource(roomInfoPromise, (promise) => promise);
 
       createComputed(
         (
@@ -258,7 +260,7 @@ export const ChatRoom = {
             redirectToFailedUrl,
           );
 
-          loadRoomInfo(() => roomInfoObjectPromise);
+          loadRoomInfo(roomInfoObjectPromise);
 
           if (isOwner) {
             startAutoAccepting(db, roomInfoObjectPromise);

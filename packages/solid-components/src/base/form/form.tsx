@@ -1,4 +1,4 @@
-import { assignProps, Component, JSX } from 'solid-js';
+import { mergeProps, Component, JSX } from 'solid-js';
 import { RequiredSwitch } from '../../../types/component-utils';
 import { DefaultComponents } from '../../../types/component-creator';
 
@@ -26,10 +26,10 @@ export const Form = {
     U extends object = DefaultPropsMap['inputFields'],
     V extends object = DefaultPropsMap['bottomContents']
   >(contextArg?: Form.Context<T, U, V>): Component<Form.Props<T, U, V>> {
-    const context = assignProps({}, defaultContext, contextArg); // as Required<typeof contextArg>
+    const context = mergeProps(defaultContext, contextArg);
 
     return (propsArg) => {
-      const props = assignProps({}, defaultProps, propsArg);
+      const props = mergeProps(defaultProps, propsArg);
       return (
         <context.container {...(props.ofContainer ?? {})}>
           <context.inputFields {...(props.ofInputFields ?? {})} />

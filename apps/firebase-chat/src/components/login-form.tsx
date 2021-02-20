@@ -7,18 +7,18 @@ import {
   ClickHandle,
 } from '@components/common/util/component-utils';
 import { createMultiDisposableStyle } from '@components/common/util/style-utils';
-import { ComponentMemo, OnlyOptional } from '@components/types/component-utils';
+import { OnlyOptional } from '@components/types/component-utils';
 import { DO_NOTHING } from '@lib/common-utils';
 import { Cirrus } from '@alker/cirrus-types';
 import { css } from 'styled-jsx/css';
 import clsx, { Clsx } from 'clsx';
 import {
-  assignProps,
-  Component,
-  createComputed,
-  createMemo,
   createSignal,
   createState,
+  createComputed,
+  createMemo,
+  mergeProps,
+  Component,
 } from 'solid-js';
 import { FirebaseAuthOwnUI } from './firebase-auth-own-ui';
 import { FirebaseAuth } from './typings/firebase-sdk';
@@ -79,10 +79,10 @@ const getLoginModeFromText = (modeText: string | null): LoginMode => {
   }
 };
 
-const getSignUpOrSignInTogglerButton = (
+const createSignUpOrSignInTogglerMemo = (
   getLoginMode: () => LoginMode,
   setLoginMode: (loginMode: LoginMode) => void,
-): ComponentMemo => {
+) => {
   // content-fluid
   const createButton = (
     buttonText: string,
@@ -101,25 +101,21 @@ const getSignUpOrSignInTogglerButton = (
   const whenSignUp = createButton('SignIn', () =>
     setLoginMode(SignInWithPasswordMode),
   );
-  const whenSignIn = createButton('SignUp', () => setLoginMode(SignUpMode));
+  const whenSignIn = createButton('SignUp', () => {
+    setLoginMode(SignUpMode);
+  });
 
-  const componentMemo = createMemo(
+  return createMemo(
     () => (getLoginMode() === SignUpMode ? whenSignUp : whenSignIn),
     whenSignUp,
     true,
   );
-
-  return {
-    get Memo() {
-      return componentMemo();
-    },
-  };
 };
 
-const getAnchorArea = (
+const createAnchorAreaMemo = (
   getLoginMode: () => LoginMode,
   setLoginMode: (mode: LoginMode) => void,
-): ComponentMemo => {
+) => {
   const viewNothing = () => null;
   const whenSignInWithPassword = () => (
     <div class={cn('row', 'ignore-screen', 'level')}>
@@ -163,7 +159,7 @@ const getAnchorArea = (
     </div>
   );
 
-  const componentMemo = createMemo(
+  return createMemo(
     () => {
       switch (getLoginMode()) {
         case SignUpMode:
@@ -181,12 +177,6 @@ const getAnchorArea = (
     viewNothing,
     true,
   );
-
-  return {
-    get Memo() {
-      return componentMemo();
-    },
-  };
 };
 
 const getUseFields = (getLoginMode: () => LoginMode) => {
@@ -358,7 +348,7 @@ export const LoginForm = {
   createComponent: (
     contextArg: LoginForm.Context,
   ): Component<LoginForm.Props> => {
-    const context = assignProps({}, defaultContext, contextArg);
+    const context = mergeProps(defaultContext, contextArg);
 
     return () => {
       const [
@@ -389,12 +379,12 @@ export const LoginForm = {
 
       const useFields = getUseFields(loginMode);
 
-      const SignUpOrSignInToggler = getSignUpOrSignInTogglerButton(
+      const getSignUpOrSignInToggler = createSignUpOrSignInTogglerMemo(
         loginMode,
         setLoginMode,
       );
 
-      const AnchorArea = getAnchorArea(loginMode, setLoginMode);
+      const getAnchorArea = createAnchorAreaMemo(loginMode, setLoginMode);
 
       const submitAction = getSubmitAction({
         auth: context.auth,
@@ -416,10 +406,8 @@ export const LoginForm = {
               <div class={cn('row', 'input-control', 'px-0')}>
                 <props.submitButton />
               </div>
-              <div class={cn('row', 'px-0')}>
-                <SignUpOrSignInToggler.Memo />
-              </div>
-              <AnchorArea.Memo />
+              <div class={cn('row', 'px-0')}>{getSignUpOrSignInToggler()}</div>
+              {getAnchorArea()}
             </>
           )}
           submitButtonProps={(disableWhenLoggedIn) => ({

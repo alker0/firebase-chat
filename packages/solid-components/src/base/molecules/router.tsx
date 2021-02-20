@@ -1,4 +1,4 @@
-import { assignProps, JSX, on } from 'solid-js';
+import { mergeProps, on, JSX } from 'solid-js';
 import { Dynamic, Match, Suspense, Switch } from 'solid-js/web';
 import { ComponentCreater } from '../../../types/component-creator';
 
@@ -9,7 +9,7 @@ const defaultContext: Router.DefaultContext = {
 
 export const Router: ComponentCreater<Router.Context, Router.Props> = {
   createComponent: (contextArg) => {
-    const context = assignProps({}, defaultContext, contextArg);
+    const context = mergeProps(defaultContext, contextArg);
 
     return (props) => {
       const routeComponent = () => (

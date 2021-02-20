@@ -1,18 +1,13 @@
 import { createDisposableStyle } from '@components/common/util/style-utils';
 import { NON_EXISTANT_DOM_ID } from '@lib/constants';
 import { logger, shouldLog } from '@lib/logger';
-import {
-  RoomRow,
-  SearchResults,
-  SearchResultsKey,
-} from '@lib/search-rooms/search';
-import { getOldnessText } from '@lib/search-rooms/utils';
+import { RoomRow, SearchResultsKey } from '@lib/search-rooms/search';
+import { getOldnessText, ResultsInfoResources } from '@lib/search-rooms/utils';
 import { Cirrus } from '@alker/cirrus-types';
 import { css } from 'styled-jsx/css';
 import clsx, { Clsx } from 'clsx';
-import { $RAW, createEffect } from 'solid-js';
+import { createEffect } from 'solid-js';
 import { For, Switch, Match, Suspense } from 'solid-js/web';
-import { ResourceState } from '../../typings/solid-utils';
 
 const cn: Clsx<Cirrus> = clsx;
 
@@ -27,9 +22,8 @@ const enterModalAnchorStyle = createDisposableStyle<Cirrus>(
 interface ResultRowProps {
   roomRow: RoomRow;
   enterModalId: string;
-  /* eslint-disable react/no-unused-prop-types */
+  // eslint-disable-next-line react/no-unused-prop-types
   setSelectingRoomRow: (roomRow: RoomRow) => void;
-  /* eslint-enable react/no-unused-prop-types */
 }
 
 function createRoomRowClickHandler(props: ResultRowProps) {
@@ -78,10 +72,12 @@ export function createSearchResultListComponent(
     resultsKey: SearchResultsKey;
   }) {
     const {
-      searchResultsState,
+      resultsInfoResources,
       enterModalId = NON_EXISTANT_DOM_ID,
       setSelectingRoomRow,
     } = context;
+
+    const [targetResource] = resultsInfoResources[resultsKey];
 
     if (shouldLog({ prefix: 'Search Result Length' })) {
       interface LogEffectSchema {
@@ -96,11 +92,19 @@ export function createSearchResultListComponent(
             list: [],
           },
         ) => {
-          const searchResultList = searchResultsState[resultsKey].resultList;
-
-          if (prev.list === searchResultList[$RAW]) {
+          if (targetResource.loading) {
             logger.log(
-              { prefix: 'Result List Component', defaultDo: false },
+              { prefix: 'Result List Component', defaultDo: true },
+              'Skip for loading',
+            );
+
+            return prev;
+          }
+          const searchResultList = targetResource()!.resultList;
+
+          if (prev.list === searchResultList) {
+            logger.log(
+              { prefix: 'Result List Component', defaultDo: true },
               'Skip because both lists are same',
             );
 
@@ -111,7 +115,7 @@ export function createSearchResultListComponent(
 
           if (!prev?.isPresent && !nextIsPresent) {
             logger.log(
-              { prefix: 'Result List Component', defaultDo: false },
+              { prefix: 'Result List Component', defaultDo: true },
               'Skip because both lists are empty',
             );
 
@@ -125,7 +129,7 @@ export function createSearchResultListComponent(
 
             return {
               isPresent: nextIsPresent,
-              list: searchResultList[$RAW] ?? [],
+              list: searchResultList ?? [],
             };
           }
         },
@@ -134,10 +138,8 @@ export function createSearchResultListComponent(
     return (
       <Suspense fallback="Failed to Search">
         <Switch fallback="Not Found">
-          <Match when={searchResultsState.loading[resultsKey]}>
-            Searching...
-          </Match>
-          <Match when={searchResultsState[resultsKey].resultList[0]}>
+          <Match when={targetResource.loading}>Searching...</Match>
+          <Match when={targetResource()!.resultList[0]}>
             {(firstRow) => (
               <>
                 <div class={cn('row', 'row--no-wrap')}>
@@ -147,7 +149,7 @@ export function createSearchResultListComponent(
                     setSelectingRoomRow={setSelectingRoomRow}
                   />
                 </div>
-                <For each={searchResultsState[resultsKey].resultList.slice(1)}>
+                <For each={targetResource()!.resultList.slice(1)}>
                   {(roomRow) => (
                     <>
                       <div class={cn('divider', 'mx-1', 'my-0')} />
@@ -171,7 +173,7 @@ export function createSearchResultListComponent(
 }
 
 export interface SearchResultListContext {
-  searchResultsState: ResourceState<SearchResults>;
+  resultsInfoResources: ResultsInfoResources;
   enterModalId?: string;
   setSelectingRoomRow: (roomRow: RoomRow) => void;
 }
