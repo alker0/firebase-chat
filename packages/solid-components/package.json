@@ -11,9 +11,9 @@
     "prepare": "run-s build:*"
   },
   "devDependencies": {
-    "@alker/cirrus-types": "workspace:*",
-    "@alker/styled-tsx": "workspace:*",
-    "@alker/type-filtered-clsx": "workspace:*",
+    "@alker/cirrus-types": "0.6.1",
+    "@alker/styled-tsx": "^0.0.1",
+    "@alker/type-filtered-clsx": "^0.0.1",
     "@babel/cli": "^7.12.16",
     "@babel/core": "^7.12.16",
     "@babel/preset-typescript": "^7.12.16",
@@ -25,13 +25,13 @@
     "styled-jsx": "3.3.2"
   },
   "peerDependencies": {
-    "cirrus-ui": "0.6.x",
+    "cirrus-ui": "0.6.1",
     "clsx": "1.x",
-    "firebase": "7.11 - 8",
-    "firebaseui": "4.6.0 - 4.8",
+    "firebase": "^8.2",
+    "firebaseui": ">=4.6 <4.8",
     "solid-js": "^0.24.7",
     "solid-styled-jsx": "^0.24.7",
-    "styled-jsx": "3.3 - 4"
+    "styled-jsx": "^3.3"
   },
   "peerDependenciesMeta": {
     "cirrus-ui": {
