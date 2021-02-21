@@ -60,7 +60,7 @@ export interface EnterOption {
   db: FirebaseDb;
   dbServerValue: FirebaseDbServerValue;
   inputPassword: string;
-  handleEntering: (removeListener: () => void) => void;
+  waitFn: (removeListener: () => void) => void;
 }
 
 export type EnterResult =
@@ -77,7 +77,7 @@ export async function executeEnter({
   enterCondition,
   targetRoomId,
   inputPassword,
-  handleEntering,
+  waitFn,
 }: EnterOption): Promise<EnterResult> {
   if (enterCondition === 'IsAlreadyMember') {
     return 'Succeeded';
@@ -119,7 +119,7 @@ export async function executeEnter({
 
     const [enterPromise, removeListener] = autoEnterState;
 
-    handleEntering(removeListener);
+    waitFn(removeListener);
 
     const succeededEntering = await enterPromise;
 

@@ -1,10 +1,9 @@
 import { Cirrus } from '@alker/cirrus-types';
 import { css } from 'styled-jsx/css';
 import clsx, { Clsx } from 'clsx';
-import { createSignal, assignProps, JSX } from 'solid-js';
+import { createSignal, mergeProps, JSX } from 'solid-js';
 import { Portal, For } from 'solid-js/web';
-import { buttonize } from '../../util/component-utils';
-import { ComponentCreater } from '../../../types/component-creator';
+import { buttonize, DO_NOTHING } from '../../util/component-utils';
 
 type LinkButtonClass = 'LinkButtonClassName';
 
@@ -35,23 +34,18 @@ const defaultContext: HeaderMenu.DefaultContext = {
   buttonText: 'Click Me',
 };
 
-const DO_NOTHING = () => {};
-
 const defaultProps: HeaderMenu.DefaultProps = {
   buttonPlaceWhenNarrow: document.querySelector('.header-brand') ?? undefined,
   menuItems: [],
   onCleanup: DO_NOTHING,
 };
 
-export const HeaderMenu: ComponentCreater<
-  HeaderMenu.Context | undefined,
-  HeaderMenu.Props
-> = {
-  createComponent: (context?) => {
-    const fixedContext = assignProps({}, defaultContext, context ?? {});
+export const HeaderMenu = {
+  createComponent: (contextArg: HeaderMenu.Context = {}) => {
+    const fixedContext = mergeProps(defaultContext, contextArg);
 
-    return (propsArg) => {
-      const props = assignProps({}, defaultProps, propsArg);
+    return (propsArg: HeaderMenu.Props) => {
+      const props = mergeProps(defaultProps, propsArg);
 
       const { linkButtonClass, overlayClass } = createStyles();
 
@@ -82,7 +76,6 @@ export const HeaderMenu: ComponentCreater<
                 >
                   {fixedContext.buttonText}
                 </a>
-                {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
                 <div
                   class={overlayClass}
                   style={{ display: shown() ? 'block' : 'none' }}

@@ -4,14 +4,14 @@ import {
   getAndWatchRoomEntranceById,
 } from './rtdb';
 import {
-  RoomEntranceDataSchema,
   RTDB_KEY_OWNER_ID,
   RTDB_KEY_OWN_ROOM_ID,
   RTDB_KEY_ROOM_NAME,
   RTDB_KEY_ROOM_MEMBERS_COUNT,
   RTDB_KEY_CREATED_AT,
-  RoomInternalDataSchema,
   RTDB_KEY_PUBLIC_INFO,
+  RoomEntranceDataSchema,
+  RoomInternalDataSchema,
   RoomInternalPublicDataSchema,
 } from '../rtdb/constants';
 import {

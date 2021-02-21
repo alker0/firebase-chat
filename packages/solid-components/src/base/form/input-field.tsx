@@ -1,4 +1,4 @@
-import { assignProps, Component, JSX } from 'solid-js';
+import { mergeProps, Component, JSX } from 'solid-js';
 import { DefaultComponents } from '../../../types/component-creator';
 
 type DefaultPropsMap = {
@@ -25,9 +25,9 @@ export const InputField = {
   >(
     contextArg: InputField.Context<T, U> = {},
   ): Component<InputField.Props<T, U>> {
-    const context = assignProps({}, defaultContext, contextArg);
+    const context = mergeProps(defaultContext, contextArg);
     return (propsArg) => {
-      const props = assignProps({}, defaultProps, propsArg);
+      const props = mergeProps(defaultProps, propsArg);
       const Wrapper = props.wrapper ?? context.wrapper;
       const Contents = props.contents ?? context.contents;
       return (

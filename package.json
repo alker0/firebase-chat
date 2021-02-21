@@ -35,7 +35,7 @@
     "postcss-cli": "^8.3.1",
     "postcss-import": "^14.0.0",
     "postcss-import-url": "^7.0.0",
-    "postcss-syntax": "0.36 - 1",
+    "postcss-syntax": "^0.36",
     "postcss-ts-classnames": "patch:postcss-ts-classnames@0.2.0#./patches/postcss-ts-classnames.patch",
     "posthtml": "^0.15.1",
     "prettier": "^2.2.1",
@@ -111,11 +111,19 @@
     "@firebase/component": "@firebase/rules-unit-testing"
   },
   "peerDependencies": {
-    "jest": "26.6 - 27"
+    "jest": "^26.6"
   },
   "dependenciesMeta": {
     "fsevents": {
       "built": false
     }
+  },
+  "resolutions": {
+    "@alker/cirrus-types": "workspace:*",
+    "@alker/solid-components": "workspace:*",
+    "@alker/rtdb-rules-builder": "workspace:*",
+    "@alker/styled-tsx": "workspace:*",
+    "@alker/type-filtered-clsx": "workspace:*",
+    "solid-js": "patch:solid-js@^0.24.7#./solid-js-web-exports.patch"
   }
 }

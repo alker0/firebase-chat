@@ -5,7 +5,7 @@ import {
 import { DO_NOTHING } from '@lib/common-utils';
 import { Cirrus } from '@alker/cirrus-types';
 import clsx, { Clsx } from 'clsx';
-import { assignProps, Component, JSX } from 'solid-js';
+import { mergeProps, Component, JSX } from 'solid-js';
 
 const cn: Clsx<Cirrus> = clsx;
 
@@ -24,7 +24,7 @@ const defaultContext: Required<TopMenu.Context> = {
 
 export const TopMenu = {
   createComponent: (contextArg?: TopMenu.Context): Component<TopMenu.Props> => {
-    const context = assignProps({}, defaultContext, contextArg);
+    const context = mergeProps(defaultContext, contextArg);
     return () => {
       return (
         <div class={cn('content')}>

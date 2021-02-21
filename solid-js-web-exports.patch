@@ -1,0 +1,16 @@
+diff --git a/package.json b/package.json
+index 9b3140c72b2864a2d45d49da4c0addd487e52416..8d12ea98e82fb7f00b44db71929b602afa7af9d5 100644
+--- a/package.json
++++ b/package.json
+@@ -41,10 +41,7 @@
+       "require": "./dist/solid.cjs"
+     },
+     "./web": {
+-      "browser": {
+-        "import": "./web/dist/web.js",
+-        "require": "./web/dist/web.cjs"
+-      },
++      "browser": "./web/dist/web.js",
+       "node": {
+         "import": "./web/dist/server.js",
+         "require": "./web/dist/server.cjs"

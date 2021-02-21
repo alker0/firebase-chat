@@ -20,13 +20,13 @@ import {
 import { Cirrus } from '@alker/cirrus-types';
 import clsx, { Clsx } from 'clsx';
 import {
-  assignProps,
-  createMemo,
   createState,
-  SetStateFunction,
-  State,
-  JSX,
+  createMemo,
+  mergeProps,
   batch,
+  State,
+  SetStateFunction,
+  JSX,
 } from 'solid-js';
 import {
   FirebaseAuth,
@@ -48,7 +48,7 @@ const defaultContainerProps: Required<ContainerProps> = {
 
 const Container = FormContainer.createComponent({
   createContainer: () => (propsArg: ContainerProps = {}) => {
-    const props = assignProps({}, defaultContainerProps, propsArg);
+    const props = mergeProps(defaultContainerProps, propsArg);
     return (
       <form class={cn('content', 'frame')} onSubmit={props.onSubmit}>
         <div class={cn('content')}>

@@ -36,7 +36,3 @@ export type EventArgOf<T> = NonNullable<T> extends JSX.EventHandlerUnion<
 >
   ? EventArg<U, V>
   : never;
-
-export interface ComponentMemo {
-  Memo: JSX.FunctionElement;
-}

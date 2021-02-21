@@ -1,4 +1,4 @@
-import { assignProps, Component, JSX } from 'solid-js';
+import { mergeProps, Component, JSX } from 'solid-js';
 import { DO_NOTHING } from '../../util/component-utils';
 
 const defaultFormProps = {
@@ -9,7 +9,7 @@ type DefaultComponentProps = JSX.FormHTMLAttributes<HTMLFormElement>;
 
 const nativeContainers = {
   Form: (propsArg: JSX.FormHTMLAttributes<HTMLFormElement>) => {
-    const props = assignProps({}, defaultFormProps, propsArg);
+    const props = mergeProps(defaultFormProps, propsArg);
     return <form {...props} />;
   },
   Div: (props: JSX.HTMLAttributes<HTMLDivElement>) => <div {...props} />,
@@ -24,7 +24,7 @@ export const FormContainer = {
   createComponent<T = DefaultComponentProps>(
     contextArg?: FormContainer.Context<T>,
   ): Component<FormContainer.Props<T>> {
-    const context = assignProps({}, defaultContext, contextArg);
+    const context = mergeProps(defaultContext, contextArg);
     const Container = context.createContainer(nativeContainers);
     return (props) => (
       <Container {...props.containerProps} children={props.children} />

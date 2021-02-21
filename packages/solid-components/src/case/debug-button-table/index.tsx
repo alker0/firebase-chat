@@ -1,4 +1,4 @@
-import { createMemo, assignProps, splitProps, JSX } from 'solid-js';
+import { createMemo, mergeProps, splitProps, JSX } from 'solid-js';
 import { FixedDebugButtonProps } from './utils';
 import { PseudoTable } from '../../base/molecules/pseudo-table';
 
@@ -26,8 +26,7 @@ export const DebugButtonTable = {
     );
     const TableComponent = PseudoTable.createComponent(contextDelegatable);
     return (propsArg: DebugButtonTable.Props) => {
-      const props = assignProps(
-        {},
+      const props = mergeProps(
         defaultDebugButtonTableProps,
         contextOnlyForSelf,
         propsArg,

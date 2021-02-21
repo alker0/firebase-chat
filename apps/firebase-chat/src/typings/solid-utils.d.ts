@@ -1,11 +1,10 @@
-import { State } from 'solid-js';
+import { State, Resource } from 'solid-js';
 
 export type FromState<T> = T extends State<infer R> ? R : never;
 
-export interface LoadingObject<T> {
-  loading: Record<keyof T, boolean>;
+export interface ResourceController<T> {
+  mutate: (value: T | undefined) => T | undefined;
+  refetch: () => void;
 }
 
-export type ResourceState<T> = State<T & LoadingObject<T>>;
-
-export type StateOrResource<T> = State<T & Partial<LoadingObject<T>>>;
+export type ResourceWithController<T> = [Resource<T>, ResourceController<T>];

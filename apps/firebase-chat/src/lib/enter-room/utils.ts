@@ -23,14 +23,12 @@ export interface CreateHendlerForEnterOption {
   getInputPassword: () => string;
   setInputPassword: (password: string) => void;
   getSelectingRoomRow: () => RoomRow | undefined;
-  startEntering: (
-    fn: () => EnterResult | Promise<EnterResult>,
-  ) => Promise<EnterResult>;
+  startEnter: (enterResultPromise: Promise<EnterResult>) => unknown;
   setCancelEnteringFn: (cancelFn: () => void) => void;
   onSuccess: (targetRoom: RoomEntranceInfo) => void;
   executeOption: Omit<
     EnterOption,
-    'targetRoomId' | 'enterCondition' | 'inputPassword' | 'handleEntering'
+    'targetRoomId' | 'enterCondition' | 'inputPassword' | 'waitFn'
   >;
 }
 
@@ -42,7 +40,7 @@ export function createHandlerForEnter(option: CreateHendlerForEnterOption) {
       getEnterCondition,
       getInputPassword,
       getSelectingRoomRow,
-      startEntering,
+      startEnter,
       setCancelEnteringFn,
       onSuccess,
       executeOption,
@@ -57,27 +55,26 @@ export function createHandlerForEnter(option: CreateHendlerForEnterOption) {
 
       if (targetIsOwnRoom() || enterCondition === 'IsAlreadyMember') {
         onSuccess(targetRoom);
-        startEntering(() => 'Succeeded');
+        startEnter(Promise.resolve('Succeeded'));
       } else if (enterCondition !== 'NeedsPassword' || inputPassword.length) {
         const { roomId } = targetRoom;
-        startEntering(async () => {
-          const enterResult = await executeEnter({
+        startEnter(
+          executeEnter({
             ...executeOption,
             targetRoomId: roomId,
             enterCondition,
             inputPassword,
-            handleEntering: setCancelEnteringFn,
-          });
-
-          batch(() => {
-            setCancelEnteringFn(DO_NOTHING);
-            if (enterResult === 'Succeeded') {
-              onSuccess(targetRoom);
-            }
-          });
-
-          return enterResult;
-        });
+            waitFn: setCancelEnteringFn,
+          }).then((enterResult) => {
+            return batch(() => {
+              setCancelEnteringFn(DO_NOTHING);
+              if (enterResult === 'Succeeded') {
+                onSuccess(targetRoom);
+              }
+              return enterResult;
+            });
+          }),
+        );
       }
     }
   };

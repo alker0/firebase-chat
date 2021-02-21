@@ -1,4 +1,4 @@
-import { createMemo, assignProps, JSX } from 'solid-js';
+import { createMemo, mergeProps, JSX } from 'solid-js';
 import { For } from 'solid-js/web';
 
 export const defaultPseudoTableProps: PseudoTable.FixedProps = {
@@ -97,7 +97,7 @@ function createChunksMemoRunner(props: PseudoTable.FixedProps) {
 export const PseudoTable = {
   createComponent: (context: PseudoTable.Context) => {
     return (propsArg: PseudoTable.Props) => {
-      const props = assignProps({}, defaultPseudoTableProps, context, propsArg);
+      const props = mergeProps(defaultPseudoTableProps, context, propsArg);
       const chunksMemoRunner = createChunksMemoRunner(props);
       const chunks = createMemo(chunksMemoRunner, [], false);
       return (
